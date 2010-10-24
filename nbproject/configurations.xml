@@ -29,9 +29,15 @@
     </logicalFolder>
     <itemPath>BackgroundRemovedImage.cpp</itemPath>
     <itemPath>BackgroundRemovedImage.h</itemPath>
+    <itemPath>LinearStackCompressor.cpp</itemPath>
+    <itemPath>LinearStackCompressor.h</itemPath>
     <itemPath>StaticBackgroundCompressor.cpp</itemPath>
     <itemPath>StaticBackgroundCompressor.h</itemPath>
+    <itemPath>tictoc/Timer.cpp</itemPath>
+    <itemPath>tictoc/Timer.h</itemPath>
     <itemPath>testmain.cpp</itemPath>
+    <itemPath>tictoc/tictoc.cpp</itemPath>
+    <itemPath>tictoc/tictoc.h</itemPath>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -52,6 +58,7 @@
             <pElem>.</pElem>
             <pElem>Necessary Libraries and Includes</pElem>
             <pElem>Necessary Libraries and Includes/CV/headers</pElem>
+            <pElem>tictoc</pElem>
           </incDir>
         </ccTool>
         <linkerTool>

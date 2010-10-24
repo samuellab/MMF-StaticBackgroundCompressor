@@ -34,8 +34,11 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/BackgroundRemovedImage.o \
+	${OBJECTDIR}/tictoc/Timer.o \
+	${OBJECTDIR}/tictoc/tictoc.o \
 	${OBJECTDIR}/StaticBackgroundCompressor.o \
-	${OBJECTDIR}/testmain.o
+	${OBJECTDIR}/testmain.o \
+	${OBJECTDIR}/LinearStackCompressor.o
 
 
 # C Compiler Flags
@@ -65,17 +68,32 @@ dist/Debug/MinGW-Windows/image_stack_compressor.exe: ${OBJECTFILES}
 ${OBJECTDIR}/BackgroundRemovedImage.o: BackgroundRemovedImage.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -MMD -MP -MF $@.d -o ${OBJECTDIR}/BackgroundRemovedImage.o BackgroundRemovedImage.cpp
+	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/BackgroundRemovedImage.o BackgroundRemovedImage.cpp
+
+${OBJECTDIR}/tictoc/Timer.o: tictoc/Timer.cpp 
+	${MKDIR} -p ${OBJECTDIR}/tictoc
+	${RM} $@.d
+	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/tictoc/Timer.o tictoc/Timer.cpp
+
+${OBJECTDIR}/tictoc/tictoc.o: tictoc/tictoc.cpp 
+	${MKDIR} -p ${OBJECTDIR}/tictoc
+	${RM} $@.d
+	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/tictoc/tictoc.o tictoc/tictoc.cpp
 
 ${OBJECTDIR}/StaticBackgroundCompressor.o: StaticBackgroundCompressor.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -MMD -MP -MF $@.d -o ${OBJECTDIR}/StaticBackgroundCompressor.o StaticBackgroundCompressor.cpp
+	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/StaticBackgroundCompressor.o StaticBackgroundCompressor.cpp
 
 ${OBJECTDIR}/testmain.o: testmain.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -MMD -MP -MF $@.d -o ${OBJECTDIR}/testmain.o testmain.cpp
+	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/testmain.o testmain.cpp
+
+${OBJECTDIR}/LinearStackCompressor.o: LinearStackCompressor.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/LinearStackCompressor.o LinearStackCompressor.cpp
 
 # Subprojects
 .build-subprojects:
