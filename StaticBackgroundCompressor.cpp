@@ -23,6 +23,8 @@ StaticBackgroundCompressor::StaticBackgroundCompressor() {
     bwbuffer = NULL;
     buffer1 = buffer2 = NULL;
     threshAboveBackground = threshBelowBackground = 0;
+    updateBackgroundFrameInterval = -1;
+    updateCount = 0;
 }
 
 StaticBackgroundCompressor::StaticBackgroundCompressor(const StaticBackgroundCompressor& orig) {
@@ -48,16 +50,29 @@ void StaticBackgroundCompressor::calculateBackground() {
     if (background != NULL) {
         cvReleaseImage(&background);
     }
-    background = cvCloneImage(imsToProcess.front());
+ //   background = cvCloneImage(imsToProcess.front());
    for (vector<IplImage *>::iterator it = imsToProcess.begin(); it != imsToProcess.end(); ++it) {
-        cvMin(*it, background, background);
+   //     cvMin(*it, background, background);
+       updateBackground(*it);
     }
-
 }
+void StaticBackgroundCompressor::updateBackground(const IplImage* im) {
+    if (background == NULL) {
+        background = cvCloneImage(im);
+    } else {
+        cvMin(im, background, background);
+    }
+}
+
 
 void StaticBackgroundCompressor::addFrame(const IplImage* im) {
     IplImage *imcpy = cvCloneImage(im);
     imsToProcess.insert(imsToProcess.begin(), imcpy);
+    if (updateBackgroundFrameInterval > 0 && updateCount == 0) {
+        updateBackground(im);
+        updateCount = updateBackgroundFrameInterval;
+    }
+    --updateCount;
 }
 
 int StaticBackgroundCompressor::processFrame() {
@@ -149,4 +164,12 @@ void StaticBackgroundCompressor::playMovie(char* windowName) {
          cvShowImage(windowName, im);
          cvWaitKey(50);
      }
+}
+
+int StaticBackgroundCompressor::numProcessed() {
+    return bri.size();
+}
+
+int StaticBackgroundCompressor::numToProccess() {
+    return imsToProcess.size();
 }

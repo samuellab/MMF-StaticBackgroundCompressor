@@ -17,27 +17,34 @@
 class StaticBackgroundCompressor {
 public:
 
-    void addFrame (const IplImage *im);
-    int processFrame();
-    void processFrames();
-    void calculateBackground();
-    
-    void toDisk (std::ofstream &os);
-    int sizeOnDisk();
+    virtual void addFrame (const IplImage *im);
+    virtual int processFrame();
+    virtual void processFrames();
+    virtual void calculateBackground();
+    virtual void updateBackground(const IplImage *im);
+    virtual void toDisk (std::ofstream &os);
+    virtual int sizeOnDisk();
     StaticBackgroundCompressor();
     virtual ~StaticBackgroundCompressor();
-
     static StaticBackgroundCompressor *fromDisk(std::ifstream& is);
-
     static void writeIplImageToByteStream (std::ofstream &os, const IplImage *src);
     static IplImage *readIplImageFromByteStream(std::ifstream &is);
-
     inline void setThresholds(int threshBelowBackground, int threshAboveBackground) {
         this->threshAboveBackground = threshAboveBackground;
         this->threshBelowBackground = threshBelowBackground;
     }
+    virtual void playMovie (char *windowName = NULL);
 
-    void playMovie (char *windowName = NULL);
+    inline void setAutomaticUpdateInterval (int interval) {
+        updateBackgroundFrameInterval = interval;
+    }
+    inline void disableAutomaticBackgroundUpdating () {
+        updateBackgroundFrameInterval = -1;
+    }
+
+    virtual int numToProccess ();
+    virtual int numProcessed ();
+
 
 protected:
      StaticBackgroundCompressor(const StaticBackgroundCompressor& orig);
@@ -52,6 +59,8 @@ protected:
     IplImage *buffer1;
     IplImage *buffer2;
 
+    int updateBackgroundFrameInterval;
+    int updateCount;
 };
 
 #endif	/* STATICBACKGROUNDCOMPRESSOR_H */
