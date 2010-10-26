@@ -12,6 +12,7 @@
 using namespace std;
 
 LinearStackCompressor::LinearStackCompressor() {
+    init();
 }
 
 LinearStackCompressor::LinearStackCompressor(const LinearStackCompressor& orig) {
@@ -42,7 +43,7 @@ void LinearStackCompressor::init() {
     outfile = NULL;
     activeStack = NULL;
     stackBeingCompressed = NULL;
-    frameRate = 5;
+    frameRate = 1;
     threshBelowBackground = 5;
     threshAboveBackground = 5;
     processing = false; //really should be a mutex, but whatever
@@ -56,6 +57,7 @@ void LinearStackCompressor::newFrame(const IplImage* im) {
     while (lockActiveStack && --maxCycles > 0) {
         //intentionally blank
     }
+  //  cout << "lockActiveStack = " << lockActiveStack << "; processing = " << processing << "\n";
 
     lockActiveStack = true;
     addFrameToStack(im);
@@ -71,6 +73,7 @@ void LinearStackCompressor::newFrame(const IplImage* im) {
 
     if (!processing) {
         processing = true;
+    //    cout << tim.getElapsedTimeInSec() << " s elapsed\n";
         while (tim.getElapsedTimeInSec() < 0.95/frameRate && compressStack()) {
         //intentionally blank       
         }
@@ -86,10 +89,13 @@ void LinearStackCompressor::addFrameToStack(const IplImage* im) {
         createStack();
     }
     if (activeStack->numToProccess() >= keyframeInterval) {
+    //    cout << "pusing active stack on imstacks\n";
         imageStacks.push_back(activeStack);
         if (stacksavedescription.empty()) {
+   //         cout << "storing save description as string\n";
             stacksavedescription = activeStack->saveDescription();
         }
+ //       cout << "creating new stack\n";
         createStack();
     }
     if (recordingState == recording) {
@@ -143,7 +149,9 @@ void LinearStackCompressor::createStack() {
 //returns true if there may be images remaining to compress
 bool LinearStackCompressor::compressStack() {
      setCompressionStack();
+ //    cout << "stack being compressed = " << (int) stackBeingCompressed << "\n";
      if (stackBeingCompressed != NULL) {
+        // cout << "processing compression frame\n";
          stackBeingCompressed->processFrame();
          return true;
      } else {
@@ -154,13 +162,14 @@ bool LinearStackCompressor::compressStack() {
 void LinearStackCompressor::setCompressionStack() {
    vector<StaticBackgroundCompressor *>::iterator it;
    for (it = imageStacks.begin(); it != imageStacks.end(); ++it) {
-       StaticBackgroundCompressor *sbc;
        if (readyForCompression(*it)) {
+       //    cout << "found one ready for compression\n";
            stackBeingCompressed = *it;
            return;
        }
    }
-   stackBeingCompressed == NULL;
+ //  cout << "no one is ready for compression\n";
+   stackBeingCompressed = NULL;
 }
 
 //returns true if there may be stacks remaining to write
@@ -168,12 +177,20 @@ bool LinearStackCompressor::writeFinishedStack() {
    vector<StaticBackgroundCompressor *>::iterator it;
    for (it = imageStacks.begin(); it != imageStacks.end(); ++it) {
        if (readyForWriting(*it)) {
-           openOutputFile();
+           if (outfile == NULL) {
+        //       cout << "opening output file\n";
+               openOutputFile();
+           }
            if (outfile == NULL) {
                return false;
            }
            StaticBackgroundCompressor *sbc = *it;
+      //     cout << "writing to disk\n";
+           ofstream::pos_type sp = outfile->tellp();
+           int sod = sbc->sizeOnDisk();
            sbc->toDisk(*outfile);
+      //     cout << "wrote " << outfile->tellp() - sp << "/" << sbc->sizeOnDisk() << "\n";
+     //      cout << "deleting sbc\n";
            delete sbc;
            imageStacks.erase(it);
            return true;
@@ -184,6 +201,9 @@ bool LinearStackCompressor::writeFinishedStack() {
 }
 
 bool LinearStackCompressor::readyForCompression(StaticBackgroundCompressor* sc) {
+ //   if (sc != NULL) {
+//        cout << "num to compress = " << sc->numToProccess() << "\n";
+ //   }
     return (sc != NULL && sc != activeStack && sc->numToProccess() > 0);
 }
 

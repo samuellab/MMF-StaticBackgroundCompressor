@@ -86,9 +86,9 @@ void testLSC() {
 //    StaticBackgroundCompressor sbc;
  //   sbc.setThresholds(0, 5);
     lsc.setThresholds(5, 5);
-    lsc.setIntervals(64, 1);
+    lsc.setIntervals(128, 1);
     lsc.setOutputFileName("c:\\teststack.bin");
-    int nframes = 100;
+    int nframes = 1000;
     lsc.startRecording(nframes);
     stringstream s;
     for (int j = 0; j < nframes; ++j) {

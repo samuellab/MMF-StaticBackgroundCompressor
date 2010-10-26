@@ -269,10 +269,12 @@ void BackgroundRemovedImage::restoreImage(IplImage** dst) {
 }
 
 std::string BackgroundRemovedImage::saveDescription() {
+    cout << "entered bri save description\n";
     std::stringstream os;
     os << classname() << ": header is a" << headerDescription() << "header is followed by numims image blocks of the following form:\n";
     os << "(" << sizeof(CvRect) << " bytes) CvRect [x y w h] describing location of image data, then interlaced row ordered image data\n";
     return os.str();
+    cout << "ended bri save description\n";
 }
 
 std::string BackgroundRemovedImage::headerDescription() {
