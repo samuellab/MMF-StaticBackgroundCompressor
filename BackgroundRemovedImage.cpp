@@ -14,6 +14,7 @@
 #include <iostream>
 #include <fstream>
 #include <map>
+#include <sstream>
 
 using namespace std;
 
@@ -30,6 +31,9 @@ BackgroundRemovedImage::~BackgroundRemovedImage() {
     vector<pair<CvRect, IplImage *> >::iterator it;
     for (it = differencesFromBackground.begin(); it != differencesFromBackground.end(); ++it) {
         cvReleaseImage(&(it->second));
+    }
+    if (ms != NULL) {
+        cvReleaseMemStorage(&ms);
     }
 }
 
@@ -142,17 +146,21 @@ void BackgroundRemovedImage::extractBlobs(IplImage *src, IplImage *mask) {
 
 void BackgroundRemovedImage::toDisk(std::ofstream &os) {
     vector<pair<CvRect, IplImage *> >::iterator it;
-    int info[3]; //depth, nchannels, npoints
+    int info[4] = {0}; //header size, depth, nchannels, npoints
+    std::ofstream::pos_type cur_loc = os.tellp();
+    info[0] = headerSizeInBytes;
     if (differencesFromBackground.empty()) {
-        info[0] = info[1] = info[2] = 0;
         os.write((char *) info, sizeof(info));
-        return;
+    } else {
+        info[1] = differencesFromBackground.front().second->depth;
+        info[2] = differencesFromBackground.front().second->nChannels;
+        info[3] = differencesFromBackground.size();
+        os.write((char *) info, sizeof(info));
     }
-    info[0] = differencesFromBackground.front().second->depth;
-    info[1] = differencesFromBackground.front().second->nChannels;
-    info[2] = differencesFromBackground.size();
-    os.write((char *) info, sizeof(info));
-    
+    //fill in rest of header with zeros
+    char zero[headerSizeInBytes] = {0};
+    os.write(zero, cur_loc + (std::ofstream::pos_type) headerSizeInBytes - os.tellp());
+
     for (it = differencesFromBackground.begin(); it != differencesFromBackground.end(); ++it) {
         os.write((char *) &(it->first), sizeof(CvRect));
         writeImageData(os, it->second);
@@ -160,7 +168,7 @@ void BackgroundRemovedImage::toDisk(std::ofstream &os) {
 }
 
 int BackgroundRemovedImage::sizeOnDisk() {
-    int totalbytes = 12;
+    int totalbytes = headerSizeInBytes;
     for (vector<pair<CvRect, IplImage *> >::iterator it = differencesFromBackground.begin(); it != differencesFromBackground.end(); ++it) {
         IplImage *im = it->second;
         totalbytes += sizeof(CvRect) + bytesPerPixel(im)*im->width*im->height*im->nChannels;
@@ -219,9 +227,14 @@ BackgroundRemovedImage *BackgroundRemovedImage::fromDisk(std::ifstream& is, cons
     bri->threshAboveBackground = bri->threshBelowBackground = 0;
     bri->ms = NULL;
     int depth, nChannels, numims;
+    std::ifstream::pos_type cur_loc = is.tellg();
+    int headersize;
+    is.read((char *) &headersize, sizeof(int));
     is.read((char *) &depth, sizeof(int));
     is.read((char *) &nChannels, sizeof(int));
     is.read((char *) &numims, sizeof(int));
+    is.seekg(cur_loc + (std::ifstream::pos_type) headersize);
+
     for (int j = 0; j < numims; ++j) {
         CvRect r;
         is.read((char *) &r, sizeof(CvRect));
@@ -253,4 +266,18 @@ void BackgroundRemovedImage::restoreImage(IplImage** dst) {
     }
     cvSetImageROI(*dst, roi);
     
+}
+
+std::string BackgroundRemovedImage::saveDescription() {
+    std::stringstream os;
+    os << classname() << ": header is a" << headerDescription() << "header is followed by numims image blocks of the following form:\n";
+    os << "(" << sizeof(CvRect) << " bytes) CvRect [x y w h] describing location of image data, then interlaced row ordered image data\n";
+    return os.str();
+}
+
+std::string BackgroundRemovedImage::headerDescription() {
+    std::stringstream os;
+    os << headerSizeInBytes << " byte zero padded header with the following data fields (all " << sizeof(int) << " byte ints)\n";
+    os << "headersize (number of bytes in header), depth (IplImage depth), nChannels (IplImage number of channels), numims (number of image blocks that differ from background)\n";
+    return os.str();
 }

@@ -17,6 +17,8 @@
 class StaticBackgroundCompressor {
 public:
 
+    static const int headerSizeInBytes = 512;
+
     virtual void addFrame (const IplImage *im);
     virtual int processFrame();
     virtual void processFrames();
@@ -45,6 +47,7 @@ public:
     virtual int numToProccess ();
     virtual int numProcessed ();
 
+    virtual std::string saveDescription();
 
 protected:
      StaticBackgroundCompressor(const StaticBackgroundCompressor& orig);
@@ -61,6 +64,7 @@ protected:
 
     int updateBackgroundFrameInterval;
     int updateCount;
+    virtual std::string headerDescription();
 };
 
 #endif	/* STATICBACKGROUNDCOMPRESSOR_H */

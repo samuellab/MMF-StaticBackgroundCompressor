@@ -18,11 +18,14 @@ public:
 
     BackgroundRemovedImage (IplImage *src, const IplImage *bak, IplImage *bwbuffer = NULL, IplImage *srcbuffer1 = NULL,  IplImage *srcbuffer2 = NULL, int threshBelowBackground = 0, int threshAboveBackground = 0);
     virtual ~BackgroundRemovedImage();
-    void toDisk(std::ofstream &os);
+    virtual void toDisk(std::ofstream &os);
     static BackgroundRemovedImage *fromDisk(std::ifstream& is, const IplImage *bak);
-    int sizeOnDisk();
-    int sizeInMemory();
-    void restoreImage (IplImage **dst);
+    virtual int sizeOnDisk();
+    virtual int sizeInMemory();
+    virtual std::string saveDescription();
+    virtual void restoreImage (IplImage **dst);
+
+    static const int headerSizeInBytes = 256;
 
     static inline int bytesPerPixel(const IplImage *src) {
         switch (src->depth) {
@@ -49,8 +52,11 @@ public:
     }
 
 protected:
-    void extractDifferences(IplImage *src, IplImage *bwbuffer = NULL, IplImage *srcbuffer1 = NULL, IplImage *srcbuffer2 = NULL);
-    void extractBlobs (IplImage *src, IplImage *mask);
+    virtual void extractDifferences(IplImage *src, IplImage *bwbuffer = NULL, IplImage *srcbuffer1 = NULL, IplImage *srcbuffer2 = NULL);
+    virtual void extractBlobs (IplImage *src, IplImage *mask);
+
+    virtual inline std::string classname() { return std::string("BackgroundRemovedImage");}
+    virtual std::string headerDescription();
 
     BackgroundRemovedImage();
     BackgroundRemovedImage(const BackgroundRemovedImage& orig);

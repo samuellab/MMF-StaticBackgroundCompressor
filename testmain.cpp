@@ -9,6 +9,7 @@
 #include "cv.h"
 #include "highgui.h"
 #include "StaticBackgroundCompressor.h"
+#include "LinearStackCompressor.h"
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -20,10 +21,12 @@ using namespace std;
  */
 void createTestStack();
 void loadAndPlayTestStack() ;
+void testLSC();
 
 int main(int argc, char** argv) {
-    createTestStack();
-  loadAndPlayTestStack();
+   // createTestStack();
+  //loadAndPlayTestStack();
+    testLSC();
     return 0;
 }
 void loadAndPlayTestStack() {
@@ -76,3 +79,30 @@ void createTestStack() {
     cout << "done\n";
     
 }
+
+void testLSC() {
+    string stub = "\\\\labnas2\\LarvalCO2\\Image Data\\50 mL CO2 in 2 L air\\20101001\\CS3\\CS3_";
+    LinearStackCompressor lsc;
+//    StaticBackgroundCompressor sbc;
+ //   sbc.setThresholds(0, 5);
+    lsc.setThresholds(5, 5);
+    lsc.setIntervals(64, 1);
+    lsc.setOutputFileName("c:\\teststack.bin");
+    int nframes = 100;
+    lsc.startRecording(nframes);
+    stringstream s;
+    for (int j = 0; j < nframes; ++j) {
+        s.str("");
+        s << stub << j << ".jpg";
+        IplImage *im = cvLoadImage(s.str().c_str(), 0);
+        assert(im != NULL);
+        cout << "loaded image " << j <<"\n";
+        lsc.newFrame(im);
+        cvReleaseImage(&im);
+   //     cout << "added image to stack\n";
+    }
+
+    lsc.stopRecording();
+    
+}
+

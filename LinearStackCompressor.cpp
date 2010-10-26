@@ -18,6 +18,20 @@ LinearStackCompressor::LinearStackCompressor(const LinearStackCompressor& orig) 
 }
 
 LinearStackCompressor::~LinearStackCompressor() {
+   closeOutputFile();
+   vector<StaticBackgroundCompressor *>::iterator it;
+   for (it = imageStacks.begin(); it != imageStacks.end(); ++it) {
+       if ((*it) != NULL && (*it) != activeStack) {
+           delete *it;
+           *it = NULL;
+       }
+   }
+   imageStacks.clear();
+   if (activeStack != NULL) {
+       delete activeStack;
+   }
+
+
 }
 
 void LinearStackCompressor::init() {
@@ -26,7 +40,6 @@ void LinearStackCompressor::init() {
     recordingState = idle;
     framesToRecord = 0;
     outfile = NULL;
-    imageStacks = new vector<StaticBackgroundCompressor *>;
     activeStack = NULL;
     stackBeingCompressed = NULL;
     frameRate = 5;
@@ -37,7 +50,7 @@ void LinearStackCompressor::init() {
 }
 
 void LinearStackCompressor::newFrame(const IplImage* im) {
-    int maxCycles = 1E9; //just so it doesn't hang
+    int maxCycles = (int) 1E9; //just so it doesn't hang
     Timer tim = Timer();
     tim.start();
     while (lockActiveStack && --maxCycles > 0) {
@@ -48,18 +61,24 @@ void LinearStackCompressor::newFrame(const IplImage* im) {
     addFrameToStack(im);
     lockActiveStack = false;
 
-    if (processing) {
-        return; // don't do anything if someone else is still trying to work
+    if (recordingState == recording) {
+        if(--framesToRecord <= 0) {
+            finishRecording();
+            return;
+        }
     }
-    processing = true;
-    while (tim.getElapsedTimeInSec() < 0.95/frameRate && compressStack()) {
-        //intentionally blank
-       
+
+
+    if (!processing) {
+        processing = true;
+        while (tim.getElapsedTimeInSec() < 0.95/frameRate && compressStack()) {
+        //intentionally blank       
+        }
+        while (tim.getElapsedTimeInSec() < 0.95/frameRate && writeFinishedStack()) {
+            //intentionally blank
+        }
+        processing = false;
     }
-    while (tim.getElapsedTimeInSec() < 0.95/frameRate && writeFinishedStack()) {
-        //intentionally blank
-    }
-    processing = false;
 }
 
 void LinearStackCompressor::addFrameToStack(const IplImage* im) {
@@ -67,7 +86,10 @@ void LinearStackCompressor::addFrameToStack(const IplImage* im) {
         createStack();
     }
     if (activeStack->numToProccess() >= keyframeInterval) {
-        imageStacks->push_back(activeStack);
+        imageStacks.push_back(activeStack);
+        if (stacksavedescription.empty()) {
+            stacksavedescription = activeStack->saveDescription();
+        }
         createStack();
     }
     if (recordingState == recording) {
@@ -78,11 +100,23 @@ void LinearStackCompressor::addFrameToStack(const IplImage* im) {
     }
 }
 
+void LinearStackCompressor::startRecording(int numFramesToRecord) {
+    recordingState = recording;
+    this->framesToRecord = numFramesToRecord;
+}
+
 void LinearStackCompressor::finishRecording() {
+    int maxCycles = (int) 1E9; //just so it doesn't hang
+    while (processing && --maxCycles > 0) {
+        //intentionally blank
+    }
+    processing = true;
+    lockActiveStack = true;
+
     recordingState = idle;
     if (activeStack != NULL) {
         if (activeStack->numToProccess() > 0) {
-            imageStacks->push_back(activeStack);
+            imageStacks.push_back(activeStack);
         } else {
             delete activeStack;
         }
@@ -94,11 +128,10 @@ void LinearStackCompressor::finishRecording() {
     while (writeFinishedStack()) {
         //intentionally blank
     }
-    if (outfile != NULL) {
-        outfile->close();
-        delete outfile;
-        outfile = NULL;
-    }
+   
+
+    processing = false;
+    lockActiveStack = false;
 }
 
 void LinearStackCompressor::createStack() {
@@ -120,7 +153,7 @@ bool LinearStackCompressor::compressStack() {
 
 void LinearStackCompressor::setCompressionStack() {
    vector<StaticBackgroundCompressor *>::iterator it;
-   for (it = imageStacks->begin(); it != imageStacks.end(); ++it) {
+   for (it = imageStacks.begin(); it != imageStacks.end(); ++it) {
        StaticBackgroundCompressor *sbc;
        if (readyForCompression(*it)) {
            stackBeingCompressed = *it;
@@ -133,7 +166,7 @@ void LinearStackCompressor::setCompressionStack() {
 //returns true if there may be stacks remaining to write
 bool LinearStackCompressor::writeFinishedStack() {
    vector<StaticBackgroundCompressor *>::iterator it;
-   for (it = imageStacks->begin(); it != imageStacks.end(); ++it) {
+   for (it = imageStacks.begin(); it != imageStacks.end(); ++it) {
        if (readyForWriting(*it)) {
            openOutputFile();
            if (outfile == NULL) {
@@ -142,7 +175,7 @@ bool LinearStackCompressor::writeFinishedStack() {
            StaticBackgroundCompressor *sbc = *it;
            sbc->toDisk(*outfile);
            delete sbc;
-           imageStacks->erase(it);
+           imageStacks.erase(it);
            return true;
            
         }
@@ -158,3 +191,55 @@ bool LinearStackCompressor::readyForWriting(StaticBackgroundCompressor* sc) {
     return (sc != NULL && sc != activeStack && sc != stackBeingCompressed && sc->numToProccess() == 0 && sc->numProcessed() > 0);
 }
 
+void LinearStackCompressor::openOutputFile() {
+    closeOutputFile();
+    if (!fname.empty()) {
+        outfile = new ofstream (fname.c_str(),ofstream::binary);
+        writeHeader();
+    }
+}
+
+void LinearStackCompressor::closeOutputFile() {
+     if (outfile != NULL) {
+        outfile->close();
+        delete outfile;
+        outfile = NULL;
+    }
+}
+
+void LinearStackCompressor::setOutputFileName(const char* fname) {
+    if (fname != NULL) {
+        this->fname = string(fname);
+    }
+}
+
+void LinearStackCompressor::stopRecording() {
+    if (recording) {
+        finishRecording();
+    }
+    recordingState = idle;
+}
+
+void LinearStackCompressor::goIdle() {
+    finishRecording();
+}
+
+void LinearStackCompressor::startUpdatingBackground() {
+    recordingState = updatingBackground;
+}
+
+void LinearStackCompressor::writeHeader() {
+    if (outfile == NULL) {
+        return;
+    }
+    char zero[headerSizeInBytes] = {0};
+    ofstream::pos_type cloc = outfile->tellp();
+    outfile->write(zero, headerSizeInBytes);
+    outfile->seekp(cloc);
+    int info[10] = {0};
+    info[0] = keyframeInterval;
+    info[1] = threshBelowBackground;
+    info[2] = threshAboveBackground;
+    outfile->seekp(headerSizeInBytes);
+
+}

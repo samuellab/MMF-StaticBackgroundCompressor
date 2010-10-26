@@ -17,6 +17,7 @@
 
 class LinearStackCompressor {
 public:
+    static const int headerSizeInBytes = 1024;
     LinearStackCompressor();
    
     virtual ~LinearStackCompressor();
@@ -24,6 +25,7 @@ public:
 
     virtual void setOutputFileName (const char *fname);
     virtual void openOutputFile ();
+    virtual void closeOutputFile ();
     virtual void startRecording(int numFramesToRecord);
     virtual void stopRecording();
     virtual void startUpdatingBackground();
@@ -31,6 +33,10 @@ public:
     inline void setThresholds(int threshBelowBackground, int threshAboveBackground) {
         this->threshAboveBackground = threshAboveBackground;
         this->threshBelowBackground = threshBelowBackground;
+    }
+    inline void setIntervals (int keyframeInterval, int backgroundUpdateInterval = 1) {
+        this->keyframeInterval = keyframeInterval;
+        this->backgroundUpdateInterval = backgroundUpdateInterval;
     }
 
 protected:
@@ -50,6 +56,8 @@ protected:
     bool processing; //really should be a mutex, but whatever
     bool lockActiveStack; //really should be a mutex, but whatever
 
+    std::string stacksavedescription;
+
     virtual void createStack();
     virtual void addFrameToStack(const IplImage *im);
     virtual bool compressStack();
@@ -60,6 +68,7 @@ protected:
     virtual void finishRecording ();
 
     virtual void init();
+    virtual void writeHeader();
     
 private:
      LinearStackCompressor(const LinearStackCompressor& orig);

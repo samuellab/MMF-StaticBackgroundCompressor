@@ -15,6 +15,7 @@
 #include "highgui.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -98,21 +99,53 @@ void StaticBackgroundCompressor::processFrames() {
 }
 
 void StaticBackgroundCompressor::toDisk(std::ofstream& os) {
-    writeIplImageToByteStream(os, background);
- 
-    int numFrames = bri.size();
+    int info[3] = {0};
 
-    os.write((char *) &numFrames, sizeof(int));
+    info[0] = headerSizeInBytes;
+    info[2] = bri.size(); //numframes
+
+    std::ofstream::pos_type start_loc = os.tellp();
+  //  os.write((char *) info, sizeof(info));
+    //fill in rest of header with zeros
+    char zero[headerSizeInBytes] = {0};
+    os.write(zero, headerSizeInBytes);
+    writeIplImageToByteStream(os, background);
     for (vector<BackgroundRemovedImage *>::iterator it = bri.begin(); it != bri.end(); ++it) {
         (*it)->toDisk(os);
-    
     }
+    std::ofstream::pos_type end_loc = os.tellp();
+    info[1] = end_loc - start_loc;
+    os.seekp(start_loc);
+    os.write((char *) info, sizeof(info));
+    os.seekp(end_loc);
 }
+std::string StaticBackgroundCompressor::saveDescription() {
+    std::stringstream os;
+    os << "Stack of common background images, beginning with this header:\n" << headerDescription();
+    os << "Then the background image, as an IplImage, starting with the " << sizeof (IplImage) << " byte image header, followed by the image data\n";
+    os << "Then nframes background removed images containing only differences from the background, in this format:\n";
+    if (bri.empty()) {
+        os << "<no background removed images in stack>\n";
+    } else {
+        os << bri.front()->saveDescription();
+    }
+    return os.str();
+}
+std::string StaticBackgroundCompressor::headerDescription() {
+    std::stringstream os;
+    os << headerSizeInBytes << " byte zero-padded header, with the following fields (all " << sizeof(int) << " byte ints):\n";
+    os << "header size in bytes, total size of stack on disk, nframes: number of images in stack\n";
+}
+
 StaticBackgroundCompressor * StaticBackgroundCompressor::fromDisk(std::ifstream& is) {
+    std::ifstream::pos_type start_loc = is.tellg();
+    int info[3];
+    is.read((char *) info, sizeof(info));
+    int numFrames = info[2];
+    int headerSize = info[0];
+    is.seekg(start_loc + (std::ifstream::pos_type) headerSize);
     StaticBackgroundCompressor *sbc = new StaticBackgroundCompressor();
     sbc->background = readIplImageFromByteStream(is);
-    int numFrames;
-    is.read((char *) &numFrames, sizeof(int));
   
     for (int j = 0; j < numFrames; ++j) {
         BackgroundRemovedImage *bri = BackgroundRemovedImage::fromDisk(is, sbc->background);
@@ -123,7 +156,7 @@ StaticBackgroundCompressor * StaticBackgroundCompressor::fromDisk(std::ifstream&
 
 int StaticBackgroundCompressor::sizeOnDisk() {
     
-    int totalBytes = sizeof(int) + ((background != NULL) ? sizeof(IplImage) + background->imageSize : 0);
+   int totalBytes = headerSizeInBytes + ((background != NULL) ? sizeof(IplImage) + background->imageSize : 0);
    for (vector<BackgroundRemovedImage *>::iterator it = bri.begin(); it != bri.end(); ++it) {
         totalBytes += (*it)->sizeOnDisk();
     }
