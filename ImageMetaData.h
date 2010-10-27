@@ -17,14 +17,17 @@
 #ifndef IMAGEMETADATA_H
 #define	IMAGEMETADATA_H
 
+#include <ostream>
+#include <string>
+
 class ImageMetaData {
 public:
-    ImageMetaData();
+    ImageMetaData() {};
     virtual void toDisk (std::ofstream &os) = 0;
     virtual std::string saveDescription () = 0;
     virtual int sizeOnDisk () = 0;
    
-    virtual ~ImageMetaData();
+    virtual ~ImageMetaData() {};
 private:
      ImageMetaData(const ImageMetaData& orig);
 };

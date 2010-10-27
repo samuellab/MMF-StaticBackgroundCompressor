@@ -38,6 +38,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/tictoc/tictoc.o \
 	${OBJECTDIR}/StaticBackgroundCompressor.o \
 	${OBJECTDIR}/testmain.o \
+	${OBJECTDIR}/MightexMetaData.o \
 	${OBJECTDIR}/LinearStackCompressor.o
 
 
@@ -89,6 +90,11 @@ ${OBJECTDIR}/testmain.o: testmain.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/testmain.o testmain.cpp
+
+${OBJECTDIR}/MightexMetaData.o: MightexMetaData.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/MightexMetaData.o MightexMetaData.cpp
 
 ${OBJECTDIR}/LinearStackCompressor.o: LinearStackCompressor.cpp 
 	${MKDIR} -p ${OBJECTDIR}

@@ -9,6 +9,7 @@
 #define	BACKGROUNDREMOVEDIMAGE_H
 
 #include "cv.h"
+#include "ImageMetaData.h"
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -16,7 +17,7 @@
 class BackgroundRemovedImage {
 public:
 
-    BackgroundRemovedImage (IplImage *src, const IplImage *bak, IplImage *bwbuffer = NULL, IplImage *srcbuffer1 = NULL,  IplImage *srcbuffer2 = NULL, int threshBelowBackground = 0, int threshAboveBackground = 0);
+    BackgroundRemovedImage (IplImage *src, const IplImage *bak, IplImage *bwbuffer = NULL, IplImage *srcbuffer1 = NULL,  IplImage *srcbuffer2 = NULL, int threshBelowBackground = 0, int threshAboveBackground = 0, ImageMetaData *metadata = NULL);
     virtual ~BackgroundRemovedImage();
     virtual void toDisk(std::ofstream &os);
     static BackgroundRemovedImage *fromDisk(std::ifstream& is, const IplImage *bak);
@@ -54,6 +55,7 @@ public:
 protected:
     virtual void extractDifferences(IplImage *src, IplImage *bwbuffer = NULL, IplImage *srcbuffer1 = NULL, IplImage *srcbuffer2 = NULL);
     virtual void extractBlobs (IplImage *src, IplImage *mask);
+    virtual void writeHeader (std::ofstream &os);
 
     virtual inline std::string classname() { return std::string("BackgroundRemovedImage");}
     virtual std::string headerDescription();
@@ -66,6 +68,7 @@ protected:
     int threshBelowBackground;
     int threshAboveBackground;
     CvMemStorage *ms;
+    ImageMetaData *metadata;
 };
 
 #endif	/* BACKGROUNDREMOVEDIMAGE_H */

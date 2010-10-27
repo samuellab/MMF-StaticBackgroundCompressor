@@ -11,16 +11,18 @@
 #include "ImageMetaData.h"
 
 
-class BlankMetaData : ImageMetaData {
+class BlankMetaData : public ImageMetaData {
 public:
-    BlankMetaData();
+    BlankMetaData() {};
     BlankMetaData(const BlankMetaData& orig);
-    virtual ~BlankMetaData();
+    virtual ~BlankMetaData() {};
     virtual void toDisk (std::ofstream &os) {
         return;
     }
     virtual std::string saveDescription () {
-        return std::string("no meta data\n");
+      //  std::cout << "into saveDescription\n";
+        std::string s ("no meta data\n");
+        return s;
     }
     virtual int sizeOnDisk () {
         return 0;

@@ -9,6 +9,7 @@
 #include "tictoc/Timer.h"
 #include <vector>
 #include <string>
+#include <sstream>
 using namespace std;
 
 LinearStackCompressor::LinearStackCompressor() {
@@ -50,7 +51,7 @@ void LinearStackCompressor::init() {
     lockActiveStack = false; //really should be a mutex, but whatever
 }
 
-void LinearStackCompressor::newFrame(const IplImage* im) {
+void LinearStackCompressor::newFrame(const IplImage* im, ImageMetaData *metadata) {
     int maxCycles = (int) 1E9; //just so it doesn't hang
     Timer tim = Timer();
     tim.start();
@@ -60,7 +61,7 @@ void LinearStackCompressor::newFrame(const IplImage* im) {
   //  cout << "lockActiveStack = " << lockActiveStack << "; processing = " << processing << "\n";
 
     lockActiveStack = true;
-    addFrameToStack(im);
+    addFrameToStack(im, metadata);
     lockActiveStack = false;
 
     if (recordingState == recording) {
@@ -84,22 +85,19 @@ void LinearStackCompressor::newFrame(const IplImage* im) {
     }
 }
 
-void LinearStackCompressor::addFrameToStack(const IplImage* im) {
+void LinearStackCompressor::addFrameToStack(const IplImage* im, ImageMetaData *metadata) {
     if (activeStack == NULL) {
         createStack();
     }
     if (activeStack->numToProccess() >= keyframeInterval) {
     //    cout << "pusing active stack on imstacks\n";
         imageStacks.push_back(activeStack);
-        if (stacksavedescription.empty()) {
-   //         cout << "storing save description as string\n";
-            stacksavedescription = activeStack->saveDescription();
-        }
+        
  //       cout << "creating new stack\n";
         createStack();
     }
     if (recordingState == recording) {
-        activeStack->addFrame(im);
+        activeStack->addFrame(im, metadata);
     }
     if (recordingState == updatingBackground) {
         activeStack->updateBackground(im);
@@ -178,21 +176,24 @@ bool LinearStackCompressor::writeFinishedStack() {
    for (it = imageStacks.begin(); it != imageStacks.end(); ++it) {
        if (readyForWriting(*it)) {
            if (outfile == NULL) {
-        //       cout << "opening output file\n";
                openOutputFile();
            }
            if (outfile == NULL) {
                return false;
            }
            StaticBackgroundCompressor *sbc = *it;
-      //     cout << "writing to disk\n";
            ofstream::pos_type sp = outfile->tellp();
            int sod = sbc->sizeOnDisk();
+           if (stacksavedescription.empty()) {
+                stacksavedescription = sbc->saveDescription();
+            }
+           //cout << "sbc to disk\n";
            sbc->toDisk(*outfile);
-      //     cout << "wrote " << outfile->tellp() - sp << "/" << sbc->sizeOnDisk() << "\n";
-     //      cout << "deleting sbc\n";
+         //  cout << "delete sbc\n";
            delete sbc;
+       //    cout << "imageStacks.erase\n";
            imageStacks.erase(it);
+      //     cout << "return\n";
            return true;
            
         }
@@ -221,6 +222,8 @@ void LinearStackCompressor::openOutputFile() {
 
 void LinearStackCompressor::closeOutputFile() {
      if (outfile != NULL) {
+        outfile->seekp(0);
+        writeHeader(); //now that we have an updated save description
         outfile->close();
         delete outfile;
         outfile = NULL;
@@ -255,11 +258,32 @@ void LinearStackCompressor::writeHeader() {
     char zero[headerSizeInBytes] = {0};
     ofstream::pos_type cloc = outfile->tellp();
     outfile->write(zero, headerSizeInBytes);
+    ofstream::pos_type eloc = outfile->tellp();
     outfile->seekp(cloc);
-    int info[10] = {0};
-    info[0] = keyframeInterval;
-    info[1] = threshBelowBackground;
-    info[2] = threshAboveBackground;
-    outfile->seekp(headerSizeInBytes);
 
+    string sd = saveDescription();
+    outfile->write(sd.c_str(), sd.length() + 1);
+
+    int info[10] = {0};
+    info[0] = headerSizeInBytes;
+    info[1] = keyframeInterval;
+    info[2] = threshBelowBackground;
+    info[3] = threshAboveBackground;
+    outfile->write((char *) info, sizeof(info));
+    outfile->seekp(eloc);
+
+}
+
+string LinearStackCompressor::headerDescription() {
+    stringstream os;
+    os << headerSizeInBytes << " byte zero padded header beginning with a textual description of the file, followed by \\0 then the following fields (all ints)\n";
+    os << "header size in bytes, key frame interval, threshold below background, threshold above background\n";
+    return os.str();
+}
+
+string LinearStackCompressor::saveDescription() {
+    stringstream os;
+    os << "Set of Image Stacks representing a movie. Beginning of file is a header, with this format:\n" << headerDescription();
+    os << "Header is followed by a set of common background image stacks, with the following format:\n" << stacksavedescription;
+    return os.str();
 }

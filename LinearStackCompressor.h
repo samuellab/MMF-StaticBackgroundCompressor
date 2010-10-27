@@ -17,11 +17,11 @@
 
 class LinearStackCompressor {
 public:
-    static const int headerSizeInBytes = 1024;
+    static const int headerSizeInBytes = 10240;
     LinearStackCompressor();
    
     virtual ~LinearStackCompressor();
-    virtual void newFrame(const IplImage *im);
+    virtual void newFrame(const IplImage *im, ImageMetaData *metadata = NULL);
 
     virtual void setOutputFileName (const char *fname);
     virtual void openOutputFile ();
@@ -38,6 +38,7 @@ public:
         this->keyframeInterval = keyframeInterval;
         this->backgroundUpdateInterval = backgroundUpdateInterval;
     }
+    virtual std::string saveDescription();
 
 protected:
     int keyframeInterval;
@@ -59,7 +60,7 @@ protected:
     std::string stacksavedescription;
 
     virtual void createStack();
-    virtual void addFrameToStack(const IplImage *im);
+    virtual void addFrameToStack(const IplImage *im, ImageMetaData *metadata);
     virtual bool compressStack();
     virtual bool writeFinishedStack();
     virtual void setCompressionStack();
@@ -69,7 +70,7 @@ protected:
 
     virtual void init();
     virtual void writeHeader();
-    
+    virtual std::string headerDescription();
 private:
      LinearStackCompressor(const LinearStackCompressor& orig);
 };

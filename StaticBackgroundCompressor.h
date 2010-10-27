@@ -19,7 +19,7 @@ public:
 
     static const int headerSizeInBytes = 512;
 
-    virtual void addFrame (const IplImage *im);
+    virtual void addFrame (const IplImage *im, ImageMetaData *metadata = NULL);
     virtual int processFrame();
     virtual void processFrames();
     virtual void calculateBackground();
@@ -52,9 +52,11 @@ public:
 protected:
      StaticBackgroundCompressor(const StaticBackgroundCompressor& orig);
 
+     typedef std::pair<IplImage *, ImageMetaData *> InputImT;
+
     IplImage *background;
     std::vector<BackgroundRemovedImage *> bri;
-    std::vector<IplImage *> imsToProcess;
+    std::vector<InputImT> imsToProcess;
 
     int threshBelowBackground;
     int threshAboveBackground;

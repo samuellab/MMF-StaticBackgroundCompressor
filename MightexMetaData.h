@@ -11,7 +11,7 @@
 #include "ImageMetaData.h"
 
 
-class MightexMetaData : ImageMetaData {
+class MightexMetaData : public ImageMetaData {
 public:
     
     MightexMetaData(const TProcessedDataProperty *attributes);

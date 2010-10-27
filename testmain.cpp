@@ -10,6 +10,7 @@
 #include "highgui.h"
 #include "StaticBackgroundCompressor.h"
 #include "LinearStackCompressor.h"
+#include "BlankMetaData.h"
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -97,7 +98,8 @@ void testLSC() {
         IplImage *im = cvLoadImage(s.str().c_str(), 0);
         assert(im != NULL);
         cout << "loaded image " << j <<"\n";
-        lsc.newFrame(im);
+        BlankMetaData *bmd = new BlankMetaData;
+        lsc.newFrame(im, bmd);
         cvReleaseImage(&im);
    //     cout << "added image to stack\n";
     }

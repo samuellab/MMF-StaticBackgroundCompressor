@@ -29,8 +29,12 @@
     </logicalFolder>
     <itemPath>BackgroundRemovedImage.cpp</itemPath>
     <itemPath>BackgroundRemovedImage.h</itemPath>
+    <itemPath>BlankMetaData.h</itemPath>
+    <itemPath>ImageMetaData.h</itemPath>
     <itemPath>LinearStackCompressor.cpp</itemPath>
     <itemPath>LinearStackCompressor.h</itemPath>
+    <itemPath>MightexMetaData.cpp</itemPath>
+    <itemPath>MightexMetaData.h</itemPath>
     <itemPath>StaticBackgroundCompressor.cpp</itemPath>
     <itemPath>StaticBackgroundCompressor.h</itemPath>
     <itemPath>tictoc/Timer.cpp</itemPath>

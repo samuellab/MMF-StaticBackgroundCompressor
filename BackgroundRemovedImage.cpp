@@ -35,9 +35,12 @@ BackgroundRemovedImage::~BackgroundRemovedImage() {
     if (ms != NULL) {
         cvReleaseMemStorage(&ms);
     }
+    if (metadata != NULL) {
+        delete metadata;
+    }
 }
 
-BackgroundRemovedImage::BackgroundRemovedImage(IplImage* src, const IplImage* bak, IplImage* bwbuffer, IplImage* srcbuffer1, IplImage* srcbuffer2, int threshBelowBackground, int threshAboveBackground) {
+BackgroundRemovedImage::BackgroundRemovedImage(IplImage* src, const IplImage* bak, IplImage* bwbuffer, IplImage* srcbuffer1, IplImage* srcbuffer2, int threshBelowBackground, int threshAboveBackground, ImageMetaData *metadata) {
     //source and background must both be single channel arrays
     assert (src != NULL);
     assert (bak != NULL);
@@ -49,6 +52,7 @@ BackgroundRemovedImage::BackgroundRemovedImage(IplImage* src, const IplImage* ba
 
     //update later, but for now just set memstorage to null, so it will be allocated on need
     ms = NULL;
+    this->metadata = metadata;
     backgroundIm = bak;
     this->threshAboveBackground = threshAboveBackground;
     this->threshBelowBackground = threshBelowBackground;
@@ -145,9 +149,25 @@ void BackgroundRemovedImage::extractBlobs(IplImage *src, IplImage *mask) {
 }
 
 void BackgroundRemovedImage::toDisk(std::ofstream &os) {
+    writeHeader(os);
     vector<pair<CvRect, IplImage *> >::iterator it;
-    int info[4] = {0}; //header size, depth, nchannels, npoints
+    for (it = differencesFromBackground.begin(); it != differencesFromBackground.end(); ++it) {
+        os.write((char *) &(it->first), sizeof(CvRect));
+        writeImageData(os, it->second);
+    }
+}
+
+void BackgroundRemovedImage::writeHeader(std::ofstream& os) {
+
+    //fill in header with 0s
     std::ofstream::pos_type cur_loc = os.tellp();
+    char zero[headerSizeInBytes] = {0};
+    os.write(zero, headerSizeInBytes);
+    std::ofstream::pos_type end_loc = os.tellp();
+
+    //return to the beginning of the header and write data
+    os.seekp(cur_loc);
+    int info[4] = {0}; //header size, depth, nchannels, npoints
     info[0] = headerSizeInBytes;
     if (differencesFromBackground.empty()) {
         os.write((char *) info, sizeof(info));
@@ -157,14 +177,14 @@ void BackgroundRemovedImage::toDisk(std::ofstream &os) {
         info[3] = differencesFromBackground.size();
         os.write((char *) info, sizeof(info));
     }
-    //fill in rest of header with zeros
-    char zero[headerSizeInBytes] = {0};
-    os.write(zero, cur_loc + (std::ofstream::pos_type) headerSizeInBytes - os.tellp());
-
-    for (it = differencesFromBackground.begin(); it != differencesFromBackground.end(); ++it) {
-        os.write((char *) &(it->first), sizeof(CvRect));
-        writeImageData(os, it->second);
+    if (metadata != NULL) {
+     //   cout << "trying to write metadata\n";
+        metadata->toDisk(os);
+  //      cout << "finished writing metadata\n";
     }
+    //go back to the end of the header
+    os.seekp(end_loc);
+    
 }
 
 int BackgroundRemovedImage::sizeOnDisk() {
@@ -269,17 +289,23 @@ void BackgroundRemovedImage::restoreImage(IplImage** dst) {
 }
 
 std::string BackgroundRemovedImage::saveDescription() {
-    cout << "entered bri save description\n";
+ //   cout << "entered bri save description\n";
     std::stringstream os;
     os << classname() << ": header is a" << headerDescription() << "header is followed by numims image blocks of the following form:\n";
     os << "(" << sizeof(CvRect) << " bytes) CvRect [x y w h] describing location of image data, then interlaced row ordered image data\n";
     return os.str();
-    cout << "ended bri save description\n";
+ //   cout << "ended bri save description\n";
 }
 
 std::string BackgroundRemovedImage::headerDescription() {
     std::stringstream os;
     os << headerSizeInBytes << " byte zero padded header with the following data fields (all " << sizeof(int) << " byte ints)\n";
-    os << "headersize (number of bytes in header), depth (IplImage depth), nChannels (IplImage number of channels), numims (number of image blocks that differ from background)\n";
+    os << "headersize (number of bytes in header), depth (IplImage depth), nChannels (IplImage number of channels), numims (number of image blocks that differ from background) then metadata:\n";
+    if (metadata != NULL) {
+ //       cout << metadata->saveDescription();
+        os << metadata->saveDescription();
+    } else {
+        os << "no metadata\n";
+    }
     return os.str();
 }

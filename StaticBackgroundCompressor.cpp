@@ -33,9 +33,13 @@ StaticBackgroundCompressor::StaticBackgroundCompressor(const StaticBackgroundCom
 
 StaticBackgroundCompressor::~StaticBackgroundCompressor() {
     cvReleaseImage(&background);
-    for (vector<IplImage *>::iterator it = imsToProcess.begin(); it != imsToProcess.end(); ++it) {
-        IplImage *im = *it;
+  //  cout << "size of imsToProcess is " << imsToProcess.size() << "\n";
+    for (vector<InputImT>::iterator it = imsToProcess.begin(); it != imsToProcess.end(); ++it) {
+        IplImage *im = it->first;
         cvReleaseImage(&im);
+        if (it->second != NULL) {
+            delete it->second;
+        }
     }
     for (vector<BackgroundRemovedImage *>::iterator it = bri.begin(); it != bri.end(); ++it) {
         delete (*it);
@@ -52,9 +56,9 @@ void StaticBackgroundCompressor::calculateBackground() {
         cvReleaseImage(&background);
     }
  //   background = cvCloneImage(imsToProcess.front());
-   for (vector<IplImage *>::iterator it = imsToProcess.begin(); it != imsToProcess.end(); ++it) {
+   for (vector<InputImT>::iterator it = imsToProcess.begin(); it != imsToProcess.end(); ++it) {
    //     cvMin(*it, background, background);
-       updateBackground(*it);
+       updateBackground(it->first);
     }
 }
 void StaticBackgroundCompressor::updateBackground(const IplImage* im) {
@@ -66,9 +70,9 @@ void StaticBackgroundCompressor::updateBackground(const IplImage* im) {
 }
 
 
-void StaticBackgroundCompressor::addFrame(const IplImage* im) {
+void StaticBackgroundCompressor::addFrame(const IplImage* im, ImageMetaData *metadata) {
     IplImage *imcpy = cvCloneImage(im);
-    imsToProcess.insert(imsToProcess.begin(), imcpy);
+    imsToProcess.insert(imsToProcess.begin(), InputImT(imcpy,metadata));
     if (updateBackgroundFrameInterval > 0 && updateCount == 0) {
         updateBackground(im);
         updateCount = updateBackgroundFrameInterval;
@@ -83,11 +87,15 @@ int StaticBackgroundCompressor::processFrame() {
     if (background == NULL) {
         return -1;
     }
-    IplImage *im = imsToProcess.back();
+    InputImT nextim = imsToProcess.back();
+//    IplImage *im = imsToProcess.back();
     imsToProcess.pop_back();
-    BackgroundRemovedImage *brim = new BackgroundRemovedImage(im, background, bwbuffer, buffer1, buffer2, threshBelowBackground, threshAboveBackground);
+    IplImage *im = nextim.first;
+    ImageMetaData *metadata = nextim.second;
+    BackgroundRemovedImage *brim = new BackgroundRemovedImage(im, background, bwbuffer, buffer1, buffer2, threshBelowBackground, threshAboveBackground, metadata);
     bri.push_back(brim);
     cvReleaseImage(&im);
+    //NB: we do NOT release metadata storage, as this is now background removed images problem
     return imsToProcess.size();
 }
 
