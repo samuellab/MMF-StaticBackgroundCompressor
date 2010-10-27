@@ -33,7 +33,7 @@ StaticBackgroundCompressor::StaticBackgroundCompressor(const StaticBackgroundCom
 
 StaticBackgroundCompressor::~StaticBackgroundCompressor() {
     cvReleaseImage(&background);
-  //  cout << "size of imsToProcess is " << imsToProcess.size() << "\n";
+    cout << "size of imsToProcess is " << imsToProcess.size() << "\n";
     for (vector<InputImT>::iterator it = imsToProcess.begin(); it != imsToProcess.end(); ++it) {
         IplImage *im = it->first;
         cvReleaseImage(&im);
@@ -41,6 +41,7 @@ StaticBackgroundCompressor::~StaticBackgroundCompressor() {
             delete it->second;
         }
     }
+    cout << "size of bri is " << bri.size() << "\n";
     for (vector<BackgroundRemovedImage *>::iterator it = bri.begin(); it != bri.end(); ++it) {
         delete (*it);
         *it = NULL;
@@ -157,6 +158,18 @@ std::string StaticBackgroundCompressor::headerDescription() {
     return os.str();
 }
 
+StaticBackgroundCompressor::HeaderInfoT StaticBackgroundCompressor::getHeaderInfo(std::ifstream& is) {
+    std::ifstream::pos_type start_loc = is.tellg();
+    int info[3];
+    is.read((char *) info, sizeof(info));
+    HeaderInfoT hi;
+    hi.headerSize = info[0];
+    hi.numframes = info[2];
+    hi.totalSize = info[1];
+    is.seekg(start_loc);
+    return hi;
+}
+
 StaticBackgroundCompressor * StaticBackgroundCompressor::fromDisk(std::ifstream& is) {
     std::ifstream::pos_type start_loc = is.tellg();
     int info[3];
@@ -226,3 +239,16 @@ int StaticBackgroundCompressor::numProcessed() {
 int StaticBackgroundCompressor::numToProccess() {
     return imsToProcess.size();
 }
+
+void StaticBackgroundCompressor::reconstructFrame(int frameNum, IplImage** dst) {
+    if (frameNum < 0 || frameNum >= bri.size()) {
+        if (*dst != NULL) {
+            cvReleaseImage(dst);
+        }
+        *dst = NULL;
+        return;
+    }
+    BackgroundRemovedImage *brim = bri.at(frameNum);
+    brim->restoreImage(dst);
+}
+

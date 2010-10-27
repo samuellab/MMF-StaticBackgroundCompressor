@@ -11,6 +11,7 @@
 #include "StaticBackgroundCompressor.h"
 #include "LinearStackCompressor.h"
 #include "BlankMetaData.h"
+#include "StackReader.h"
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -24,18 +25,23 @@ void createTestStack();
 void loadAndPlayTestStack() ;
 void testLSC();
 
+void testSR();
 int main(int argc, char** argv) {
    // createTestStack();
   //loadAndPlayTestStack();
-    testLSC();
+//    testLSC();
+
+    testSR();
     return 0;
 }
 void loadAndPlayTestStack() {
-    ifstream is ("c:\\imagestack.bin",ifstream::binary);
+ //   ifstream is ("c:\\imagestack.bin",ifstream::binary);
+    ifstream is ("c:\\teststack.bin", ifstream::binary);
+    is.seekg(LinearStackCompressor::headerSizeInBytes);
     StaticBackgroundCompressor *sbc = StaticBackgroundCompressor::fromDisk(is);
     cout << (is.good() ? "no error\n":"error\n");
     cout << (is.eof() ? "at end of file\n":"not at end of file\n");
-    cout << is.tellg() << "bytes read\n";
+    cout << (is.tellg() - (ifstream::pos_type) LinearStackCompressor::headerSizeInBytes) << "bytes read\n";
     is.seekg(0,ifstream::end);
      cout << is.tellg() << "bytes in file\n";
     is.close();
@@ -79,6 +85,12 @@ void createTestStack() {
     outfile.close();
     cout << "done\n";
     
+}
+
+void testSR() {
+    StackReader sr("c:\\teststack.bin");
+    cout << "created sr\n";
+    sr.playMovie();
 }
 
 void testLSC() {

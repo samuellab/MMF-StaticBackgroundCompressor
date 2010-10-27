@@ -29,12 +29,22 @@ public:
     StaticBackgroundCompressor();
     virtual ~StaticBackgroundCompressor();
     static StaticBackgroundCompressor *fromDisk(std::ifstream& is);
+
+    typedef struct {int headerSize; int totalSize; int numframes;} HeaderInfoT;
+
+    /* static headerInfoT getHeaderInfo(std::ifstream &is);
+     * gets header info, then returns file pointer to starting location
+     */
+    static HeaderInfoT getHeaderInfo(std::ifstream &is);
+
     static void writeIplImageToByteStream (std::ofstream &os, const IplImage *src);
     static IplImage *readIplImageFromByteStream(std::ifstream &is);
     inline void setThresholds(int threshBelowBackground, int threshAboveBackground) {
         this->threshAboveBackground = threshAboveBackground;
         this->threshBelowBackground = threshBelowBackground;
     }
+    virtual void reconstructFrame (int frameNum, IplImage **dst);
+
     virtual void playMovie (char *windowName = NULL);
 
     inline void setAutomaticUpdateInterval (int interval) {

@@ -22,6 +22,7 @@ static void writeImageData (ofstream &os, IplImage *im);
 static IplImage *readImageData (ifstream &is, int width, int height, int depth, int nChannels);
 
 BackgroundRemovedImage::BackgroundRemovedImage() {
+    init();
 }
 
 BackgroundRemovedImage::BackgroundRemovedImage(const BackgroundRemovedImage& orig) {
@@ -41,6 +42,8 @@ BackgroundRemovedImage::~BackgroundRemovedImage() {
 }
 
 BackgroundRemovedImage::BackgroundRemovedImage(IplImage* src, const IplImage* bak, IplImage* bwbuffer, IplImage* srcbuffer1, IplImage* srcbuffer2, int threshBelowBackground, int threshAboveBackground, ImageMetaData *metadata) {
+
+    init();
     //source and background must both be single channel arrays
     assert (src != NULL);
     assert (bak != NULL);
@@ -50,6 +53,8 @@ BackgroundRemovedImage::BackgroundRemovedImage(IplImage* src, const IplImage* ba
     assert (src->nChannels == 1);
     assert (bak->nChannels == 1);
 
+    
+
     //update later, but for now just set memstorage to null, so it will be allocated on need
     ms = NULL;
     this->metadata = metadata;
@@ -58,6 +63,14 @@ BackgroundRemovedImage::BackgroundRemovedImage(IplImage* src, const IplImage* ba
     this->threshBelowBackground = threshBelowBackground;
     
     extractDifferences(src, bwbuffer, srcbuffer1, srcbuffer2);
+}
+
+void BackgroundRemovedImage::init() {
+    ms = NULL;
+    backgroundIm = NULL;
+    metadata = NULL;
+    threshAboveBackground = threshBelowBackground = 0;
+    
 }
 
 

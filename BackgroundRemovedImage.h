@@ -57,6 +57,8 @@ protected:
     virtual void extractBlobs (IplImage *src, IplImage *mask);
     virtual void writeHeader (std::ofstream &os);
 
+    virtual void init();
+
     virtual inline std::string classname() { return std::string("BackgroundRemovedImage");}
     virtual std::string headerDescription();
 

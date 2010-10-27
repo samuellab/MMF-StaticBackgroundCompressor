@@ -35,6 +35,8 @@
     <itemPath>LinearStackCompressor.h</itemPath>
     <itemPath>MightexMetaData.cpp</itemPath>
     <itemPath>MightexMetaData.h</itemPath>
+    <itemPath>StackReader.cpp</itemPath>
+    <itemPath>StackReader.h</itemPath>
     <itemPath>StaticBackgroundCompressor.cpp</itemPath>
     <itemPath>StaticBackgroundCompressor.h</itemPath>
     <itemPath>tictoc/Timer.cpp</itemPath>

@@ -33,6 +33,7 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/StackReader.o \
 	${OBJECTDIR}/BackgroundRemovedImage.o \
 	${OBJECTDIR}/tictoc/Timer.o \
 	${OBJECTDIR}/tictoc/tictoc.o \
@@ -65,6 +66,11 @@ LDLIBSOPTIONS=-LNecessary\ Libraries\ and\ Includes/CV/lib -lcv -lcxcore -lhighg
 dist/Debug/MinGW-Windows/image_stack_compressor.exe: ${OBJECTFILES}
 	${MKDIR} -p dist/Debug/MinGW-Windows
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/image_stack_compressor ${OBJECTFILES} ${LDLIBSOPTIONS} 
+
+${OBJECTDIR}/StackReader.o: StackReader.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/StackReader.o StackReader.cpp
 
 ${OBJECTDIR}/BackgroundRemovedImage.o: BackgroundRemovedImage.cpp 
 	${MKDIR} -p ${OBJECTDIR}
