@@ -27,6 +27,9 @@ public:
     virtual int sizeOnDisk () {
         return 0;
     }
+    virtual unsigned long idCode() {
+        return 0x0ccd07bc; //CRC32 hash of "BlankMetaData" from fileformat.info
+    }
 private:
 
 };

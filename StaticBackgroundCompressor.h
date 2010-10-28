@@ -30,7 +30,7 @@ public:
     virtual ~StaticBackgroundCompressor();
     static StaticBackgroundCompressor *fromDisk(std::ifstream& is);
 
-    typedef struct {int headerSize; int totalSize; int numframes;} HeaderInfoT;
+    typedef struct {unsigned long idcode; int headerSize; int totalSize; int numframes;} HeaderInfoT;
 
     /* static headerInfoT getHeaderInfo(std::ifstream &is);
      * gets header info, then returns file pointer to starting location
@@ -59,6 +59,9 @@ public:
 
     virtual std::string saveDescription();
 
+    virtual inline unsigned long idCode () {
+        return 0xbb67ca20; //CRC32 hash of "StaticBackgroundCompressor" from fileformat.info
+    }
 protected:
      StaticBackgroundCompressor(const StaticBackgroundCompressor& orig);
 

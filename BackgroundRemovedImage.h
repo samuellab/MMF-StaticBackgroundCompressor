@@ -52,6 +52,12 @@ public:
         return 1;
     }
 
+    virtual inline unsigned long idCode () {
+        return 0xf80921af; //CRC32 hash of "BackgroundRemovedImage" from fileformat.info
+    }
+
+    typedef struct {unsigned long idcode; int headersize; int depth; int nchannels; int numims;} HeaderInfoT;
+
 protected:
     virtual void extractDifferences(IplImage *src, IplImage *bwbuffer = NULL, IplImage *srcbuffer1 = NULL, IplImage *srcbuffer2 = NULL);
     virtual void extractBlobs (IplImage *src, IplImage *mask);
@@ -61,6 +67,9 @@ protected:
 
     virtual inline std::string classname() { return std::string("BackgroundRemovedImage");}
     virtual std::string headerDescription();
+
+
+    static const unsigned int _id_code = 0x0001;
 
     BackgroundRemovedImage();
     BackgroundRemovedImage(const BackgroundRemovedImage& orig);

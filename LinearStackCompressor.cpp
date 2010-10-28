@@ -263,7 +263,8 @@ void LinearStackCompressor::writeHeader() {
 
     string sd = saveDescription();
     outfile->write(sd.c_str(), sd.length() + 1);
-
+    unsigned long idcode = idCode();
+    outfile->write((char *) &idcode, sizeof(idcode));
     int info[10] = {0};
     info[0] = headerSizeInBytes;
     info[1] = keyframeInterval;
@@ -276,8 +277,8 @@ void LinearStackCompressor::writeHeader() {
 
 string LinearStackCompressor::headerDescription() {
     stringstream os;
-    os << headerSizeInBytes << " byte zero padded header beginning with a textual description of the file, followed by \\0 then the following fields (all ints)\n";
-    os << "header size in bytes, key frame interval, threshold below background, threshold above background\n";
+    os << headerSizeInBytes << " byte zero padded header beginning with a textual description of the file, followed by \\0 then the following fields (all ints, except idcode)\n";
+    os << sizeof(unsigned long) << " byte unsigned long idcode = " << hex << idCode() << dec << ", header size in bytes, key frame interval, threshold below background, threshold above background\n";
     return os.str();
 }
 

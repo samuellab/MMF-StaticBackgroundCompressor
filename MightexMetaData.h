@@ -19,7 +19,9 @@ public:
     virtual void toDisk (std::ofstream &os);
     virtual std::string saveDescription ();
     virtual int sizeOnDisk ();
-    
+    virtual unsigned long idCode() {
+        return 0xdf4f1592; //CRC32 hash of "MightexMetaData" from fileformat.info
+    }
 protected:
     TProcessedDataProperty attributes;
 private:

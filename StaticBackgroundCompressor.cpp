@@ -33,7 +33,7 @@ StaticBackgroundCompressor::StaticBackgroundCompressor(const StaticBackgroundCom
 
 StaticBackgroundCompressor::~StaticBackgroundCompressor() {
     cvReleaseImage(&background);
-    cout << "size of imsToProcess is " << imsToProcess.size() << "\n";
+  //  cout << "size of imsToProcess is " << imsToProcess.size() << "\n";
     for (vector<InputImT>::iterator it = imsToProcess.begin(); it != imsToProcess.end(); ++it) {
         IplImage *im = it->first;
         cvReleaseImage(&im);
@@ -41,7 +41,7 @@ StaticBackgroundCompressor::~StaticBackgroundCompressor() {
             delete it->second;
         }
     }
-    cout << "size of bri is " << bri.size() << "\n";
+  //  cout << "size of bri is " << bri.size() << "\n";
     for (vector<BackgroundRemovedImage *>::iterator it = bri.begin(); it != bri.end(); ++it) {
         delete (*it);
         *it = NULL;
@@ -108,24 +108,23 @@ void StaticBackgroundCompressor::processFrames() {
 }
 
 void StaticBackgroundCompressor::toDisk(std::ofstream& os) {
-    int info[3] = {0};
-
-    info[0] = headerSizeInBytes;
-    info[2] = bri.size(); //numframes
+    HeaderInfoT hi;
+    hi.idcode = idCode();
+    hi.numframes = bri.size();
+    hi.headerSize = headerSizeInBytes;
 
     std::ofstream::pos_type start_loc = os.tellp();
-  //  os.write((char *) info, sizeof(info));
-    //fill in rest of header with zeros
     char zero[headerSizeInBytes] = {0};
     os.write(zero, headerSizeInBytes);
+    
     writeIplImageToByteStream(os, background);
     for (vector<BackgroundRemovedImage *>::iterator it = bri.begin(); it != bri.end(); ++it) {
         (*it)->toDisk(os);
     }
     std::ofstream::pos_type end_loc = os.tellp();
-    info[1] = end_loc - start_loc;
+    hi.totalSize = end_loc - start_loc;
     os.seekp(start_loc);
-    os.write((char *) info, sizeof(info));
+    os.write((char *) &hi, sizeof(hi));
     os.seekp(end_loc);
 }
 
@@ -153,34 +152,31 @@ std::string StaticBackgroundCompressor::saveDescription() {
 }
 std::string StaticBackgroundCompressor::headerDescription() {
     std::stringstream os;
-    os << headerSizeInBytes << " byte zero-padded header, with the following fields (all " << sizeof(int) << " byte ints):\n";
-    os << "header size in bytes, total size of stack on disk, nframes: number of images in stack\n";
+    os << headerSizeInBytes << " byte zero-padded header, with the following fields (all " << sizeof(int) << " byte ints, except idcode):\n";
+    os << sizeof(unsigned long) << " byte unsigned long idcode = " << hex << idCode() << dec << ", header size in bytes, total size of stack on disk, nframes: number of images in stack\n";
     return os.str();
 }
 
 StaticBackgroundCompressor::HeaderInfoT StaticBackgroundCompressor::getHeaderInfo(std::ifstream& is) {
     std::ifstream::pos_type start_loc = is.tellg();
-    int info[3];
-    is.read((char *) info, sizeof(info));
     HeaderInfoT hi;
-    hi.headerSize = info[0];
-    hi.numframes = info[2];
-    hi.totalSize = info[1];
+    is.read((char *) &hi, sizeof(hi));
+
     is.seekg(start_loc);
     return hi;
 }
 
 StaticBackgroundCompressor * StaticBackgroundCompressor::fromDisk(std::ifstream& is) {
     std::ifstream::pos_type start_loc = is.tellg();
-    int info[3];
-    is.read((char *) info, sizeof(info));
-    int numFrames = info[2];
-    int headerSize = info[0];
-    is.seekg(start_loc + (std::ifstream::pos_type) headerSize);
+    HeaderInfoT hi;
+
+    hi = getHeaderInfo(is);
+ //   cout << "header size is " << hi.headerSize << "  id code is " << hex << hi.idcode <<dec<< "  numframes = " << hi.numframes << std::endl;
+    is.seekg(start_loc + (std::ifstream::pos_type) hi.headerSize);
     StaticBackgroundCompressor *sbc = new StaticBackgroundCompressor();
     sbc->background = readIplImageFromByteStream(is);
   
-    for (int j = 0; j < numFrames; ++j) {
+    for (int j = 0; j < hi.numframes; ++j) {
         BackgroundRemovedImage *bri = BackgroundRemovedImage::fromDisk(is, sbc->background);
         sbc->bri.push_back(bri);
     }

@@ -29,7 +29,7 @@ void testSR();
 int main(int argc, char** argv) {
    // createTestStack();
   //loadAndPlayTestStack();
-//    testLSC();
+    testLSC();
 
     testSR();
     return 0;

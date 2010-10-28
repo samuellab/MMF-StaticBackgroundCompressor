@@ -71,6 +71,9 @@ protected:
     virtual void init();
     virtual void writeHeader();
     virtual std::string headerDescription();
+    virtual inline unsigned long idCode () {
+        return 0xa3d2d45d; //CRC32 hash of "LinearStackCompressor" from fileformat.info
+    }
 private:
      LinearStackCompressor(const LinearStackCompressor& orig);
 };

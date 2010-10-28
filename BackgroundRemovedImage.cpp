@@ -172,6 +172,12 @@ void BackgroundRemovedImage::toDisk(std::ofstream &os) {
 
 void BackgroundRemovedImage::writeHeader(std::ofstream& os) {
 
+    HeaderInfoT hi;
+
+    hi.headersize = headerSizeInBytes;
+    hi.idcode = idCode();
+
+
     //fill in header with 0s
     std::ofstream::pos_type cur_loc = os.tellp();
     char zero[headerSizeInBytes] = {0};
@@ -180,22 +186,20 @@ void BackgroundRemovedImage::writeHeader(std::ofstream& os) {
 
     //return to the beginning of the header and write data
     os.seekp(cur_loc);
-    int info[4] = {0}; //header size, depth, nchannels, npoints
-    info[0] = headerSizeInBytes;
+
     if (differencesFromBackground.empty()) {
-        os.write((char *) info, sizeof(info));
+        hi.depth = 0;
+        hi.nchannels = 0;
+        hi.numims = 0;
     } else {
-        info[1] = differencesFromBackground.front().second->depth;
-        info[2] = differencesFromBackground.front().second->nChannels;
-        info[3] = differencesFromBackground.size();
-        os.write((char *) info, sizeof(info));
+        hi.depth = differencesFromBackground.front().second->depth;
+        hi.nchannels = differencesFromBackground.front().second->nChannels;
+        hi.numims = differencesFromBackground.size();
     }
+    os.write((char *) &hi, sizeof(hi));
     if (metadata != NULL) {
-     //   cout << "trying to write metadata\n";
         metadata->toDisk(os);
-  //      cout << "finished writing metadata\n";
     }
-    //go back to the end of the header
     os.seekp(end_loc);
     
 }
@@ -259,19 +263,20 @@ BackgroundRemovedImage *BackgroundRemovedImage::fromDisk(std::ifstream& is, cons
     bri->backgroundIm = bak;
     bri->threshAboveBackground = bri->threshBelowBackground = 0;
     bri->ms = NULL;
-    int depth, nChannels, numims;
+   
     std::ifstream::pos_type cur_loc = is.tellg();
-    int headersize;
-    is.read((char *) &headersize, sizeof(int));
-    is.read((char *) &depth, sizeof(int));
-    is.read((char *) &nChannels, sizeof(int));
-    is.read((char *) &numims, sizeof(int));
-    is.seekg(cur_loc + (std::ifstream::pos_type) headersize);
 
-    for (int j = 0; j < numims; ++j) {
+    HeaderInfoT hi;
+    is.read((char *) &hi, sizeof(hi));
+    if (hi.idcode != bri->idCode()) {
+        cout << "WARNING: id code does not match when loading BackgroundRemovedImage";
+    }
+    is.seekg(cur_loc + (std::ifstream::pos_type) hi.headersize);
+
+    for (int j = 0; j < hi.numims; ++j) {
         CvRect r;
         is.read((char *) &r, sizeof(CvRect));
-        IplImage *im = readImageData(is, r.width, r.height, depth, nChannels);
+        IplImage *im = readImageData(is, r.width, r.height, hi.depth, hi.nchannels);
         bri->differencesFromBackground.push_back(pair<CvRect, IplImage *> (r, im));
     }
     return bri;
@@ -312,8 +317,8 @@ std::string BackgroundRemovedImage::saveDescription() {
 
 std::string BackgroundRemovedImage::headerDescription() {
     std::stringstream os;
-    os << headerSizeInBytes << " byte zero padded header with the following data fields (all " << sizeof(int) << " byte ints)\n";
-    os << "headersize (number of bytes in header), depth (IplImage depth), nChannels (IplImage number of channels), numims (number of image blocks that differ from background) then metadata:\n";
+    os << headerSizeInBytes << " byte zero padded header with the following data fields (all " << sizeof(int) << " byte ints, except id code)\n";
+    os << sizeof(unsigned long) << " byte unsigned long idcode = " << hex << idCode() << dec << "headersize (number of bytes in header), depth (IplImage depth), nChannels (IplImage number of channels), numims (number of image blocks that differ from background) then metadata:\n";
     if (metadata != NULL) {
  //       cout << metadata->saveDescription();
         os << metadata->saveDescription();

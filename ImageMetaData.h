@@ -12,6 +12,7 @@
  * toDisk (ofstream &os) -- writes the meta data to disk at the current file poisition
  * saveDescription -- a text description of the information contained in the metadata
  * sizeOnDisk -- the number of bytes the ImageMetaData occupies on disk
+ * should also create a unique unsigend int id code that
  */
 
 #ifndef IMAGEMETADATA_H
@@ -28,6 +29,14 @@ public:
     virtual int sizeOnDisk () = 0;
    
     virtual ~ImageMetaData() {};
+
+    virtual unsigned long idCode() = 0;
+    /*
+    {
+        return CRC32 hash code of "ImageMetaData" from http://www.fileformat.info/tool/hash.htm
+      e.g. return 0x44760428;
+    }
+    */
 private:
      ImageMetaData(const ImageMetaData& orig);
 };
