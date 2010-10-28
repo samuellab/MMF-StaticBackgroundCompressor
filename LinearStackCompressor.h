@@ -30,14 +30,18 @@ public:
     virtual void stopRecording();
     virtual void startUpdatingBackground();
     virtual void goIdle();
-    inline void setThresholds(int threshBelowBackground, int threshAboveBackground) {
+    virtual inline void setThresholds(int threshBelowBackground, int threshAboveBackground) {
         this->threshAboveBackground = threshAboveBackground;
         this->threshBelowBackground = threshBelowBackground;
     }
-    inline void setIntervals (int keyframeInterval, int backgroundUpdateInterval = 1) {
+    virtual inline void setIntervals (int keyframeInterval, int backgroundUpdateInterval = 1) {
         this->keyframeInterval = keyframeInterval;
         this->backgroundUpdateInterval = backgroundUpdateInterval;
     }
+    virtual inline void setFrameRate (int frameRate) {
+        this->frameRate = frameRate;
+    }
+
     virtual std::string saveDescription();
 
 protected:
