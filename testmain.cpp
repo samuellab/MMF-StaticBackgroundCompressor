@@ -29,7 +29,7 @@ void testSR();
 int main(int argc, char** argv) {
    // createTestStack();
   //loadAndPlayTestStack();
-    testLSC();
+ //   testLSC();
 
     testSR();
     return 0;
@@ -88,6 +88,7 @@ void createTestStack() {
 }
 
 void testSR() {
+//    StackReader sr("\\\\labnas2\\LarvalCO2\\test2_stack.mmf");
     StackReader sr("c:\\teststack.bin");
     cout << "created sr\n";
     sr.playMovie();

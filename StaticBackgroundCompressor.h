@@ -44,6 +44,7 @@ public:
         this->threshBelowBackground = threshBelowBackground;
     }
     virtual void reconstructFrame (int frameNum, IplImage **dst);
+    virtual void annotatedFrame (int frameNum, IplImage **buffer, IplImage **annotatedImage);
 
     virtual void playMovie (char *windowName = NULL);
 

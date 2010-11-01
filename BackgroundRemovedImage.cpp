@@ -306,6 +306,14 @@ void BackgroundRemovedImage::restoreImage(IplImage** dst) {
     
 }
 
+void BackgroundRemovedImage::annotateImage(IplImage* dst, CvScalar color, int thickness) {
+    assert(dst != NULL);
+    for (vector< pair<CvRect, IplImage *> >::iterator it = differencesFromBackground.begin(); it != differencesFromBackground.end(); ++it) {
+        CvRect r = it->first;
+        cvRectangle(dst, cvPoint(r.x, r.y), cvPoint(r.x + r.width, r.y + r.height), color, thickness, 8, 0);
+    }
+}
+
 std::string BackgroundRemovedImage::saveDescription() {
  //   cout << "entered bri save description\n";
     std::stringstream os;

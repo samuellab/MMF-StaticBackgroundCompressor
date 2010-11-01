@@ -248,3 +248,24 @@ void StaticBackgroundCompressor::reconstructFrame(int frameNum, IplImage** dst) 
     brim->restoreImage(dst);
 }
 
+void StaticBackgroundCompressor::annotatedFrame(int frameNum, IplImage** buffer, IplImage** annotatedImage) {
+    reconstructFrame(frameNum, buffer);
+    if (*buffer == NULL) {
+        if (*annotatedImage != NULL) {
+            cvReleaseImage(annotatedImage);        
+            *annotatedImage = NULL;
+            return;
+        }
+    }
+    if (*annotatedImage == NULL || (*annotatedImage)->width != (*buffer)->width || (*annotatedImage)->height != (*buffer)->height) {
+        if (*annotatedImage != NULL) {
+            cvReleaseImage(annotatedImage);
+        }
+        *annotatedImage = cvCreateImage(cvGetSize(*buffer), (*buffer)->depth, 3);
+    }
+    cvConvertImage(*buffer, *annotatedImage,0);
+
+    BackgroundRemovedImage *brim = bri.at(frameNum);
+    brim->annotateImage(*annotatedImage);
+}
+
