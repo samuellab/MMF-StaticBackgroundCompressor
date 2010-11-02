@@ -139,6 +139,15 @@ void StackReader::getFrame(int frameNum, IplImage** dst) {
     }
 }
 
+void StackReader::annotatedFrame(int frameNum, IplImage** dst) {
+    setSBC(frameNum);
+    IplImage *buffer = NULL;
+    if (sbc != NULL) {
+        sbc->annotatedFrame(frameNum - startFrame, &buffer, dst);
+    }
+    cvReleaseImage(&buffer);
+}
+
 void StackReader::playMovie(int startFrame, int endFrame, int delay_ms, char* windowName) {
     startFrame = startFrame < 0 ? 0 : startFrame;
     endFrame = endFrame > totalFrames ? totalFrames : endFrame;
@@ -149,9 +158,13 @@ void StackReader::playMovie(int startFrame, int endFrame, int delay_ms, char* wi
     }
     cvNamedWindow(windowName, 0);
     IplImage *im = NULL;
+   // IplImage *colorim = NULL;
     for (int f = startFrame; f < endFrame; ++f) {
      //  cout << f << "\n";
-        getFrame(f, &im);
+        annotatedFrame(f, &im);
+        
+
+
         cvShowImage(windowName, im);
         cvWaitKey(delay_ms);
     }

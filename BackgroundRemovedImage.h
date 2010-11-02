@@ -17,7 +17,7 @@
 class BackgroundRemovedImage {
 public:
 
-    BackgroundRemovedImage (IplImage *src, const IplImage *bak, IplImage *bwbuffer = NULL, IplImage *srcbuffer1 = NULL,  IplImage *srcbuffer2 = NULL, int threshBelowBackground = 0, int threshAboveBackground = 0, ImageMetaData *metadata = NULL);
+    BackgroundRemovedImage (IplImage *src, const IplImage *bak, IplImage *bwbuffer = NULL, IplImage *srcbuffer1 = NULL,  IplImage *srcbuffer2 = NULL, int threshBelowBackground = 0, int threshAboveBackground = 0, int smallDimMinSize = 1, int lgDimMinSize = 1, ImageMetaData *metadata = NULL);
     virtual ~BackgroundRemovedImage();
     virtual void toDisk(std::ofstream &os);
     static BackgroundRemovedImage *fromDisk(std::ifstream& is, const IplImage *bak);
@@ -25,6 +25,7 @@ public:
     virtual int sizeInMemory();
     virtual std::string saveDescription();
     virtual void restoreImage (IplImage **dst);
+    virtual void annotateImage (IplImage *dst, CvScalar color = CV_RGB(255,0,0), int thickness = 2);
 
     static const int headerSizeInBytes = 256;
 
@@ -78,6 +79,8 @@ protected:
     std::vector<std::pair<CvRect, IplImage *> > differencesFromBackground;
     int threshBelowBackground;
     int threshAboveBackground;
+    int smallDimMinSize;
+    int lgDimMinSize;
     CvMemStorage *ms;
     ImageMetaData *metadata;
 };
