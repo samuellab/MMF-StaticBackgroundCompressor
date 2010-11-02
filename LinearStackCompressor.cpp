@@ -47,6 +47,8 @@ void LinearStackCompressor::init() {
     frameRate = 1;
     threshBelowBackground = 5;
     threshAboveBackground = 5;
+    lgDimMinSize = 2;
+    smallDimMinSize = 3;
     processing = false; //really should be a mutex, but whatever
     lockActiveStack = false; //really should be a mutex, but whatever
 }
@@ -141,7 +143,7 @@ void LinearStackCompressor::finishRecording() {
 void LinearStackCompressor::createStack() {
     activeStack = new StaticBackgroundCompressor();
     activeStack->setAutomaticUpdateInterval(backgroundUpdateInterval);
-    activeStack->setThresholds(threshBelowBackground, threshAboveBackground);
+    activeStack->setThresholds(threshBelowBackground, threshAboveBackground, smallDimMinSize, lgDimMinSize);
 }
 
 //returns true if there may be images remaining to compress

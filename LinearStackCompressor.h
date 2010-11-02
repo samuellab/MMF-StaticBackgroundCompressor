@@ -30,9 +30,11 @@ public:
     virtual void stopRecording();
     virtual void startUpdatingBackground();
     virtual void goIdle();
-    virtual inline void setThresholds(int threshBelowBackground, int threshAboveBackground) {
+    virtual inline void setThresholds(int threshBelowBackground, int threshAboveBackground, int smallDimMinSize, int lgDimMinSize) {
         this->threshAboveBackground = threshAboveBackground;
         this->threshBelowBackground = threshBelowBackground;
+        this->smallDimMinSize = smallDimMinSize;
+        this->lgDimMinSize = lgDimMinSize;
     }
     virtual inline void setIntervals (int keyframeInterval, int backgroundUpdateInterval = 1) {
         this->keyframeInterval = keyframeInterval;
@@ -57,6 +59,8 @@ protected:
     double frameRate;
     int threshBelowBackground;
     int threshAboveBackground;
+    int smallDimMinSize;
+    int lgDimMinSize;
     std::string fname;
     bool processing; //really should be a mutex, but whatever
     bool lockActiveStack; //really should be a mutex, but whatever

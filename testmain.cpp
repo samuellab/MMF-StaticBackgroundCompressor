@@ -29,7 +29,7 @@ void testSR();
 int main(int argc, char** argv) {
    // createTestStack();
   //loadAndPlayTestStack();
- //   testLSC();
+ // testLSC();
 
     testSR();
     return 0;
@@ -54,7 +54,7 @@ void loadAndPlayTestStack() {
 void createTestStack() {
     string stub = "\\\\labnas2\\LarvalCO2\\Image Data\\50 mL CO2 in 2 L air\\20101001\\CS3\\CS3_";
     StaticBackgroundCompressor sbc;
-    sbc.setThresholds(0, 5);
+    sbc.setThresholds(0, 5, 2, 3);
     int nframes = 1000;
     stringstream s;
     for (int j = 0; j < nframes; ++j) {
@@ -88,10 +88,10 @@ void createTestStack() {
 }
 
 void testSR() {
-//    StackReader sr("\\\\labnas2\\LarvalCO2\\test2_stack.mmf");
-    StackReader sr("c:\\teststack.bin");
+    StackReader sr("\\\\labnas2\\LarvalCO2\\test2_stack.mmf");
+  //  StackReader sr("c:\\teststack.bin");
     cout << "created sr\n";
-    sr.playMovie();
+    sr.playMovie(0, 100, 10000);
 }
 
 void testLSC() {
@@ -99,7 +99,7 @@ void testLSC() {
     LinearStackCompressor lsc;
 //    StaticBackgroundCompressor sbc;
  //   sbc.setThresholds(0, 5);
-    lsc.setThresholds(5, 5);
+    lsc.setThresholds(0, 5, 2, 3);
     lsc.setIntervals(128, 1);
     lsc.setOutputFileName("c:\\teststack.bin");
     int nframes = 1000;

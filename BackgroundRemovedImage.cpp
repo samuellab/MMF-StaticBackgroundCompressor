@@ -41,8 +41,7 @@ BackgroundRemovedImage::~BackgroundRemovedImage() {
     }
 }
 
-BackgroundRemovedImage::BackgroundRemovedImage(IplImage* src, const IplImage* bak, IplImage* bwbuffer, IplImage* srcbuffer1, IplImage* srcbuffer2, int threshBelowBackground, int threshAboveBackground, ImageMetaData *metadata) {
-
+BackgroundRemovedImage::BackgroundRemovedImage(IplImage* src, const IplImage* bak, IplImage* bwbuffer, IplImage* srcbuffer1, IplImage* srcbuffer2, int threshBelowBackground, int threshAboveBackground, int smallDimMinSize, int lgDimMinSize, ImageMetaData* metadata) {
     init();
     //source and background must both be single channel arrays
     assert (src != NULL);
@@ -61,7 +60,9 @@ BackgroundRemovedImage::BackgroundRemovedImage(IplImage* src, const IplImage* ba
     backgroundIm = bak;
     this->threshAboveBackground = threshAboveBackground;
     this->threshBelowBackground = threshBelowBackground;
-    
+    this->lgDimMinSize = lgDimMinSize;
+    this->smallDimMinSize = smallDimMinSize;
+
     extractDifferences(src, bwbuffer, srcbuffer1, srcbuffer2);
 }
 
@@ -70,7 +71,8 @@ void BackgroundRemovedImage::init() {
     backgroundIm = NULL;
     metadata = NULL;
     threshAboveBackground = threshBelowBackground = 0;
-    
+    smallDimMinSize = 2;
+    lgDimMinSize = 3;
 }
 
 
@@ -147,12 +149,14 @@ void BackgroundRemovedImage::extractBlobs(IplImage *src, IplImage *mask) {
    // subIm = cvCreateImageHeader(cvSize(r.width, r.height), src->depth, src->nChannels);
     for ( ; contour != NULL; contour = contour->h_next) {
         r = cvBoundingRect(contour, 0);
-        cvSetImageROI(src, r);
-        copy = cvCreateImage(cvSize(r.width, r.height), src->depth, src->nChannels);
-        cvCopy(src, copy);
-        r.x += offset.x;
-        r.y += offset.y;
-        differencesFromBackground.push_back(pair<CvRect, IplImage *> (r, copy));
+        if (r.width >= smallDimMinSize && r.height >= smallDimMinSize && (r.width >= lgDimMinSize || r.height >= lgDimMinSize)) {
+            cvSetImageROI(src, r);
+            copy = cvCreateImage(cvSize(r.width, r.height), src->depth, src->nChannels);
+            cvCopy(src, copy);
+            r.x += offset.x;
+            r.y += offset.y;
+            differencesFromBackground.push_back(pair<CvRect, IplImage *> (r, copy));
+        }
     }
     if (freems) {
         cvReleaseMemStorage(&ms);

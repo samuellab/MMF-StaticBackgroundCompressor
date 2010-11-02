@@ -47,7 +47,7 @@
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
-    <conf name="Debug" type="1">
+    <conf name="Debug" type="3">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
         <compilerSet>MinGW|MinGW</compilerSet>
@@ -67,17 +67,9 @@
             <pElem>tictoc</pElem>
           </incDir>
         </ccTool>
-        <linkerTool>
-          <linkerAddLib>
-            <pElem>Necessary Libraries and Includes/CV/lib</pElem>
-          </linkerAddLib>
-          <linkerLibItems>
-            <linkerLibLibItem>cv</linkerLibLibItem>
-            <linkerLibLibItem>cvaux</linkerLibLibItem>
-            <linkerLibLibItem>cxcore</linkerLibLibItem>
-            <linkerLibLibItem>highgui</linkerLibLibItem>
-          </linkerLibItems>
-        </linkerTool>
+        <archiverTool>
+          <output>image_stack_compressor.lib</output>
+        </archiverTool>
       </compileType>
     </conf>
     <conf name="Release" type="2">

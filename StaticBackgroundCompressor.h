@@ -39,9 +39,11 @@ public:
 
     static void writeIplImageToByteStream (std::ofstream &os, const IplImage *src);
     static IplImage *readIplImageFromByteStream(std::ifstream &is);
-    inline void setThresholds(int threshBelowBackground, int threshAboveBackground) {
+    inline void setThresholds(int threshBelowBackground, int threshAboveBackground, int smallDimMinSize, int lgDimMinSize) {
         this->threshAboveBackground = threshAboveBackground;
         this->threshBelowBackground = threshBelowBackground;
+        this->smallDimMinSize = smallDimMinSize;
+        this->lgDimMinSize = lgDimMinSize;
     }
     virtual void reconstructFrame (int frameNum, IplImage **dst);
     virtual void annotatedFrame (int frameNum, IplImage **buffer, IplImage **annotatedImage);
@@ -74,6 +76,9 @@ protected:
 
     int threshBelowBackground;
     int threshAboveBackground;
+    //an extracted blob must have a bounding box at least smallDimMinSize x lgDimMinSize to be counted (lgDimSize automatically >= smallDimSize)
+    int lgDimMinSize;
+    int smallDimMinSize;
     IplImage *bwbuffer;
     IplImage *buffer1;
     IplImage *buffer2;
