@@ -132,6 +132,26 @@ void StackReader::setSBC(int frameNum) {
     endFrame = startFrame + sbc->numProcessed();
 }
 
+void StackReader::getBackground(int frameNum, IplImage** dst, int frameRange) {
+    setSBC(frameNum);
+    sbc->copyBackground(dst);
+    if (frameRange > 0) {
+        //find a range of points with frameNum in the approximate center
+        int start = (int) (frameNum - frameRange/2);
+        start = start < 0 ? 0 : start;
+        int stop = start + frameRange > totalFrames ? totalFrames : start + frameRange;
+        start = stop - frameRange < 0 ? 0 : stop - frameRange;
+        //iterate through all frames; every time the sbc changes, take the minimum of that sbc's background
+        //and the accumulated background so far
+        for (int j = start; j < stop; ++j) {
+            if (j < startFrame || j >= endFrame) {
+                setSBC(j);
+                cvMin(sbc->getBackground(), *dst, *dst);
+            }
+        }
+    }
+}
+
 void StackReader::getFrame(int frameNum, IplImage** dst) {
     setSBC(frameNum);
     if (sbc != NULL) {

@@ -11,9 +11,9 @@ CND_CONF=Release
 CND_DISTDIR=dist
 NBTMPDIR=build/${CND_CONF}/${CND_PLATFORM}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libImage-Stack-Compressor.dll
-OUTPUT_BASENAME=libImage-Stack-Compressor.dll
-PACKAGE_TOP_DIR=libImage-Stack-Compressor.dll/
+OUTPUT_PATH=${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libImage_Stack_Compressor.dll
+OUTPUT_BASENAME=libImage_Stack_Compressor.dll
+PACKAGE_TOP_DIR=libImageStackCompressor.dll/
 
 # Functions
 function checkReturnCode
@@ -58,15 +58,15 @@ mkdir -p ${NBTMPDIR}
 
 # Copy files and create directories and links
 cd "${TOP}"
-makeDirectory "${NBTMPDIR}/libImage-Stack-Compressor.dll/lib"
+makeDirectory "${NBTMPDIR}/libImageStackCompressor.dll/lib"
 copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
 
 
 # Generate tar file
 cd "${TOP}"
-rm -f ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/libImage-Stack-Compressor.dll.tar
+rm -f ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/libImageStackCompressor.dll.tar
 cd ${NBTMPDIR}
-tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/libImage-Stack-Compressor.dll.tar *
+tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/libImageStackCompressor.dll.tar *
 checkReturnCode
 
 # Cleanup

@@ -21,6 +21,7 @@ public:
     virtual void openInputFile ();
     virtual void closeInputFile ();
 
+    virtual void getBackground (int frameNum, IplImage **dst, int frameRange = 0);
     virtual void getFrame (int frameNum, IplImage **dst);
     virtual void annotatedFrame (int frameNum, IplImage **dst);
     virtual void playMovie (int startFrame = 0, int endFrame = -1, int delay_ms = 50, char *windowName = NULL);

@@ -249,6 +249,30 @@ void StaticBackgroundCompressor::reconstructFrame(int frameNum, IplImage** dst) 
     brim->restoreImage(dst);
 }
 
+const IplImage *StaticBackgroundCompressor::getBackground() {
+    return this->background;
+}
+void StaticBackgroundCompressor::copyBackground(IplImage** dst) {
+    if (dst == NULL) {
+        return;
+    }
+    if (background == NULL) {
+        if (*dst != NULL) {
+            cvReleaseImage(dst);
+            *dst = NULL;
+        }
+        return;
+    }
+    if (*dst == NULL || (*dst)->width != background->width || (*dst)->height != background->height || (*dst)->depth != background->depth || (*dst)->nChannels != background->nChannels) {
+        if (*dst != NULL) {
+            cvReleaseImage(dst);
+        }
+        *dst = cvCloneImage(background);
+    } else {
+        cvCopyImage(background, *dst);
+    }
+}
+
 void StaticBackgroundCompressor::annotatedFrame(int frameNum, IplImage** buffer, IplImage** annotatedImage) {
     reconstructFrame(frameNum, buffer);
     if (*buffer == NULL) {

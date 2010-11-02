@@ -61,11 +61,11 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-Release.mk dist/Release/MinGW-Windows/libImage-Stack-Compressor.dll
+	"${MAKE}"  -f nbproject/Makefile-Release.mk dist/Release/MinGW-Windows/libImage_Stack_Compressor.dll
 
-dist/Release/MinGW-Windows/libImage-Stack-Compressor.dll: ${OBJECTFILES}
+dist/Release/MinGW-Windows/libImage_Stack_Compressor.dll: ${OBJECTFILES}
 	${MKDIR} -p dist/Release/MinGW-Windows
-	${LINK.cc} -shared -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libImage-Stack-Compressor.dll ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} -shared -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libImage_Stack_Compressor.dll ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/StackReader.o: StackReader.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -113,7 +113,7 @@ ${OBJECTDIR}/LinearStackCompressor.o: LinearStackCompressor.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r build/Release
-	${RM} dist/Release/MinGW-Windows/libImage-Stack-Compressor.dll
+	${RM} dist/Release/MinGW-Windows/libImage_Stack_Compressor.dll
 
 # Subprojects
 .clean-subprojects:

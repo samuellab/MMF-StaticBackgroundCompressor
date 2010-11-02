@@ -88,10 +88,10 @@ void createTestStack() {
 }
 
 void testSR() {
-    StackReader sr("\\\\labnas2\\LarvalCO2\\test2_stack.mmf");
+    StackReader sr("\\\\labnas2\\LarvalCO2\\mess_stack.mmf");
   //  StackReader sr("c:\\teststack.bin");
     cout << "created sr\n";
-    sr.playMovie(0, 100, 10000);
+    sr.playMovie();
 }
 
 void testLSC() {

@@ -45,6 +45,9 @@ public:
         this->smallDimMinSize = smallDimMinSize;
         this->lgDimMinSize = lgDimMinSize;
     }
+
+    virtual const IplImage *getBackground();
+    virtual void copyBackground(IplImage **dst);
     virtual void reconstructFrame (int frameNum, IplImage **dst);
     virtual void annotatedFrame (int frameNum, IplImage **buffer, IplImage **annotatedImage);
 
