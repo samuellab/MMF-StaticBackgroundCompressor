@@ -98,9 +98,11 @@ void LinearStackCompressor::addFrameToStack(const IplImage* im, ImageMetaData *m
     }
     if (recordingState == recording) {
         activeStack->addFrame(im, metadata);
-    }
-    if (recordingState == updatingBackground) {
-        activeStack->updateBackground(im);
+    } else {
+        if (recordingState == updatingBackground) {
+            activeStack->updateBackground(im);
+        }
+        delete (metadata);
     }
 }
 
