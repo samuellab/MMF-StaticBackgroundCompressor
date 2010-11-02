@@ -40,7 +40,7 @@ public:
         this->keyframeInterval = keyframeInterval;
         this->backgroundUpdateInterval = backgroundUpdateInterval;
     }
-    virtual inline void setFrameRate (int frameRate) {
+    virtual inline void setFrameRate (double frameRate) {
         this->frameRate = frameRate;
     }
 
