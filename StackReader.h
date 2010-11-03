@@ -30,6 +30,11 @@ public:
         return (infile != NULL && infile->good());
     }
 
+    virtual inline int getTotalFrames () {
+        return totalFrames;
+    }
+    
+
 protected:
     std::string fname;
     std::ifstream *infile;

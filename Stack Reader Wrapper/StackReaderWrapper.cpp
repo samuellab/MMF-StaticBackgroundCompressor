@@ -50,3 +50,12 @@ void *getBackground(void* SR, int frameNumber, int frameRange) {
     sr->getBackground(frameNumber, &dst, frameRange);
     return (void *) dst;
 }
+
+int getTotalFrames(void* SR) {
+    StackReader *sr = (StackReader *) SR;
+    if (sr == NULL || !sr->dataFileOk()) {
+        return -1;
+    }
+    return sr->getTotalFrames();
+
+}

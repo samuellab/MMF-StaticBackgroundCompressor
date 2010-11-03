@@ -33,6 +33,7 @@ extern "C" {
      */
     EXPORT void *getBackground (void *sr, int frameNumber, int frameRange);
 
+    EXPORT int getTotalFrames (void *sr);
 
 #ifdef	__cplusplus
 }
