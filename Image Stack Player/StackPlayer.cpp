@@ -18,7 +18,7 @@ using namespace std;
 const int default_delay = 50;
 
 
-int parseArguments(int argc, char **argv, string &filename, int &delayms, int &startframe, int &endframe);
+int parseArguments(int argc, char **argv, string &filename, int &delayms, int &startframe, int &endframe, bool &annotated);
 
 /*
  * 
@@ -26,7 +26,8 @@ int parseArguments(int argc, char **argv, string &filename, int &delayms, int &s
 int main(int argc, char** argv) {
     string filename;
     int delayms, startframe, endframe;
-    if (parseArguments(argc, argv, filename, delayms, startframe, endframe) < 0) {
+    bool annotated;
+    if (parseArguments(argc, argv, filename, delayms, startframe, endframe, annotated) < 0) {
         return 0;
     }
     StackReader sr(filename.c_str());
@@ -34,14 +35,15 @@ int main(int argc, char** argv) {
         cout << "couldn't open or parse data file: " << filename;
         return 0;
     }
-    sr.playMovie(startframe, endframe, delayms, "MMF Player");
+    sr.playMovie(startframe, endframe, delayms, "MMF Player", annotated);
     return 0;
 }
 
-int parseArguments(int argc, char **argv, string &filename, int &delayms, int &startframe, int &endframe) {
+int parseArguments(int argc, char **argv, string &filename, int &delayms, int &startframe, int &endframe, bool &annotated) {
     if (argc <= 1) {
-        cout << "stackplayer movie.mmf -delayms [inter-frame delay in ms] -startframe [starting frame] -endframe [ending frame]" << endl;
-        cout << "or stackplayer -filename movie.mmf -delayms [inter-frame delay in ms] -startframe [starting frame] -endframe [ending frame]" << endl;
+        cout << "stackplayer movie.mmf -delayms [inter-frame delay in ms] -startframe [starting frame] -endframe [ending frame]" << endl << endl;
+        cout << "or stackplayer -filename movie.mmf -delayms [inter-frame delay in ms] -startframe [starting frame] -endframe [ending frame]" << endl <<endl;
+        cout << "add -annotated to see boxes around all regions different from background";
         return -1;
     }
     vector<string> argsin;
@@ -51,22 +53,29 @@ int parseArguments(int argc, char **argv, string &filename, int &delayms, int &s
     filename = string("");
     delayms = default_delay;
     for (vector<string>::iterator it = argsin.begin(); it != argsin.end()-1; ++it) {
-        if (it->compare("-filename")) {
+        if (it->compare("-filename") == 0) {
             filename = *(it+1);
         }
-        if (it->compare("-delayms")) {
+        if (it->compare("-delayms") == 0) {
             stringstream ss(*(it+1));
             ss >> delayms;
         }
-        if (it->compare("-startframe")) {
+        if (it->compare("-startframe") == 0) {
             stringstream ss(*(it+1));
             ss >> startframe;
         }
-        if (it->compare("-endframe")) {
+        if (it->compare("-endframe") == 0) {
             stringstream ss(*(it+1));
             ss >> endframe;
         }
     }
+    annotated = false;
+    for (vector<string>::iterator it = argsin.begin(); it != argsin.end(); ++it) {
+        if (it->compare("-annotated") == 0) {
+            annotated = true;
+        }
+    }
+
     if (filename.empty()) {
         filename = argsin.front();
     }

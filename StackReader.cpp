@@ -67,15 +67,24 @@ void StackReader::openInputFile() {
 }
 
 void StackReader::parseInputFile() {
-    cout << "parse input file\n";
+   // cout << "parse input file " << fname << endl;
     infile->seekg(0, ios::end);
     ifstream::pos_type length = infile->tellg();
     infile->seekg(0, ios::beg); //go to start
-    
+ //   cout << "infile length = " << length << endl;
+    if (length < 0 || !infile->good()) {
+        delete infile;
+        infile = NULL;
+        return;
+    }
     //blow through text header
     char c = 'a';
     while (c != '\0') {
         infile->get(c);
+        cout << c;
+        if ((infile->tellg() % 10240) == 0) {
+            cout << (infile->tellg()/1024) << " kb into header";
+        }
     }
     unsigned long idcode;
     infile->read((char *) &idcode, sizeof(idcode));
@@ -106,7 +115,7 @@ void StackReader::parseInputFile() {
 
 void StackReader::setSBC(int frameNum) {
     //if the frame is out of range or the infile isn't open, abort
-    if (frameNum < 0 || frameNum >= totalFrames || infile == NULL) {
+    if (frameNum < 0 || frameNum >= totalFrames || !dataFileOk()) {
         return;
     }
 
@@ -125,7 +134,7 @@ void StackReader::setSBC(int frameNum) {
     if (it != keyframelocations.begin()) {
         --it;
     }
-  //  cout << "sbc starting with frame " << it->first << "located at " << it->second << " on disk\n";
+    cout << "sbc starting with frame " << it->first << "located at " << it->second << " on disk\n";
     infile->seekg(it->second, ifstream::beg);
     startFrame = it->first;
     sbc = StaticBackgroundCompressor::fromDisk(*infile);
@@ -136,7 +145,15 @@ void StackReader::setSBC(int frameNum) {
 }
 
 void StackReader::getBackground(int frameNum, IplImage** dst, int frameRange) {
+
     setSBC(frameNum);
+    if (!dataFileOk() || sbc == NULL) {
+        if (*dst != NULL) {
+            cvReleaseImage(dst);
+            *dst = NULL;
+        }
+        return;
+    }
     sbc->copyBackground(dst);
     if (frameRange > 0) {
         //find a range of points with frameNum in the approximate center
@@ -157,6 +174,13 @@ void StackReader::getBackground(int frameNum, IplImage** dst, int frameRange) {
 
 void StackReader::getFrame(int frameNum, IplImage** dst) {
     setSBC(frameNum);
+    if (!dataFileOk() || sbc == NULL) {
+        if (*dst != NULL) {
+            cvReleaseImage(dst);
+            *dst = NULL;
+        }
+        return;
+    }
     if (sbc != NULL) {
         sbc->reconstructFrame(frameNum - startFrame, dst);
     }
@@ -164,6 +188,13 @@ void StackReader::getFrame(int frameNum, IplImage** dst) {
 
 void StackReader::annotatedFrame(int frameNum, IplImage** dst) {
     setSBC(frameNum);
+    if (!dataFileOk() || sbc == NULL) {
+        if (*dst != NULL) {
+            cvReleaseImage(dst);
+            *dst = NULL;
+        }
+        return;
+    }
     IplImage *buffer = NULL;
     if (sbc != NULL) {
         sbc->annotatedFrame(frameNum - startFrame, &buffer, dst);
@@ -171,7 +202,7 @@ void StackReader::annotatedFrame(int frameNum, IplImage** dst) {
     cvReleaseImage(&buffer);
 }
 
-void StackReader::playMovie(int startFrame, int endFrame, int delay_ms, char* windowName) {
+void StackReader::playMovie(int startFrame, int endFrame, int delay_ms, char* windowName, bool annotated) {
     startFrame = startFrame < 0 ? 0 : startFrame;
     endFrame = endFrame > totalFrames ? totalFrames : endFrame;
     endFrame = endFrame < 0 ? totalFrames : endFrame;
@@ -184,8 +215,14 @@ void StackReader::playMovie(int startFrame, int endFrame, int delay_ms, char* wi
    // IplImage *colorim = NULL;
     for (int f = startFrame; f < endFrame; ++f) {
      //  cout << f << "\n";
-        annotatedFrame(f, &im);
-        
+        if (annotated) {
+            annotatedFrame(f, &im);
+        } else {
+            getFrame(f, &im);
+        }
+        if (im == NULL) {
+            break;
+        }
 
 
         cvShowImage(windowName, im);
