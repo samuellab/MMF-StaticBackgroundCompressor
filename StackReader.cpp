@@ -9,6 +9,7 @@
 
 #include "StackReader.h"
 #include "highgui.h"
+#include "Timer.h"
 
 using namespace std;
 
@@ -213,7 +214,11 @@ void StackReader::playMovie(int startFrame, int endFrame, int delay_ms, char* wi
     cvNamedWindow(windowName, 0);
     IplImage *im = NULL;
    // IplImage *colorim = NULL;
+
+    Timer tim;
     for (int f = startFrame; f < endFrame; ++f) {
+
+        tim.start();
      //  cout << f << "\n";
         if (annotated) {
             annotatedFrame(f, &im);
@@ -226,7 +231,10 @@ void StackReader::playMovie(int startFrame, int endFrame, int delay_ms, char* wi
 
 
         cvShowImage(windowName, im);
-        if (tolower(cvWaitKey(delay_ms)) == 'q') {
+        int delaytime = (int) (delay_ms - tim.getElapsedTimeInMilliSec());
+        tim.stop();
+        delaytime = delaytime < 1 ? 1: delaytime;
+        if (tolower(cvWaitKey(delaytime)) == 'q') {
             break;
         }
     }
