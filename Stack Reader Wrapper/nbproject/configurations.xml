@@ -39,11 +39,15 @@
         <platform>3</platform>
       </toolsSet>
       <compileType>
+        <cTool>
+          <commandLine>-DBUILD_DLL</commandLine>
+        </cTool>
         <ccTool>
           <incDir>
             <pElem>..</pElem>
             <pElem>../Necessary Libraries and Includes/CV/headers</pElem>
           </incDir>
+          <commandLine>-DBUILD_DLL</commandLine>
         </ccTool>
         <linkerTool>
           <output>./StackReaderWrapper.dll</output>

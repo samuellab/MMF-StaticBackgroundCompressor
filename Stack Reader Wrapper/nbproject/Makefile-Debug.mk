@@ -37,11 +37,11 @@ OBJECTFILES= \
 
 
 # C Compiler Flags
-CFLAGS=
+CFLAGS=-DBUILD_DLL
 
 # CC Compiler Flags
-CCFLAGS=
-CXXFLAGS=
+CCFLAGS=-DBUILD_DLL
+CXXFLAGS=-DBUILD_DLL
 
 # Fortran Compiler Flags
 FFLAGS=
