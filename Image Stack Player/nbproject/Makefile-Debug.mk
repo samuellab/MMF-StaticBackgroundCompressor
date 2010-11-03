@@ -54,13 +54,13 @@ LDLIBSOPTIONS=-L../Necessary\ Libraries\ and\ Includes/CV/lib ../image_stack_com
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-Debug.mk dist/Debug/MinGW-Windows/image_stack_player.exe
+	"${MAKE}"  -f nbproject/Makefile-Debug.mk ./mmf_player.exe
 
-dist/Debug/MinGW-Windows/image_stack_player.exe: ../image_stack_compressor.lib
+./mmf_player.exe: ../image_stack_compressor.lib
 
-dist/Debug/MinGW-Windows/image_stack_player.exe: ${OBJECTFILES}
-	${MKDIR} -p dist/Debug/MinGW-Windows
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/image_stack_player ${OBJECTFILES} ${LDLIBSOPTIONS} 
+./mmf_player.exe: ${OBJECTFILES}
+	${MKDIR} -p .
+	${LINK.cc} -o ./mmf_player ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/StackPlayer.o: StackPlayer.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -74,7 +74,7 @@ ${OBJECTDIR}/StackPlayer.o: StackPlayer.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r build/Debug
-	${RM} dist/Debug/MinGW-Windows/image_stack_player.exe
+	${RM} ./mmf_player.exe
 
 # Subprojects
 .clean-subprojects:

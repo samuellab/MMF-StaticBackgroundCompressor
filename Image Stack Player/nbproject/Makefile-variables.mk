@@ -8,9 +8,9 @@ CND_BUILDDIR=build
 CND_DISTDIR=dist
 # Debug configuration
 CND_PLATFORM_Debug=MinGW-Windows
-CND_ARTIFACT_DIR_Debug=dist/Debug/MinGW-Windows
-CND_ARTIFACT_NAME_Debug=image_stack_player
-CND_ARTIFACT_PATH_Debug=dist/Debug/MinGW-Windows/image_stack_player
+CND_ARTIFACT_DIR_Debug=.
+CND_ARTIFACT_NAME_Debug=mmf_player
+CND_ARTIFACT_PATH_Debug=./mmf_player
 CND_PACKAGE_DIR_Debug=dist/Debug/MinGW-Windows/package
 CND_PACKAGE_NAME_Debug=imagestackplayer.tar
 CND_PACKAGE_PATH_Debug=dist/Debug/MinGW-Windows/package/imagestackplayer.tar

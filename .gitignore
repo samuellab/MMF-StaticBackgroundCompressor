@@ -2,3 +2,4 @@
 *.dll
 *.o
 *.d
+!mmf_player.exe
