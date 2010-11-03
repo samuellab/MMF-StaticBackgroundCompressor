@@ -125,10 +125,13 @@ void StackReader::setSBC(int frameNum) {
     if (it != keyframelocations.begin()) {
         --it;
     }
-    cout << "sbc starting with frame " << it->first << "located at " << it->second << " on disk\n";
+  //  cout << "sbc starting with frame " << it->first << "located at " << it->second << " on disk\n";
     infile->seekg(it->second, ifstream::beg);
     startFrame = it->first;
     sbc = StaticBackgroundCompressor::fromDisk(*infile);
+    if (sbc == NULL) {
+        return;
+    }
     endFrame = startFrame + sbc->numProcessed();
 }
 
@@ -186,9 +189,12 @@ void StackReader::playMovie(int startFrame, int endFrame, int delay_ms, char* wi
 
 
         cvShowImage(windowName, im);
-        cvWaitKey(delay_ms);
+        if (tolower(cvWaitKey(delay_ms)) == 'q') {
+            break;
+        }
     }
     if (im != NULL) {
         cvReleaseImage(&im);
     }
+    cvDestroyWindow(windowName);
 }

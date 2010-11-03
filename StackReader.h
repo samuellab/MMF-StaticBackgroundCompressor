@@ -26,6 +26,10 @@ public:
     virtual void annotatedFrame (int frameNum, IplImage **dst);
     virtual void playMovie (int startFrame = 0, int endFrame = -1, int delay_ms = 50, char *windowName = NULL);
 
+    virtual inline bool dataFileOk (){
+        return (infile != NULL && infile->good());
+    }
+
 protected:
     std::string fname;
     std::ifstream *infile;
