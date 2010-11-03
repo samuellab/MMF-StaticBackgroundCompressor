@@ -1,19 +1,29 @@
 #include "StackReaderWrapper.h"
 #include "cv.h"
 #include "StackReader.h"
+#include <ostream>
+
+using namespace std;
 
 void *createStackReader(const char* fname) {
+  //  ofstream os("c:\\stackreadlog.txt");
     if (fname == NULL) {
+   //     os << "fname was null " << endl;
         return NULL;
     }
+ //   os << "trying to open " << fname << endl;
     StackReader *sr = new StackReader(fname);
     if (sr == NULL) {
+ //       os << "sr is null" << endl;
         return NULL;
     }
     if (!sr->dataFileOk()) {
+ //       os << "data file not OK" << endl;
         delete sr;
         return NULL;
     }
+ //   os << "returning sr" << endl;
+ //   os.close();
     return (void *) sr;
 }
 
@@ -35,6 +45,9 @@ void *getFrame(void* SR, int frameNumber) {
     IplImage *dst = NULL;
 
     sr->getFrame(frameNumber, &dst);
+  //  ofstream os("c:\\stackreadlog.txt");
+//    os << "dst = " << (unsigned long) dst << "  dst has width " << dst->width << " and height " << dst->height << endl;
+ //   os.close();
     return (void *) dst;
 }
 

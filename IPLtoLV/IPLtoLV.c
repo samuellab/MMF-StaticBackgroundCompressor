@@ -1,6 +1,6 @@
 #include "cv.h"
 #include "IPLtoLV.h"
-
+#include <stdio.h>
 void *IplImageFromLVImage(void* lvsrc, int lvwidth, int lvheight, int lvlinewidth) {
     IplImage *lvim, *im;
     if (lvsrc == NULL || lvwidth <= 0 || lvheight <= 0 || lvlinewidth < lvwidth) {
@@ -14,10 +14,14 @@ void *IplImageFromLVImage(void* lvsrc, int lvwidth, int lvheight, int lvlinewidt
 }
 
 int IplImageSize(void* iplImage, int* width, int* height) {
+   // FILE *f;
     IplImage *im = (IplImage *) iplImage;
     if (iplImage == NULL || width == NULL || height == NULL) {
         return -1;
     }
+ //   f = fopen("c:\\foo.txt", "w");
+  //  fprintf (f, "iplImage = %d: width, height %d,%d\n", (unsigned long) im, im->width, im->height);
+  //  fclose(f);
     *width = im->width;
     *height = im->height;
     return 0;
