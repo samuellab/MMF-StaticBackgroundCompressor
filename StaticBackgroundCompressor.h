@@ -17,6 +17,8 @@
 class StaticBackgroundCompressor {
 public:
 
+    static const unsigned long IdCode = 0xbb67ca20; //CRC32 hash of "StaticBackgroundCompressor" from fileformat.info
+
     static const int headerSizeInBytes = 512;
 
     virtual void addFrame (const IplImage *im, ImageMetaData *metadata = NULL);
@@ -66,7 +68,7 @@ public:
     virtual std::string saveDescription();
 
     virtual inline unsigned long idCode () {
-        return 0xbb67ca20; //CRC32 hash of "StaticBackgroundCompressor" from fileformat.info
+        return StaticBackgroundCompressor::IdCode;
     }
 protected:
      StaticBackgroundCompressor(const StaticBackgroundCompressor& orig);

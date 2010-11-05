@@ -21,9 +21,12 @@ MightexMetaData::~MightexMetaData() {
 
 MightexMetaData::MightexMetaData(const TProcessedDataProperty *attributes) {
     this->attributes = *attributes;
+    
 }
 
 void MightexMetaData::toDisk(std::ofstream& os) {
+    unsigned long id = idCode();
+    os.write ((char *) &id, sizeof(id));
     os.write((char *)&attributes, sizeof(attributes));
 }
 
@@ -37,4 +40,8 @@ std::string MightexMetaData::saveDescription() {
     return os.str();
 }
 
-
+MightexMetaData *MightexMetaData::fromFile(std::ifstream& is) {
+    TProcessedDataProperty tpd;
+    is.read((char *) &tpd, sizeof(tpd));
+    return new MightexMetaData(&tpd);
+}

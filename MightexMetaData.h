@@ -13,6 +13,8 @@
 
 class MightexMetaData : public ImageMetaData {
 public:
+    static const unsigned long IdCode = 0xdf4f1592; //CRC32 hash of "MightexMetaData" from fileformat.info
+
     
     MightexMetaData(const TProcessedDataProperty *attributes);
     virtual ~MightexMetaData();
@@ -20,8 +22,13 @@ public:
     virtual std::string saveDescription ();
     virtual int sizeOnDisk ();
     virtual unsigned long idCode() {
-        return 0xdf4f1592; //CRC32 hash of "MightexMetaData" from fileformat.info
+        return MightexMetaData::IdCode;
     }
+    /* static MightexMetaData *fromFile(std::ifstream &is);
+     * assumes idCode has already been read from is, so starts at the next byte
+     *
+     */
+    static MightexMetaData *fromFile(std::ifstream &is);
 protected:
     TProcessedDataProperty attributes;
 private:

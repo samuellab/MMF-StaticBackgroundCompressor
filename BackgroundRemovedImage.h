@@ -17,6 +17,8 @@
 class BackgroundRemovedImage {
 public:
 
+    static const unsigned long IdCode =  0xf80921af; //CRC32 hash of "BackgroundRemovedImage" from fileformat.info
+
     BackgroundRemovedImage (IplImage *src, const IplImage *bak, IplImage *bwbuffer = NULL, IplImage *srcbuffer1 = NULL,  IplImage *srcbuffer2 = NULL, int threshBelowBackground = 0, int threshAboveBackground = 0, int smallDimMinSize = 1, int lgDimMinSize = 1, ImageMetaData *metadata = NULL);
     virtual ~BackgroundRemovedImage();
     virtual void toDisk(std::ofstream &os);
@@ -54,7 +56,7 @@ public:
     }
 
     virtual inline unsigned long idCode () {
-        return 0xf80921af; //CRC32 hash of "BackgroundRemovedImage" from fileformat.info
+        return BackgroundRemovedImage::IdCode;
     }
 
     typedef struct {unsigned long idcode; int headersize; int depth; int nchannels; int numims;} HeaderInfoT;
@@ -69,8 +71,6 @@ protected:
     virtual inline std::string classname() { return std::string("BackgroundRemovedImage");}
     virtual std::string headerDescription();
 
-
-    static const unsigned int _id_code = 0x0001;
 
     BackgroundRemovedImage();
     BackgroundRemovedImage(const BackgroundRemovedImage& orig);

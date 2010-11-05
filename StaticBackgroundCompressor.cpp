@@ -13,6 +13,7 @@
 #include "BackgroundRemovedImage.h"
 #include "cv.h"
 #include "highgui.h"
+#include "BackgroundRemovedImageLoader.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -178,7 +179,8 @@ StaticBackgroundCompressor * StaticBackgroundCompressor::fromDisk(std::ifstream&
     sbc->background = readIplImageFromByteStream(is);
   
     for (int j = 0; j < hi.numframes; ++j) {
-        BackgroundRemovedImage *bri = BackgroundRemovedImage::fromDisk(is, sbc->background);
+        //BackgroundRemovedImage *bri = BackgroundRemovedImage::fromDisk(is, sbc->background);
+        BackgroundRemovedImage *bri = BackgroundRemovedImageLoader::fromFile(is, sbc->background);
         sbc->bri.push_back(bri);
     }
     return sbc;
