@@ -6,7 +6,7 @@
  */
 
 #include "BackgroundRemovedImage.h"
-
+#include "ImageMetaDataLoader.h"
 #include "cv.h"
 #include "cxcore.h"
 #include "cvtypes.h"
@@ -275,6 +275,7 @@ BackgroundRemovedImage *BackgroundRemovedImage::fromDisk(std::ifstream& is, cons
     if (hi.idcode != bri->idCode()) {
         cout << "WARNING: id code does not match when loading BackgroundRemovedImage";
     }
+    bri->metadata = ImageMetaDataLoader::fromFile(is);
     is.seekg(cur_loc + (std::ifstream::pos_type) hi.headersize);
 
     for (int j = 0; j < hi.numims; ++j) {

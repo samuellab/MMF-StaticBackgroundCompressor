@@ -7,5 +7,5 @@
    <Item Name="destroy Stack Reader.vi" Type="VI" URL="VIs/destroy Stack Reader.vi"/>
    <Item Name="get Background.vi" Type="VI" URL="VIs/get Background.vi"/>
    <Item Name="get Frame.vi" Type="VI" URL="VIs/get Frame.vi"/>
-   <Item Name="get Total Frames.vi" Type="VI" URL="VIs/get Total Frames.vi"/>
+   <Item Name="get Total Frames.vi" Type="VI" URL="../../../Track-Extraction-Software/Image-Stack-Compressor/Stack Reader Wrapper/labview vis/VIs/get Total Frames.vi"/>
 </Library>

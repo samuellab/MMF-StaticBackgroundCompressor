@@ -10,6 +10,7 @@
 #include "StackReader.h"
 #include "highgui.h"
 #include "Timer.h"
+#include "StaticBackgroundCompressorLoader.h"
 
 using namespace std;
 
@@ -100,7 +101,7 @@ void StackReader::parseInputFile() {
     StaticBackgroundCompressor::HeaderInfoT hi;
     while(infile->good()) {
         ifstream::pos_type cpos = infile->tellg();
-        hi = StaticBackgroundCompressor::getHeaderInfo(*infile);
+        hi = StaticBackgroundCompressorLoader::getHeaderInfo(*infile);
         keyframelocations.insert(std::make_pair(startFrame, cpos));
         startFrame = startFrame + hi.numframes;
         cpos += (ifstream::pos_type) hi.totalSize;
@@ -138,7 +139,7 @@ void StackReader::setSBC(int frameNum) {
     cout << "sbc starting with frame " << it->first << "located at " << it->second << " on disk\n";
     infile->seekg(it->second, ifstream::beg);
     startFrame = it->first;
-    sbc = StaticBackgroundCompressor::fromDisk(*infile);
+    sbc = StaticBackgroundCompressorLoader::fromFile(*infile);
     if (sbc == NULL) {
         return;
     }

@@ -36,10 +36,14 @@ OBJECTFILES= \
 	${OBJECTDIR}/StackReader.o \
 	${OBJECTDIR}/BackgroundRemovedImage.o \
 	${OBJECTDIR}/tictoc/Timer.o \
+	${OBJECTDIR}/CompositeImageMetaData.o \
 	${OBJECTDIR}/tictoc/tictoc.o \
 	${OBJECTDIR}/StaticBackgroundCompressor.o \
 	${OBJECTDIR}/testmain.o \
+	${OBJECTDIR}/StaticBackgroundCompressorLoader.o \
+	${OBJECTDIR}/BackgroundRemovedImageLoader.o \
 	${OBJECTDIR}/MightexMetaData.o \
+	${OBJECTDIR}/ImageMetaDataLoader.o \
 	${OBJECTDIR}/LinearStackCompressor.o
 
 
@@ -82,6 +86,11 @@ ${OBJECTDIR}/tictoc/Timer.o: tictoc/Timer.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O2  -MMD -MP -MF $@.d -o ${OBJECTDIR}/tictoc/Timer.o tictoc/Timer.cpp
 
+${OBJECTDIR}/CompositeImageMetaData.o: CompositeImageMetaData.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2  -MMD -MP -MF $@.d -o ${OBJECTDIR}/CompositeImageMetaData.o CompositeImageMetaData.cpp
+
 ${OBJECTDIR}/tictoc/tictoc.o: tictoc/tictoc.cpp 
 	${MKDIR} -p ${OBJECTDIR}/tictoc
 	${RM} $@.d
@@ -97,10 +106,25 @@ ${OBJECTDIR}/testmain.o: testmain.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O2  -MMD -MP -MF $@.d -o ${OBJECTDIR}/testmain.o testmain.cpp
 
+${OBJECTDIR}/StaticBackgroundCompressorLoader.o: StaticBackgroundCompressorLoader.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2  -MMD -MP -MF $@.d -o ${OBJECTDIR}/StaticBackgroundCompressorLoader.o StaticBackgroundCompressorLoader.cpp
+
+${OBJECTDIR}/BackgroundRemovedImageLoader.o: BackgroundRemovedImageLoader.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2  -MMD -MP -MF $@.d -o ${OBJECTDIR}/BackgroundRemovedImageLoader.o BackgroundRemovedImageLoader.cpp
+
 ${OBJECTDIR}/MightexMetaData.o: MightexMetaData.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -O2  -MMD -MP -MF $@.d -o ${OBJECTDIR}/MightexMetaData.o MightexMetaData.cpp
+
+${OBJECTDIR}/ImageMetaDataLoader.o: ImageMetaDataLoader.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2  -MMD -MP -MF $@.d -o ${OBJECTDIR}/ImageMetaDataLoader.o ImageMetaDataLoader.cpp
 
 ${OBJECTDIR}/LinearStackCompressor.o: LinearStackCompressor.cpp 
 	${MKDIR} -p ${OBJECTDIR}

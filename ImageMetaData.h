@@ -18,25 +18,25 @@
 #ifndef IMAGEMETADATA_H
 #define	IMAGEMETADATA_H
 
+
 #include <ostream>
 #include <string>
 
 class ImageMetaData {
 public:
-    ImageMetaData() {};
+     
+    
     virtual void toDisk (std::ofstream &os) = 0;
     virtual std::string saveDescription () = 0;
-    virtual int sizeOnDisk () = 0;
-   
+    virtual int sizeOnDisk () = 0;   
     virtual ~ImageMetaData() {};
-
     virtual unsigned long idCode() = 0;
-    /*
-    {
-        return CRC32 hash code of "ImageMetaData" from http://www.fileformat.info/tool/hash.htm
-      e.g. return 0x44760428;
-    }
-    */
+
+    
+
+protected:
+    ImageMetaData() {};
+
 private:
      ImageMetaData(const ImageMetaData& orig);
 };
