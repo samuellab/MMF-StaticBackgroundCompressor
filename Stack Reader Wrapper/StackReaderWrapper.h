@@ -35,6 +35,7 @@ extern "C" {
 
     EXPORT int getTotalFrames (void *sr);
 
+    EXPORT void compressImageStack (const char *fstub, const char *extension, const char *outname, int startFrame, int endFrame, int diffThresh, int smallDimMinSize, int lgDimMinSize);
 #ifdef	__cplusplus
 }
 #endif

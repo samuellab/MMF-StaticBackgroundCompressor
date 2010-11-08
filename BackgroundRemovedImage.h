@@ -29,6 +29,10 @@ public:
     virtual void restoreImage (IplImage **dst);
     virtual void annotateImage (IplImage *dst, CvScalar color = CV_RGB(255,0,0), int thickness = 2);
 
+    const ImageMetaData *getMetaData() {
+        return this->metadata;
+    }
+
     static const int headerSizeInBytes = 256;
 
     static inline int bytesPerPixel(const IplImage *src) {

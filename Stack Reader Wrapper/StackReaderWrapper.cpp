@@ -1,6 +1,10 @@
 #include "StackReaderWrapper.h"
 #include "cv.h"
+#include "highgui.h"
 #include "StackReader.h"
+#include "LinearStackCompressor.h"
+#include "BlankMetaData.h"
+#include <sstream>
 #include <ostream>
 
 using namespace std;
@@ -72,3 +76,32 @@ int getTotalFrames(void* SR) {
     return sr->getTotalFrames();
 
 }
+
+void compressImageStack(const char* fstub, const char* extension, const char* outname, int startFrame, int endFrame, int diffThresh, int smallDimMinSize, int lgDimMinSize) {
+//    string stub(fstub);
+    LinearStackCompressor lsc;
+    lsc.setThresholds(0, diffThresh, smallDimMinSize, lgDimMinSize);
+    lsc.setIntervals(128, 1);
+    lsc.setOutputFileName(outname);
+    int nframes = endFrame - startFrame;
+    lsc.startRecording(nframes);
+    stringstream s;
+    string ext(extension);
+    if (ext.at(0) != '.') {
+        ext.insert(0, 1, '.');
+    }
+    for (int j = startFrame; j < endFrame; ++j) {
+        s.str("");
+        s << fstub << j << ext;
+        IplImage *im = cvLoadImage(s.str().c_str(), 0);
+    //    assert(im != NULL);
+        cout << "loaded image " << j <<"\n";
+        BlankMetaData *bmd = new BlankMetaData;
+        lsc.newFrame(im, bmd);
+        cvReleaseImage(&im);
+   //     cout << "added image to stack\n";
+    }
+
+    lsc.stopRecording();
+}
+
