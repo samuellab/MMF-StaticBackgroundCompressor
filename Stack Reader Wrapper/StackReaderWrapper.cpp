@@ -79,23 +79,28 @@ int getTotalFrames(void* SR) {
 
 void compressImageStack(const char* fstub, const char* extension, const char* outname, int startFrame, int endFrame, int diffThresh, int smallDimMinSize, int lgDimMinSize) {
 //    string stub(fstub);
+    //ofstream log("c:\\cislog.txt");
     LinearStackCompressor lsc;
     lsc.setThresholds(0, diffThresh, smallDimMinSize, lgDimMinSize);
     lsc.setIntervals(128, 1);
     lsc.setOutputFileName(outname);
-    int nframes = endFrame - startFrame;
+    int nframes = endFrame - startFrame + 1;
     lsc.startRecording(nframes);
     stringstream s;
     string ext(extension);
     if (ext.at(0) != '.') {
         ext.insert(0, 1, '.');
     }
-    for (int j = startFrame; j < endFrame; ++j) {
+    for (int j = startFrame; j <= endFrame; ++j) {
         s.str("");
         s << fstub << j << ext;
         IplImage *im = cvLoadImage(s.str().c_str(), 0);
-    //    assert(im != NULL);
-        cout << "loaded image " << j <<"\n";
+        if (im == NULL) {
+    //        log << "failed to load image " << s.str().c_str() << endl;
+            break;
+        }
+        assert(im != NULL);
+    //    log << "loaded image " << s.str().c_str() << endl;
         BlankMetaData *bmd = new BlankMetaData;
         lsc.newFrame(im, bmd);
         cvReleaseImage(&im);
