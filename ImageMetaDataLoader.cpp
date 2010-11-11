@@ -8,6 +8,7 @@
 #include "ImageMetaDataLoader.h"
 #include <iostream>
 #include <fstream>
+#include <iosfwd>
 ImageMetaDataLoader::ImageMetaDataLoader() {
 }
 
@@ -19,7 +20,9 @@ ImageMetaDataLoader::~ImageMetaDataLoader() {
 
 ImageMetaData *ImageMetaDataLoader::fromFile (std::ifstream &is) {
         unsigned long id;
+        std::ifstream::pos_type cloc = is.tellg();
         is.read((char *) &id, sizeof(id));
+     //   std::cout << "id = " << id << "\n";
         switch (id) {
             case BlankMetaData::IdCode:
                 return BlankMetaData::fromFile(is);
@@ -30,8 +33,9 @@ ImageMetaData *ImageMetaDataLoader::fromFile (std::ifstream &is) {
             case CompositeImageMetaData::IdCode:
                 return CompositeImageMetaData::fromFile(is);
                 break;
-            default:
-                return NULL;
+            default://this is a kludge but we have some old data files that just stored mightex meta data directly
+                is.seekg(cloc);
+                return MightexMetaData::fromFile(is);
                 break;
         }
         return NULL;

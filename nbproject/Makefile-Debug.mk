@@ -35,9 +35,10 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/StackReader.o \
 	${OBJECTDIR}/BackgroundRemovedImage.o \
+	${OBJECTDIR}/ExtraDataWriter.o \
 	${OBJECTDIR}/tictoc/Timer.o \
-	${OBJECTDIR}/CompositeImageMetaData.o \
 	${OBJECTDIR}/tictoc/tictoc.o \
+	${OBJECTDIR}/CompositeImageMetaData.o \
 	${OBJECTDIR}/StaticBackgroundCompressor.o \
 	${OBJECTDIR}/testmain.o \
 	${OBJECTDIR}/StaticBackgroundCompressorLoader.o \
@@ -61,7 +62,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=
+LDLIBSOPTIONS=-LNecessary\ Libraries\ and\ Includes/CV/lib -lcv -lhighgui -lcxcore
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -82,20 +83,25 @@ ${OBJECTDIR}/BackgroundRemovedImage.o: BackgroundRemovedImage.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/BackgroundRemovedImage.o BackgroundRemovedImage.cpp
 
+${OBJECTDIR}/ExtraDataWriter.o: ExtraDataWriter.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/ExtraDataWriter.o ExtraDataWriter.cpp
+
 ${OBJECTDIR}/tictoc/Timer.o: tictoc/Timer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/tictoc
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/tictoc/Timer.o tictoc/Timer.cpp
 
-${OBJECTDIR}/CompositeImageMetaData.o: CompositeImageMetaData.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/CompositeImageMetaData.o CompositeImageMetaData.cpp
-
 ${OBJECTDIR}/tictoc/tictoc.o: tictoc/tictoc.cpp 
 	${MKDIR} -p ${OBJECTDIR}/tictoc
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/tictoc/tictoc.o tictoc/tictoc.cpp
+
+${OBJECTDIR}/CompositeImageMetaData.o: CompositeImageMetaData.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/CompositeImageMetaData.o CompositeImageMetaData.cpp
 
 ${OBJECTDIR}/StaticBackgroundCompressor.o: StaticBackgroundCompressor.cpp 
 	${MKDIR} -p ${OBJECTDIR}

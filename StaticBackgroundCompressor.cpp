@@ -296,3 +296,10 @@ void StaticBackgroundCompressor::annotatedFrame(int frameNum, IplImage** buffer,
     brim->annotateImage(*annotatedImage);
 }
 
+const ImageMetaData *StaticBackgroundCompressor::getMetaData(int frameNumber) {
+    BackgroundRemovedImage *brim = bri.at(frameNumber);
+    if (brim == NULL) {
+        return NULL;
+    }
+    return brim->getMetaData();
+}

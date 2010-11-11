@@ -244,3 +244,23 @@ void StackReader::playMovie(int startFrame, int endFrame, int delay_ms, char* wi
     }
     cvDestroyWindow(windowName);
 }
+
+ExtraDataWriter *StackReader::getSupplementalData() {
+    ExtraDataWriter *edw = new ExtraDataWriter();
+    for (int frameNum = 0; frameNum < totalFrames; ++frameNum) {
+        setSBC(frameNum);
+        const ImageMetaData *imd = sbc->getMetaData(frameNum-startFrame);
+        edw->goToFrame(frameNum);
+        edw->addElement(string("FrameNumber"), (double) frameNum);
+        if (imd != NULL) {
+            edw->addElements(imd->getFieldNamesAndValues());
+        }
+    }
+    return edw;
+}
+
+void StackReader::createSupplementalDataFile(const char* fname) {
+    ExtraDataWriter *edw = getSupplementalData();
+    edw->writeFile(fname);
+    delete edw;
+}

@@ -21,6 +21,7 @@
 
 #include <ostream>
 #include <string>
+#include <map>
 
 class ImageMetaData {
 public:
@@ -31,7 +32,7 @@ public:
     virtual int sizeOnDisk () = 0;   
     virtual ~ImageMetaData() {};
     virtual unsigned long idCode() = 0;
-
+    virtual std::map<std::string, double> getFieldNamesAndValues(void)const = 0;
     
 
 protected:

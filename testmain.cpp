@@ -88,9 +88,11 @@ void createTestStack() {
 }
 
 void testSR() {
-    StackReader sr("\\\\labnas2\\LarvalCO2\\mess_stack.mmf");
+   // StackReader sr("\\\\labnas2\\LarvalCO2\\mess_stack.mmf");
   //  StackReader sr("c:\\teststack.bin");
+    StackReader sr("\\\\labnas2\\LarvalCO2\\Image Data\\control air only\\20101105\\CS5\\CS5_stack.mmf");
     cout << "created sr\n";
+    sr.createSupplementalDataFile("c:\\testcs5_dat.dat");
     sr.playMovie();
 }
 

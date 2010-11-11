@@ -7,8 +7,10 @@
 
 #include <fstream>
 #include <sstream>
+#include <map>
 
 #include "MightexMetaData.h"
+using namespace std;
 
 MightexMetaData::MightexMetaData() {
 }
@@ -44,4 +46,23 @@ MightexMetaData *MightexMetaData::fromFile(std::ifstream& is) {
     TProcessedDataProperty tpd;
     is.read((char *) &tpd, sizeof(tpd));
     return new MightexMetaData(&tpd);
+}
+std::map<std::string, double> MightexMetaData::getFieldNamesAndValues() const {
+    map<string, double> fnav;
+    fnav.insert(pair<string, double>("Mightex_Bin", attributes.Bin));
+    fnav.insert(pair<string, double>("Mightex_BlueGain", attributes.BlueGain));
+    fnav.insert(pair<string, double>("Mightex_CameraID", attributes.CameraID));
+    fnav.insert(pair<string, double>("Mightex_Column", attributes.Column));
+    fnav.insert(pair<string, double>("Mightex_ExposureTime", attributes.ExposureTime));
+    fnav.insert(pair<string, double>("Mightex_FilterAcceptForFile", attributes.FilterAcceptForFile));
+    fnav.insert(pair<string, double>("Mightex_ProcessFrameType", attributes.ProcessFrameType));
+    fnav.insert(pair<string, double>("Mightex_RedGain", attributes.RedGain));
+    fnav.insert(pair<string, double>("Mightex_Row", attributes.Row));
+    fnav.insert(pair<string, double>("Mightex_TimeStamp", attributes.TimeStamp));
+    fnav.insert(pair<string, double>("Mightex_TriggerEventCount", attributes.TriggerEventCount));
+    fnav.insert(pair<string, double>("Mightex_TriggerOccurred", attributes.TriggerOccurred));
+    fnav.insert(pair<string, double>("Mightex_XStart", attributes.XStart));
+    fnav.insert(pair<string, double>("Mightex_YStart", attributes.YStart));
+    return fnav;
+
 }

@@ -34,6 +34,8 @@
     <itemPath>BlankMetaData.h</itemPath>
     <itemPath>CompositeImageMetaData.cpp</itemPath>
     <itemPath>CompositeImageMetaData.h</itemPath>
+    <itemPath>ExtraDataWriter.cpp</itemPath>
+    <itemPath>ExtraDataWriter.h</itemPath>
     <itemPath>ImageMetaData.h</itemPath>
     <itemPath>ImageMetaDataLoader.cpp</itemPath>
     <itemPath>ImageMetaDataLoader.h</itemPath>

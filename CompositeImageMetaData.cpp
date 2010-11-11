@@ -83,3 +83,12 @@ CompositeImageMetaData *CompositeImageMetaData::fromFile(std::ifstream& is) {
     return cmd;
 
 }
+
+std::map<std::string, double> CompositeImageMetaData::getFieldNamesAndValues() const {
+    map<std::string, double> fnav, snav;
+    for (vector<ImageMetaData *>::const_iterator it = imd.begin(); it != imd.end(); ++it) {
+        snav = (*it)->getFieldNamesAndValues();
+        fnav.insert(snav.begin(), snav.end());
+    }
+    return fnav;
+}

@@ -34,6 +34,12 @@ public:
     virtual unsigned long idCode() {
         return BlankMetaData::IdCode;
     }
+
+    virtual std::map<std::string, double> getFieldNamesAndValues(void)const{
+        std::map<std::string, double> rval;
+        return rval;
+    }
+
     static BlankMetaData *fromFile (std::istream &is) {
         return new BlankMetaData();
     }

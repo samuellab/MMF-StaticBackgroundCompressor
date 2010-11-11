@@ -70,6 +70,9 @@ public:
     virtual inline unsigned long idCode () {
         return StaticBackgroundCompressor::IdCode;
     }
+
+    virtual const ImageMetaData *getMetaData(int frameNumber);
+
 protected:
      StaticBackgroundCompressor(const StaticBackgroundCompressor& orig);
 

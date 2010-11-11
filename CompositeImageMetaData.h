@@ -26,6 +26,7 @@ public:
     virtual unsigned long idCode() {
         return CompositeImageMetaData::IdCode;
     }
+    virtual std::map<std::string, double> getFieldNamesAndValues(void)const;
 
     static CompositeImageMetaData *fromFile (std::ifstream &is);
 protected:

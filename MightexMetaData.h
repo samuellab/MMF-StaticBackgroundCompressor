@@ -24,6 +24,7 @@ public:
     virtual unsigned long idCode() {
         return MightexMetaData::IdCode;
     }
+    virtual std::map<std::string, double> getFieldNamesAndValues(void)const;
     /* static MightexMetaData *fromFile(std::ifstream &is);
      * assumes idCode has already been read from is, so starts at the next byte
      *
