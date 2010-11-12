@@ -20,10 +20,10 @@ public:
     CompositeImageMetaData();
     virtual ~CompositeImageMetaData();
     void addMetaData(ImageMetaData *md);
-    virtual void toDisk (std::ofstream &os);
-    virtual std::string saveDescription ();
-    virtual int sizeOnDisk ();
-    virtual unsigned long idCode() {
+    virtual void toDisk (std::ofstream &os)const;
+    virtual std::string saveDescription ()const;
+    virtual int sizeOnDisk ()const;
+    virtual unsigned long idCode()const {
         return CompositeImageMetaData::IdCode;
     }
     virtual std::map<std::string, double> getFieldNamesAndValues(void)const;

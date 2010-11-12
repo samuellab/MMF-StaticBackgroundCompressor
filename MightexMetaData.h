@@ -18,10 +18,10 @@ public:
     
     MightexMetaData(const TProcessedDataProperty *attributes);
     virtual ~MightexMetaData();
-    virtual void toDisk (std::ofstream &os);
-    virtual std::string saveDescription ();
-    virtual int sizeOnDisk ();
-    virtual unsigned long idCode() {
+    virtual void toDisk (std::ofstream &os)const;
+    virtual std::string saveDescription ()const;
+    virtual int sizeOnDisk ()const;
+    virtual unsigned long idCode()const {
         return MightexMetaData::IdCode;
     }
     virtual std::map<std::string, double> getFieldNamesAndValues(void)const;

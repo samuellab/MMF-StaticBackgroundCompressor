@@ -27,13 +27,13 @@ CompositeImageMetaData::~CompositeImageMetaData() {
     }
 }
 
-void CompositeImageMetaData::toDisk(std::ofstream& os) {
+void CompositeImageMetaData::toDisk(std::ofstream& os)const {
     unsigned long id = idCode();
-    removeNulls();
+    //removeNulls();
     int len = imd.size();
     os.write((char *) &id, sizeof(id));
     os.write((char *) &len, sizeof(len));
-    for(vector<ImageMetaData *>::iterator it = imd.begin(); it != imd.end(); ++it) {
+    for(vector<ImageMetaData *>::const_iterator it = imd.begin(); it != imd.end(); ++it) {
         if (*it != NULL) {
             (*it)->toDisk(os);
         }
@@ -45,10 +45,10 @@ void CompositeImageMetaData::removeNulls() {
     imd.erase(newend, imd.end());
 }
 
-string CompositeImageMetaData::saveDescription() {
+string CompositeImageMetaData::saveDescription()const{
     stringstream os;
     os << "Composite Meta Data: idcode (unsigned long) = " << hex << idCode() << dec << ", int number of Image Meta Datas stored, then each Meta Data in succession:\n";
-    for(vector<ImageMetaData *>::iterator it = imd.begin(); it != imd.end(); ++it) {
+    for(vector<ImageMetaData *>::const_iterator it = imd.begin(); it != imd.end(); ++it) {
         if (*it != NULL) {
             os << (*it)->saveDescription();
         }
@@ -63,7 +63,7 @@ void CompositeImageMetaData::addMetaData(ImageMetaData* md) {
     }
 }
 
-int CompositeImageMetaData::sizeOnDisk() {
+int CompositeImageMetaData::sizeOnDisk()const {
     int sod = sizeof(unsigned long) + sizeof(int);
     for(vector<ImageMetaData *>::iterator it = imd.begin(); it != imd.end(); ++it) {
         if (*it != NULL) {

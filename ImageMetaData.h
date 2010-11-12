@@ -27,11 +27,11 @@ class ImageMetaData {
 public:
      
     
-    virtual void toDisk (std::ofstream &os) = 0;
-    virtual std::string saveDescription () = 0;
-    virtual int sizeOnDisk () = 0;   
+    virtual void toDisk (std::ofstream &os)const = 0;
+    virtual std::string saveDescription ()const = 0;
+    virtual int sizeOnDisk ()const = 0;
     virtual ~ImageMetaData() {};
-    virtual unsigned long idCode() = 0;
+    virtual unsigned long idCode()const = 0;
     virtual std::map<std::string, double> getFieldNamesAndValues(void)const = 0;
     
 

@@ -18,20 +18,20 @@ public:
     BlankMetaData() {};
     BlankMetaData(const BlankMetaData& orig);
     virtual ~BlankMetaData() {};
-    virtual void toDisk (std::ofstream &os) {
-        unsigned int id = idCode();
+    virtual void toDisk (std::ofstream &os)const {
+        unsigned long id = idCode();
         os.write((char *) &id, sizeof(id));
         return;
     }
-    virtual std::string saveDescription () {
+    virtual std::string saveDescription ()const {
       //  std::cout << "into saveDescription\n";
         std::string s ("no meta data\n");
         return s;
     }
-    virtual int sizeOnDisk () {
-        return 0;
+    virtual int sizeOnDisk () const{
+        return sizeof(unsigned long);
     }
-    virtual unsigned long idCode() {
+    virtual unsigned long idCode() const {
         return BlankMetaData::IdCode;
     }
 
