@@ -27,7 +27,7 @@ public:
     virtual void addData (std::string name, double value);
     virtual bool hasField (std::string fieldName)const;
     virtual void replaceData (std::string name, double value);
-
+    virtual void clear();
     virtual NameValueMetaData *copy() const;
 
     static NameValueMetaData *fromFile (std::ifstream &is);

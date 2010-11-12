@@ -92,3 +92,6 @@ NameValueMetaData *NameValueMetaData::fromFile(ifstream& is) {
     }
 }
 
+void NameValueMetaData::clear() {
+    data.clear();
+}
