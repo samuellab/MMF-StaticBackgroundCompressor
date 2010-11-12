@@ -37,6 +37,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/BackgroundRemovedImage.o \
 	${OBJECTDIR}/ExtraDataWriter.o \
 	${OBJECTDIR}/tictoc/Timer.o \
+	${OBJECTDIR}/NameValueMetaData.o \
 	${OBJECTDIR}/tictoc/tictoc.o \
 	${OBJECTDIR}/CompositeImageMetaData.o \
 	${OBJECTDIR}/StaticBackgroundCompressor.o \
@@ -91,6 +92,11 @@ ${OBJECTDIR}/tictoc/Timer.o: tictoc/Timer.cpp
 	${MKDIR} -p ${OBJECTDIR}/tictoc
 	${RM} $@.d
 	$(COMPILE.cc) -O2  -MMD -MP -MF $@.d -o ${OBJECTDIR}/tictoc/Timer.o tictoc/Timer.cpp
+
+${OBJECTDIR}/NameValueMetaData.o: NameValueMetaData.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2  -MMD -MP -MF $@.d -o ${OBJECTDIR}/NameValueMetaData.o NameValueMetaData.cpp
 
 ${OBJECTDIR}/tictoc/tictoc.o: tictoc/tictoc.cpp 
 	${MKDIR} -p ${OBJECTDIR}/tictoc

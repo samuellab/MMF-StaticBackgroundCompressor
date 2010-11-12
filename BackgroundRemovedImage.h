@@ -33,7 +33,7 @@ public:
         return this->metadata;
     }
 
-    static const int headerSizeInBytes = 256;
+    static const int headerSizeInBytes = 1024;
 
     static inline int bytesPerPixel(const IplImage *src) {
         switch (src->depth) {

@@ -43,6 +43,8 @@
     <itemPath>LinearStackCompressor.h</itemPath>
     <itemPath>MightexMetaData.cpp</itemPath>
     <itemPath>MightexMetaData.h</itemPath>
+    <itemPath>NameValueMetaData.cpp</itemPath>
+    <itemPath>NameValueMetaData.h</itemPath>
     <itemPath>StackReader.cpp</itemPath>
     <itemPath>StackReader.h</itemPath>
     <itemPath>StaticBackgroundCompressor.cpp</itemPath>

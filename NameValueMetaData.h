@@ -13,13 +13,15 @@
 
 class NameValueMetaData : public ImageMetaData{
 public:
+    static const unsigned long IdCode = 0xc15ac674; //CRC32 hash of "NameValueMetaData" from http://www.fileformat.info/tool/hash.htm?text=NameValueMetaData
     NameValueMetaData();
    virtual ~NameValueMetaData();
-    virtual void toDisk (std::ofstream &os)const;
+    virtual void toDisk (std::ofstream &os) const;
     virtual std::string saveDescription ()const;
     virtual int sizeOnDisk ()const;
-    virtual ~ImageMetaData() {};
-    virtual unsigned long idCode()const;
+    virtual unsigned long idCode()const {
+        return IdCode;
+    }
     virtual std::map<std::string, double> getFieldNamesAndValues(void)const;
 
     virtual void addData (std::string name, double value);
@@ -27,6 +29,8 @@ public:
     virtual void replaceData (std::string name, double value);
 
     virtual NameValueMetaData *copy() const;
+
+    static NameValueMetaData *fromFile (std::ifstream &is);
 protected:
     std::map<std::string, double> data;
 
