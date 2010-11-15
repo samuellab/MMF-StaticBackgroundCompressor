@@ -57,13 +57,16 @@ void LinearStackCompressor::newFrame(const IplImage* im, ImageMetaData *metadata
     int maxCycles = (int) 1E9; //just so it doesn't hang
     Timer tim = Timer();
     tim.start();
+
+    IplImage *imcpy = cvCloneImage(im);
     while (lockActiveStack && --maxCycles > 0) {
         //intentionally blank
     }
   //  cout << "lockActiveStack = " << lockActiveStack << "; processing = " << processing << "\n";
 
+
     lockActiveStack = true;
-    addFrameToStack(im, metadata);
+    addFrameToStack(&imcpy, metadata);
     lockActiveStack = false;
 
     if (recordingState == recording) {
@@ -87,7 +90,7 @@ void LinearStackCompressor::newFrame(const IplImage* im, ImageMetaData *metadata
     }
 }
 
-void LinearStackCompressor::addFrameToStack(const IplImage* im, ImageMetaData *metadata) {
+void LinearStackCompressor::addFrameToStack(IplImage **im, ImageMetaData *metadata) {
     if (activeStack == NULL) {
         createStack();
     }
@@ -102,11 +105,12 @@ void LinearStackCompressor::addFrameToStack(const IplImage* im, ImageMetaData *m
         activeStack->addFrame(im, metadata);
     } else {
         if (recordingState == updatingBackground) {
-            activeStack->updateBackground(im);
+            activeStack->updateBackground(*im);            
         }
         if (metadata != NULL) {
             delete metadata;
         }
+        cvReleaseImage(im);
     }
 }
 

@@ -29,6 +29,8 @@ public:
     virtual void restoreImage (IplImage **dst);
     virtual void annotateImage (IplImage *dst, CvScalar color = CV_RGB(255,0,0), int thickness = 2);
 
+    virtual int numRegions() const;
+
     const ImageMetaData *getMetaData() {
         return this->metadata;
     }

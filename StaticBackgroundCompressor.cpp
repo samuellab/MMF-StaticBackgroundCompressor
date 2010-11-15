@@ -14,6 +14,7 @@
 #include "cv.h"
 #include "highgui.h"
 #include "BackgroundRemovedImageLoader.h"
+#include "StackReader.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -75,12 +76,17 @@ void StaticBackgroundCompressor::updateBackground(const IplImage* im) {
 
 void StaticBackgroundCompressor::addFrame(const IplImage* im, ImageMetaData *metadata) {
     IplImage *imcpy = cvCloneImage(im);
-    imsToProcess.insert(imsToProcess.begin(), InputImT(imcpy,metadata));
+    addFrame(&imcpy, metadata);
+}
+
+void StaticBackgroundCompressor::addFrame(IplImage** im, ImageMetaData* metadata) {
+    imsToProcess.insert(imsToProcess.begin(), InputImT(*im,metadata));
     if (updateBackgroundFrameInterval > 0 && updateCount == 0) {
-        updateBackground(im);
+        updateBackground(*im);
         updateCount = updateBackgroundFrameInterval;
     }
     --updateCount;
+    *im = NULL;
 }
 
 int StaticBackgroundCompressor::processFrame() {
@@ -302,4 +308,12 @@ const ImageMetaData *StaticBackgroundCompressor::getMetaData(int frameNumber) {
         return NULL;
     }
     return brim->getMetaData();
+}
+
+int StaticBackgroundCompressor::numRegionsInFrame(int frameNum) const {
+    if (frameNum < 0 || frameNum >= bri.size()) {
+        return -1;
+    }
+    const BackgroundRemovedImage *brim = bri.at(frameNum);
+    return brim->numRegions();
 }

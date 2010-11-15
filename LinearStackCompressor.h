@@ -68,7 +68,7 @@ protected:
     std::string stacksavedescription;
 
     virtual void createStack();
-    virtual void addFrameToStack(const IplImage *im, ImageMetaData *metadata);
+    virtual void addFrameToStack(IplImage **im, ImageMetaData *metadata);
     virtual bool compressStack();
     virtual bool writeFinishedStack();
     virtual void setCompressionStack();

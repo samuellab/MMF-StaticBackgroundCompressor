@@ -348,3 +348,7 @@ std::string BackgroundRemovedImage::headerDescription() {
     }
     return os.str();
 }
+
+int BackgroundRemovedImage::numRegions() const {
+    return differencesFromBackground.size();
+}

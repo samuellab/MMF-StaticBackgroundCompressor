@@ -251,10 +251,11 @@ ExtraDataWriter *StackReader::getSupplementalData() {
         setSBC(frameNum);
         const ImageMetaData *imd = sbc->getMetaData(frameNum-startFrame);
         edw->goToFrame(frameNum);
-        edw->addElement(string("FrameNumber"), (double) frameNum);
         if (imd != NULL) {
             edw->addElements(imd->getFieldNamesAndValues());
         }
+        edw->addElement(string("FrameNumber"), (double) frameNum);
+        edw->addElement(string("NumberOfRegionsDiffFromBackground"), (double) sbc->numRegionsInFrame(frameNum-startFrame));
     }
     return edw;
 }

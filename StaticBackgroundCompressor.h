@@ -21,7 +21,13 @@ public:
 
     static const int headerSizeInBytes = 512;
 
+    /*
+     * use addFrame (const IplImage *im, ...) to add an image to the stack: the image will be copied internally
+     * use addFrame (IplImage **im,...) to add an image to the stack; im will be added directly and then set to NULL,
+     * signifying that you are no longer allowed to change or required to free im
+     */
     virtual void addFrame (const IplImage *im, ImageMetaData *metadata = NULL);
+    virtual void addFrame (IplImage **im, ImageMetaData *metadata = NULL);
     virtual int processFrame();
     virtual void processFrames();
     virtual void calculateBackground();
@@ -52,6 +58,8 @@ public:
     virtual void copyBackground(IplImage **dst);
     virtual void reconstructFrame (int frameNum, IplImage **dst);
     virtual void annotatedFrame (int frameNum, IplImage **buffer, IplImage **annotatedImage);
+
+    int numRegionsInFrame (int frameNum) const;
 
     virtual void playMovie (char *windowName = NULL);
 
