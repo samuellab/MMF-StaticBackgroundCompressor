@@ -20,7 +20,7 @@ using namespace std;
 
 static void writeImageData (ofstream &os, IplImage *im);
 static IplImage *readImageData (ifstream &is, int width, int height, int depth, int nChannels);
-
+static ofstream logkludge("c:\\brilogstream");
 BackgroundRemovedImage::BackgroundRemovedImage() {
     init();
 }
@@ -62,8 +62,9 @@ BackgroundRemovedImage::BackgroundRemovedImage(IplImage* src, const IplImage* ba
     this->threshBelowBackground = threshBelowBackground;
     this->lgDimMinSize = lgDimMinSize;
     this->smallDimMinSize = smallDimMinSize;
-
+    logkludge << "entered extract differences" << endl<< flush;
     extractDifferences(src, bwbuffer, srcbuffer1, srcbuffer2);
+    logkludge << "exited extrac differences" << endl<<flush;
 }
 
 void BackgroundRemovedImage::init() {
@@ -101,7 +102,7 @@ void BackgroundRemovedImage::extractDifferences(IplImage* src, IplImage* bwbuffe
              cvSetImageROI(srcbuffer2, cvGetImageROI(src));
         }
     }
-
+    logkludge << "test point 1 in extract differences" << endl << flush;
     //compare image to background and find differences
     if (threshAboveBackground <= 0 && threshBelowBackground <= 0) {
         cvCmp (src, backgroundIm, bwbuffer, CV_CMP_NE);
@@ -118,8 +119,12 @@ void BackgroundRemovedImage::extractDifferences(IplImage* src, IplImage* bwbuffe
         cvNot(bwbuffer, bwbuffer);
     }
 
+    logkludge <<  "test point 2 in extract differences" << endl << flush;
     //turn those differences into mini images
     extractBlobs (src, bwbuffer);
+
+     logkludge <<  "test point 3 in extract differences" << endl << flush;
+
 
     if (bwfreewhendone) {
         cvReleaseImage(&bwbuffer);
@@ -144,18 +149,21 @@ void BackgroundRemovedImage::extractBlobs(IplImage *src, IplImage *mask) {
     CvPoint offset = (mask->roi == NULL) ? cvPoint(0,0) : cvPoint(mask->roi->xOffset, mask->roi->yOffset);
 
     IplImage *copy;
-    CvRect r = cvBoundingRect(contour, 0);
     CvRect roi = cvGetImageROI(src);
-   // subIm = cvCreateImageHeader(cvSize(r.width, r.height), src->depth, src->nChannels);
-    for ( ; contour != NULL; contour = contour->h_next) {
-        r = cvBoundingRect(contour, 0);
-        if (r.width >= smallDimMinSize && r.height >= smallDimMinSize && (r.width >= lgDimMinSize || r.height >= lgDimMinSize)) {
-            cvSetImageROI(src, r);
-            copy = cvCreateImage(cvSize(r.width, r.height), src->depth, src->nChannels);
-            cvCopy(src, copy);
-            r.x += offset.x;
-            r.y += offset.y;
-            differencesFromBackground.push_back(pair<CvRect, IplImage *> (r, copy));
+    if (contour != NULL) {
+        CvRect r = cvBoundingRect(contour, 0);
+        
+       // subIm = cvCreateImageHeader(cvSize(r.width, r.height), src->depth, src->nChannels);
+        for ( ; contour != NULL; contour = contour->h_next) {
+            r = cvBoundingRect(contour, 0);
+            if (r.width >= smallDimMinSize && r.height >= smallDimMinSize && (r.width >= lgDimMinSize || r.height >= lgDimMinSize)) {
+                cvSetImageROI(src, r);
+                copy = cvCreateImage(cvSize(r.width, r.height), src->depth, src->nChannels);
+                cvCopy(src, copy);
+                r.x += offset.x;
+                r.y += offset.y;
+                differencesFromBackground.push_back(pair<CvRect, IplImage *> (r, copy));
+            }
         }
     }
     if (freems) {
