@@ -20,7 +20,7 @@ using namespace std;
 
 static void writeImageData (ofstream &os, IplImage *im);
 static IplImage *readImageData (ifstream &is, int width, int height, int depth, int nChannels);
-static ofstream logkludge("c:\\brilogstream");
+//static ofstream logkludge("c:\\brilogstream");
 BackgroundRemovedImage::BackgroundRemovedImage() {
     init();
 }
@@ -62,9 +62,9 @@ BackgroundRemovedImage::BackgroundRemovedImage(IplImage* src, const IplImage* ba
     this->threshBelowBackground = threshBelowBackground;
     this->lgDimMinSize = lgDimMinSize;
     this->smallDimMinSize = smallDimMinSize;
-    logkludge << "entered extract differences" << endl<< flush;
+    // logkludge << "entered extract differences" << endl<< flush;
     extractDifferences(src, bwbuffer, srcbuffer1, srcbuffer2);
-    logkludge << "exited extrac differences" << endl<<flush;
+    // logkludge << "exited extrac differences" << endl<<flush;
 }
 
 void BackgroundRemovedImage::init() {
@@ -102,7 +102,7 @@ void BackgroundRemovedImage::extractDifferences(IplImage* src, IplImage* bwbuffe
              cvSetImageROI(srcbuffer2, cvGetImageROI(src));
         }
     }
-    logkludge << "test point 1 in extract differences" << endl << flush;
+    // logkludge << "test point 1 in extract differences" << endl << flush;
     //compare image to background and find differences
     if (threshAboveBackground <= 0 && threshBelowBackground <= 0) {
         cvCmp (src, backgroundIm, bwbuffer, CV_CMP_NE);
@@ -119,11 +119,11 @@ void BackgroundRemovedImage::extractDifferences(IplImage* src, IplImage* bwbuffe
         cvNot(bwbuffer, bwbuffer);
     }
 
-    logkludge <<  "test point 2 in extract differences" << endl << flush;
+    // logkludge <<  "test point 2 in extract differences" << endl << flush;
     //turn those differences into mini images
     extractBlobs (src, bwbuffer);
 
-     logkludge <<  "test point 3 in extract differences" << endl << flush;
+     // logkludge <<  "test point 3 in extract differences" << endl << flush;
 
 
     if (bwfreewhendone) {
