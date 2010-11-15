@@ -5,6 +5,7 @@
    <Item Name="StackReaderWrapper.dll" Type="Document" URL="../StackReaderWrapper.dll"/>
    <Item Name="compress Image Stack.vi" Type="VI" URL="VIs/compress Image Stack.vi"/>
    <Item Name="create Stack Reader.vi" Type="VI" URL="VIs/create Stack Reader.vi"/>
+   <Item Name="create Supplemental Data File.vi" Type="VI" URL="VIs/create Supplemental Data File.vi"/>
    <Item Name="destroy Stack Reader.vi" Type="VI" URL="VIs/destroy Stack Reader.vi"/>
    <Item Name="get Background.vi" Type="VI" URL="VIs/get Background.vi"/>
    <Item Name="get Frame.vi" Type="VI" URL="VIs/get Frame.vi"/>

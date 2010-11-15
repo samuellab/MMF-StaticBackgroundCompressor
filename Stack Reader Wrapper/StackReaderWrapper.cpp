@@ -77,6 +77,14 @@ int getTotalFrames(void* SR) {
 
 }
 
+void createSupplementalDataFile (void *SR, const char *fname) {
+    StackReader *sr = (StackReader *) SR;
+    if (sr == NULL || !sr->dataFileOk()) {
+        return;
+    }
+    sr->createSupplementalDataFile(fname);
+}
+
 void compressImageStack(const char* fstub, const char* extension, const char* outname, int startFrame, int endFrame, int diffThresh, int smallDimMinSize, int lgDimMinSize) {
 //    string stub(fstub);
     //ofstream log("c:\\cislog.txt");
