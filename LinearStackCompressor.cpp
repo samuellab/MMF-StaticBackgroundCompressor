@@ -224,7 +224,9 @@ bool LinearStackCompressor::readyForWriting(StaticBackgroundCompressor* sc) {
 }
 
 void LinearStackCompressor::openOutputFile() {
-    LinearStackCompressor::closeOutputFile();
+    if (outfile != NULL) {
+        LinearStackCompressor::closeOutputFile();
+    }
     if (!fname.empty()) {
         outfile = new ofstream (fname.c_str(),ofstream::binary);
         writeHeader();
