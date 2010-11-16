@@ -248,7 +248,20 @@ void WindowsThreadStackCompressor::finishRecording() {
     }
     LeaveCriticalSection(&activeStackCS);
     /******************************************************************/
-    while (stacksLeftToCompress || stacksLeftToWrite) {
+
+    //wait for active stacks to empty out --
+    //if it doesn't after ~10 seconds, then we'll check to see if anything is still be written
+    bool done = false;
+    for (int j = 0; j < 100 && !done; ++j) {
+         /*****************activeStackCS*********************/
+        EnterCriticalSection(&imageStacksCS);
+        done = imageStacks.empty();
+        LeaveCriticalSection(&imageStacksCS);
+        /****************************************************/
+        Sleep(100);
+    }
+    while (!done) {
+        done = stacksLeftToCompress || stacksLeftToWrite;
         logkludge << "stacks left to compress = " << stacksLeftToCompress << "\t stacks left to write = " << stacksLeftToWrite << endl;
         Sleep(100);
     }
