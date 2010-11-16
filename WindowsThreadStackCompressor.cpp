@@ -16,6 +16,8 @@
 #include <sstream>
 using namespace std;
 
+static ofstream logkludge("c:\\wtsckludge.txt");
+
 WindowsThreadStackCompressor::WindowsThreadStackCompressor() {
     init();
 }
@@ -24,14 +26,14 @@ WindowsThreadStackCompressor::WindowsThreadStackCompressor(const WindowsThreadSt
 }
 
 WindowsThreadStackCompressor::~WindowsThreadStackCompressor() {
-    //cout << "entered destructor" <<endl;
+    logkludge << "entered destructor" <<endl;
     finishRecording();
-    //cout << "finished recording" << endl;
+    logkludge << "finished recording" << endl;
     writingThreadActive = false;
     compressionThreadActive = false;
 
     closeOutputFile();
-    //cout << "output file closed" <<endl;
+    logkludge << "output file closed" <<endl;
     int timeout = 2000;
     if (compressionThread != NULL) {
         WaitForSingleObject(compressionThread, timeout);
@@ -80,7 +82,7 @@ int WindowsThreadStackCompressor::startThreads() {
     if (writingThread == NULL) {
         writingThread = (HANDLE) _beginthreadex(NULL, 0, WindowsThreadStackCompressor::startWritingThread, this, 0, NULL);
     }
-    //cout << "started threads " << " compressionThread = " << (unsigned long) compressionThread << " writingThread = " << (unsigned long) writingThread << endl;
+    logkludge << "started threads " << " compressionThread = " << (unsigned long) compressionThread << " writingThread = " << (unsigned long) writingThread << endl;
     if (compressionThread == NULL || writingThread == NULL) {
         return -1;
     }
@@ -89,7 +91,7 @@ int WindowsThreadStackCompressor::startThreads() {
 
 void WindowsThreadStackCompressor::newFrame(const IplImage* im, ImageMetaData *metadata) {
 
-  //  //cout << "new frame called" << endl;
+  //  logkludge << "new frame called" << endl;
     IplImage *imcpy = cvCloneImage(im);
    // //cout << "imcopied" <<endl;
     /*****************activeStackCS*****************/
@@ -150,13 +152,13 @@ unsigned __stdcall WindowsThreadStackCompressor::compressionThreadFunction() {
          if (stacksLeftToCompress) {
              EnterCriticalSection(&compressingStackCS);
              stackBeingCompressed->processFrame();
-             //cout << ++numcompressed << " processed" << endl;
+             logkludge << ++numcompressed << " processed" << endl;
              LeaveCriticalSection(&compressingStackCS);
          } else {
              Sleep((int) (1000/frameRate));
          }
     }
-    //cout << "leaving compression thread";
+    logkludge << "leaving compression thread";
     return 0;
 }
 
@@ -166,7 +168,7 @@ unsigned __stdcall WindowsThreadStackCompressor::startCompressionThread(void* pt
 }
 
 unsigned __stdcall WindowsThreadStackCompressor::writingThreadFunction() {
-    //cout << "started writing thread" << endl;
+    logkludge << "started writing thread" << endl;
     while (writingThreadActive) {
         EnterCriticalSection(&writingStackCS);
 
@@ -186,11 +188,11 @@ unsigned __stdcall WindowsThreadStackCompressor::writingThreadFunction() {
                openOutputFile();
             }
             if (outfile == NULL) {
-               //cout << "error opening output file" << endl;
+               logkludge << "error opening output file" << endl;
                return 1;
             }
 
-            //cout << "writing a stack" << endl;
+            logkludge << "writing a stack" << endl;
            stackBeingWritten->toDisk(*outfile);
 
            LeaveCriticalSection(&outfileCS);
@@ -215,7 +217,7 @@ unsigned __stdcall WindowsThreadStackCompressor::writingThreadFunction() {
         }
         
     }
-    //cout << "leaving writing thread" << endl;
+    logkludge << "leaving writing thread" << endl;
     return 0;
 }
 unsigned __stdcall WindowsThreadStackCompressor::startWritingThread(void* ptr) {
@@ -240,7 +242,7 @@ void WindowsThreadStackCompressor::finishRecording() {
     }
     LeaveCriticalSection(&activeStackCS);
     while (stacksLeftToCompress || stacksLeftToWrite) {
-        //cout << "stacks left to compress = " << stacksLeftToCompress << "\t stacks left to write = " << stacksLeftToWrite << endl;
+        logkludge << "stacks left to compress = " << stacksLeftToCompress << "\t stacks left to write = " << stacksLeftToWrite << endl;
         Sleep(100);
     }
 }
