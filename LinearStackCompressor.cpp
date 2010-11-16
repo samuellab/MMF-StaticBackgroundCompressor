@@ -224,7 +224,7 @@ bool LinearStackCompressor::readyForWriting(StaticBackgroundCompressor* sc) {
 }
 
 void LinearStackCompressor::openOutputFile() {
-    closeOutputFile();
+    LinearStackCompressor::closeOutputFile();
     if (!fname.empty()) {
         outfile = new ofstream (fname.c_str(),ofstream::binary);
         writeHeader();
@@ -248,14 +248,12 @@ void LinearStackCompressor::setOutputFileName(const char* fname) {
 }
 
 void LinearStackCompressor::stopRecording() {
-    if (recording) {
-        finishRecording();
-    }
     recordingState = idle;
+    finishRecording();
 }
 
 void LinearStackCompressor::goIdle() {
-    finishRecording();
+    stopRecording();
 }
 
 void LinearStackCompressor::startUpdatingBackground() {

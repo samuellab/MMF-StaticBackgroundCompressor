@@ -170,19 +170,22 @@ unsigned __stdcall WindowsThreadStackCompressor::startCompressionThread(void* pt
 unsigned __stdcall WindowsThreadStackCompressor::writingThreadFunction() {
     logkludge << "started writing thread" << endl;
     while (writingThreadActive) {
+        /**************writingStackCS, imageStacksCS******************/
         EnterCriticalSection(&writingStackCS);
-
         EnterCriticalSection(&imageStacksCS);
         setWritingStack();
         LeaveCriticalSection(&imageStacksCS);
         LeaveCriticalSection(&writingStackCS);
+        /*************************************************************/
 
         stacksLeftToWrite = (stackBeingWritten != NULL);
         if (stacksLeftToWrite) {
+            /**********************writingStackCS******************/
             EnterCriticalSection(&writingStackCS);
             if (stacksavedescription.empty()) {
                 stacksavedescription = stackBeingWritten->saveDescription();
             }
+            /*********************outfileCS***********************/
             EnterCriticalSection(&outfileCS);
             if (outfile == NULL) {
                openOutputFile();
@@ -196,8 +199,9 @@ unsigned __stdcall WindowsThreadStackCompressor::writingThreadFunction() {
            stackBeingWritten->toDisk(*outfile);
 
            LeaveCriticalSection(&outfileCS);
+           /*******************-outfile, writing still active****************/
 
-           /*************imageStacksCS**************************/
+           /*************imageStacksCS (+writing)**************************/
            EnterCriticalSection(&imageStacksCS);
            vector<StaticBackgroundCompressor *>::iterator it;
            it = find(imageStacks.begin(), imageStacks.end(), stackBeingWritten);
@@ -208,9 +212,8 @@ unsigned __stdcall WindowsThreadStackCompressor::writingThreadFunction() {
            delete stackBeingWritten;
            stackBeingWritten = NULL;
            LeaveCriticalSection(&imageStacksCS);
-           /******************************************************/
            LeaveCriticalSection(&writingStackCS);
-           
+           /******************************************************/
         }else {
 //            cout << "writing asleep\n"<<endl;
              Sleep((int) (1000/frameRate));
@@ -228,19 +231,23 @@ unsigned __stdcall WindowsThreadStackCompressor::startWritingThread(void* ptr) {
 
 void WindowsThreadStackCompressor::finishRecording() {
     recordingState = idle;
+    /*****************activeStackCS*********************/
     EnterCriticalSection(&activeStackCS);
     recordingState = idle;
     if (activeStack != NULL) {
         if (activeStack->numToProccess() > 0) {
+            /********imageStackCS (+activeStack)*********/
             EnterCriticalSection(&imageStacksCS);
             imageStacks.push_back(activeStack);
             LeaveCriticalSection(&imageStacksCS);
+            /**********-imageStack (activeStack still on)*************/
         } else {
             delete activeStack;
         }
         activeStack = NULL;
     }
     LeaveCriticalSection(&activeStackCS);
+    /******************************************************************/
     while (stacksLeftToCompress || stacksLeftToWrite) {
         logkludge << "stacks left to compress = " << stacksLeftToCompress << "\t stacks left to write = " << stacksLeftToWrite << endl;
         Sleep(100);
