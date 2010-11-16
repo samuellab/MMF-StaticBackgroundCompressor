@@ -20,7 +20,7 @@ using namespace std;
 
 static void writeImageData (ofstream &os, IplImage *im);
 static IplImage *readImageData (ifstream &is, int width, int height, int depth, int nChannels);
-//static ofstream logkludge("c:\\brilogstream");
+static ofstream logkludge("c:\\brilogstream");
 BackgroundRemovedImage::BackgroundRemovedImage() {
     init();
 }
@@ -118,6 +118,7 @@ void BackgroundRemovedImage::extractDifferences(IplImage* src, IplImage* bwbuffe
         cvInRange(src, srcbuffer1, srcbuffer2, bwbuffer);
         cvNot(bwbuffer, bwbuffer);
     }
+    logkludge << cvSumPixels(bwbuffer) << "nonzero pixels" <<endl;
 
     // logkludge <<  "test point 2 in extract differences" << endl << flush;
     //turn those differences into mini images
@@ -143,10 +144,12 @@ void BackgroundRemovedImage::extractBlobs(IplImage *src, IplImage *mask) {
     if (freems) {
         ms = cvCreateMemStorage(src->width*src->depth); //big block to save having to reallocate later
     }
+    logkludge << "created memstorage at " << (unsigned long) ms << endl;
     CvSeq *contour;
     cvSetImageROI(mask, cvGetImageROI(src));
     cvFindContours(mask, ms, &contour, sizeof(CvContour), CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE, cvPoint(0,0));
     CvPoint offset = (mask->roi == NULL) ? cvPoint(0,0) : cvPoint(mask->roi->xOffset, mask->roi->yOffset);
+    logkludge << "contour = " << (unsigned long) contour << endl;
 
     IplImage *copy;
     CvRect roi = cvGetImageROI(src);
