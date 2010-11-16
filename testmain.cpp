@@ -12,6 +12,7 @@
 #include "LinearStackCompressor.h"
 #include "BlankMetaData.h"
 #include "StackReader.h"
+#include "WindowsThreadStackCompressor.h"
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -24,6 +25,7 @@ using namespace std;
 void createTestStack();
 void loadAndPlayTestStack() ;
 void testLSC();
+void testWTSC();
 
 void testSR();
 int main(int argc, char** argv) {
@@ -31,7 +33,8 @@ int main(int argc, char** argv) {
   //loadAndPlayTestStack();
  // testLSC();
 
-    testSR();
+    testWTSC();
+  //  testSR();
     return 0;
 }
 void loadAndPlayTestStack() {
@@ -123,3 +126,31 @@ void testLSC() {
     
 }
 
+void testWTSC() {
+    string stub = "\\\\labnas2\\LarvalCO2\\Image Data\\50 mL CO2 in 2 L air\\20101001\\CS3\\CS3_";
+    WindowsThreadStackCompressor lsc;
+//    StaticBackgroundCompressor sbc;
+ //   sbc.setThresholds(0, 5);
+    lsc.setThresholds(0, 5, 2, 3);
+    lsc.setIntervals(90, 1);
+    lsc.setOutputFileName("c:\\teststack.mmf");
+    lsc.setFrameRate(5);
+    int nframes = 1000;
+    lsc.startThreads();
+    lsc.startRecording(nframes);
+    stringstream s;
+    for (int j = 0; j < nframes; ++j) {
+        s.str("");
+        s << stub << j << ".jpg";
+        IplImage *im = cvLoadImage(s.str().c_str(), 0);
+        assert(im != NULL);
+        cout << "loaded image " << j <<"\n";
+        BlankMetaData *bmd = new BlankMetaData;
+        lsc.newFrame(im, bmd);
+        cvReleaseImage(&im);
+   //     cout << "added image to stack\n";
+    }
+
+    lsc.stopRecording();
+
+}

@@ -34,6 +34,7 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/StackReader.o \
+	${OBJECTDIR}/WindowsThreadStackCompressor.o \
 	${OBJECTDIR}/BackgroundRemovedImage.o \
 	${OBJECTDIR}/ExtraDataWriter.o \
 	${OBJECTDIR}/tictoc/Timer.o \
@@ -63,7 +64,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-LNecessary\ Libraries\ and\ Includes/CV/lib -lcv -lhighgui -lcxcore
+LDLIBSOPTIONS=-L. -LNecessary\ Libraries\ and\ Includes/CV/lib -lcv -lcxcore -lhighgui
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -78,6 +79,11 @@ ${OBJECTDIR}/StackReader.o: StackReader.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/StackReader.o StackReader.cpp
+
+${OBJECTDIR}/WindowsThreadStackCompressor.o: WindowsThreadStackCompressor.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/WindowsThreadStackCompressor.o WindowsThreadStackCompressor.cpp
 
 ${OBJECTDIR}/BackgroundRemovedImage.o: BackgroundRemovedImage.cpp 
 	${MKDIR} -p ${OBJECTDIR}

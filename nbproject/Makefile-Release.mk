@@ -34,6 +34,7 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/StackReader.o \
+	${OBJECTDIR}/WindowsThreadStackCompressor.o \
 	${OBJECTDIR}/BackgroundRemovedImage.o \
 	${OBJECTDIR}/ExtraDataWriter.o \
 	${OBJECTDIR}/tictoc/Timer.o \
@@ -77,6 +78,11 @@ ${OBJECTDIR}/StackReader.o: StackReader.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -O2  -MMD -MP -MF $@.d -o ${OBJECTDIR}/StackReader.o StackReader.cpp
+
+${OBJECTDIR}/WindowsThreadStackCompressor.o: WindowsThreadStackCompressor.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2  -MMD -MP -MF $@.d -o ${OBJECTDIR}/WindowsThreadStackCompressor.o WindowsThreadStackCompressor.cpp
 
 ${OBJECTDIR}/BackgroundRemovedImage.o: BackgroundRemovedImage.cpp 
 	${MKDIR} -p ${OBJECTDIR}

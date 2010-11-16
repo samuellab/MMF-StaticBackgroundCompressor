@@ -56,6 +56,9 @@ protected:
     std::vector<StaticBackgroundCompressor *> imageStacks;
     StaticBackgroundCompressor *activeStack;
     StaticBackgroundCompressor *stackBeingCompressed;
+
+    StaticBackgroundCompressor *stackBeingWritten; //not used by lsc right now
+
     double frameRate;
     int threshBelowBackground;
     int threshAboveBackground;
@@ -72,11 +75,11 @@ protected:
     virtual bool compressStack();
     virtual bool writeFinishedStack();
     virtual void setCompressionStack();
+    virtual void setWritingStack(); //not used by lsc right now
     virtual bool readyForCompression (StaticBackgroundCompressor *sc);
     virtual bool readyForWriting (StaticBackgroundCompressor *sc);
     virtual void finishRecording ();
 
-    virtual void init();
     virtual void writeHeader();
     virtual std::string headerDescription();
     virtual inline unsigned long idCode () {
@@ -84,6 +87,7 @@ protected:
     }
 private:
      LinearStackCompressor(const LinearStackCompressor& orig);
+     void init();
 };
 
 #endif	/* LINEARSTACKCOMPRESSOR_H */

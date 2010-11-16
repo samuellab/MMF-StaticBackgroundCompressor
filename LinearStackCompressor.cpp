@@ -44,6 +44,7 @@ void LinearStackCompressor::init() {
     outfile = NULL;
     activeStack = NULL;
     stackBeingCompressed = NULL;
+    stackBeingWritten = NULL;
     frameRate = 1;
     threshBelowBackground = 5;
     threshAboveBackground = 5;
@@ -297,4 +298,15 @@ string LinearStackCompressor::saveDescription() {
     os << "Set of Image Stacks representing a movie. Beginning of file is a header, with this format:\n" << headerDescription();
     os << "Header is followed by a set of common background image stacks, with the following format:\n" << stacksavedescription;
     return os.str();
+}
+
+void LinearStackCompressor::setWritingStack() {
+   vector<StaticBackgroundCompressor *>::iterator it;
+   for (it = imageStacks.begin(); it != imageStacks.end(); ++it) {
+       if (readyForWriting(*it)) {
+           stackBeingWritten = *it;
+           return;
+       }
+   }
+   stackBeingWritten = NULL;
 }
