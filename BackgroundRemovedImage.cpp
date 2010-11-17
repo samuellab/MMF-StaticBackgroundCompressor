@@ -41,7 +41,7 @@ BackgroundRemovedImage::~BackgroundRemovedImage() {
     }
 }
 
-BackgroundRemovedImage::BackgroundRemovedImage(IplImage* src, const IplImage* bak, IplImage* bwbuffer, IplImage* srcbuffer1, IplImage* srcbuffer2, int threshBelowBackground, int threshAboveBackground, int smallDimMinSize, int lgDimMinSize, ImageMetaData* metadata) {
+BackgroundRemovedImage::BackgroundRemovedImage(IplImage* src, const IplImage* bak, int threshBelowBackground, int threshAboveBackground, int smallDimMinSize, int lgDimMinSize, ImageMetaData* metadata) {
     init();
     //source and background must both be single channel arrays
     assert (src != NULL);
@@ -63,7 +63,7 @@ BackgroundRemovedImage::BackgroundRemovedImage(IplImage* src, const IplImage* ba
     this->lgDimMinSize = lgDimMinSize;
     this->smallDimMinSize = smallDimMinSize;
     // logkludge << "entered extract differences" << endl<< flush;
-    extractDifferences(src, bwbuffer, srcbuffer1, srcbuffer2);
+    extractDifferences(src);
     // logkludge << "exited extrac differences" << endl<<flush;
 }
 
@@ -77,22 +77,14 @@ void BackgroundRemovedImage::init() {
 }
 
 
-void BackgroundRemovedImage::extractDifferences(IplImage* src, IplImage* bwbuffer, IplImage* srcbuffer1, IplImage* srcbuffer2) {
-    bool bwfreewhendone = (bwbuffer == NULL || bwbuffer->width != src->width || bwbuffer->height != src->height || bwbuffer->depth != IPL_DEPTH_8U);
-
+void BackgroundRemovedImage::extractDifferences(IplImage* src) {
+  //  bool bwfreewhendone = (bwbuffer == NULL || bwbuffer->width != src->width || bwbuffer->height != src->height || bwbuffer->depth != IPL_DEPTH_8U);
+    IplImage *bwbuffer = NULL, *srcbuffer1 = NULL, *srcbuffer2 = NULL;
     //allocate storage if necessary
-    if (bwfreewhendone) {
-        bwbuffer = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 1);
-    }
-    bool src1freewhendone = (threshBelowBackground > 0 && (srcbuffer1 == NULL || srcbuffer1->width != src->width || srcbuffer1->height != src->height || srcbuffer1->depth != src->depth));
-    if (src1freewhendone) {
-        srcbuffer1 = cvCreateImage(cvGetSize(src), src->depth, 1);
-    }
-    bool src2freewhendone = ((threshBelowBackground > 0 || threshAboveBackground > 0) && (srcbuffer2 == NULL || srcbuffer2->width != src->width || srcbuffer2->height != src->height || srcbuffer2->depth != src->depth));
-    if (src2freewhendone) {
-        srcbuffer2 = cvCreateImage(cvGetSize(src), src->depth, 1);
-    }
-
+    bwbuffer = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 1);
+    srcbuffer1 = cvCreateImage(cvGetSize(src), src->depth, 1);
+    srcbuffer2 = cvCreateImage(cvGetSize(src), src->depth, 1);
+    
     if (src->roi != NULL) {
         cvSetImageROI(bwbuffer, cvGetImageROI(src));
         if (srcbuffer1 != NULL) {
@@ -108,13 +100,11 @@ void BackgroundRemovedImage::extractDifferences(IplImage* src, IplImage* bwbuffe
         cvCmp (src, backgroundIm, bwbuffer, CV_CMP_NE);
     } else {
         //turn < bak into < bak + 1 which approximates <= bax
+        threshAboveBackground = threshAboveBackground < 0 ? 0 : threshAboveBackground;
+        threshBelowBackground = threshBelowBackground < 0 ? 0 : threshBelowBackground;
         cvAddS (backgroundIm, cvScalarAll(threshAboveBackground + 1), srcbuffer2);
-        if (threshBelowBackground > 0) {
-            cvSubS(backgroundIm, cvScalarAll(threshBelowBackground), srcbuffer1);
-        } else {
-            srcbuffer1 = const_cast <IplImage *> (backgroundIm);
-            src1freewhendone = false;
-        }
+        cvSubS (backgroundIm, cvScalarAll(threshBelowBackground), srcbuffer1);
+        
         cvInRange(src, srcbuffer1, srcbuffer2, bwbuffer);
         cvNot(bwbuffer, bwbuffer);
     }
@@ -127,15 +117,9 @@ void BackgroundRemovedImage::extractDifferences(IplImage* src, IplImage* bwbuffe
      // logkludge <<  "test point 3 in extract differences" << endl << flush;
 
 
-    if (bwfreewhendone) {
-        cvReleaseImage(&bwbuffer);
-    }
-    if (src1freewhendone) {
-        cvReleaseImage(&srcbuffer1);
-    }
-    if (src2freewhendone) {
-        cvReleaseImage(&srcbuffer2);
-    }
+    cvReleaseImage(&bwbuffer);
+    cvReleaseImage(&srcbuffer1);
+    cvReleaseImage(&srcbuffer2);
     
 }
 

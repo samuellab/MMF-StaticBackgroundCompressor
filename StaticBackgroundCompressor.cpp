@@ -101,7 +101,7 @@ int StaticBackgroundCompressor::processFrame() {
     imsToProcess.pop_back();
     IplImage *im = nextim.first;
     ImageMetaData *metadata = nextim.second;
-    BackgroundRemovedImage *brim = new BackgroundRemovedImage(im, background, bwbuffer, buffer1, buffer2, threshBelowBackground, threshAboveBackground, smallDimMinSize, lgDimMinSize,  metadata);
+    BackgroundRemovedImage *brim = new BackgroundRemovedImage(im, background, threshBelowBackground, threshAboveBackground, smallDimMinSize, lgDimMinSize,  metadata);
     bri.push_back(brim);
     cvReleaseImage(&im);
     //NB: we do NOT release metadata storage, as this is now background removed images problem
