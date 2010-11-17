@@ -86,6 +86,7 @@ void BackgroundRemovedImage::extractDifferences(IplImage* src) {
     srcbuffer2 = cvCreateImage(cvGetSize(src), src->depth, 1);
     
     if (src->roi != NULL) {
+        logkludge << "src->roi = x,y: " << src->roi->xOffset << "," << src->roi->yOffset << "  w,h: " << src->roi->width << "," << src->roi->height << endl;
         cvSetImageROI(bwbuffer, cvGetImageROI(src));
         if (srcbuffer1 != NULL) {
              cvSetImageROI(srcbuffer1, cvGetImageROI(src));
@@ -94,21 +95,37 @@ void BackgroundRemovedImage::extractDifferences(IplImage* src) {
              cvSetImageROI(srcbuffer2, cvGetImageROI(src));
         }
     }
+
     // logkludge << "test point 1 in extract differences" << endl << flush;
     //compare image to background and find differences
+
+    logkludge << "tab, tbb = " << threshAboveBackground << ", " << threshBelowBackground;
     if (threshAboveBackground <= 0 && threshBelowBackground <= 0) {
         cvCmp (src, backgroundIm, bwbuffer, CV_CMP_NE);
     } else {
         //turn < bak into < bak + 1 which approximates <= bax
         threshAboveBackground = threshAboveBackground < 0 ? 0 : threshAboveBackground;
         threshBelowBackground = threshBelowBackground < 0 ? 0 : threshBelowBackground;
+
+        double bakmin, bakmax, srcmin, srcmax, b1min, b1max, b2min, b2max;
+
         cvAddS (backgroundIm, cvScalarAll(threshAboveBackground + 1), srcbuffer2);
         cvSubS (backgroundIm, cvScalarAll(threshBelowBackground), srcbuffer1);
         
+        cvMinMaxLoc(backgroundIm, &bakmin, &bakmax, NULL, NULL, NULL);
+        cvMinMaxLoc(src, &srcmin, &srcmax, NULL, NULL, NULL);
+        cvMinMaxLoc(srcbuffer1, &b1min, &b1max, NULL, NULL, NULL);
+        cvMinMaxLoc(srcbuffer2, &b2min, &b2max, NULL, NULL, NULL);
+
+        logkludge << "src, bak, lowerbound, upperbound minima " << srcmin << ", " << bakmin << ", " << b1min << ", " << b2min << endl;
+        logkludge << "src, bak, lowerbound, upperbound maxima " << srcmax << ", " << bakmax << ", " << b1max << ", " << b2max << endl;
+        
+
         cvInRange(src, srcbuffer1, srcbuffer2, bwbuffer);
+        logkludge << cvCountNonZero(bwbuffer) << "zero pixels" <<endl;
         cvNot(bwbuffer, bwbuffer);
     }
-    logkludge << cvSumPixels(bwbuffer) << "nonzero pixels" <<endl;
+    logkludge << cvCountNonZero(bwbuffer) << "nonzero pixels" <<endl;
 
     // logkludge <<  "test point 2 in extract differences" << endl << flush;
     //turn those differences into mini images
@@ -339,3 +356,4 @@ std::string BackgroundRemovedImage::headerDescription() {
 int BackgroundRemovedImage::numRegions() const {
     return differencesFromBackground.size();
 }
+
