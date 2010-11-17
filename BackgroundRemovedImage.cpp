@@ -20,7 +20,7 @@ using namespace std;
 
 static void writeImageData (ofstream &os, IplImage *im);
 static IplImage *readImageData (ifstream &is, int width, int height, int depth, int nChannels);
-static ofstream logkludge("c:\\brilogstream");
+static ofstream logkludge("c:\\brilogstream.txt");
 BackgroundRemovedImage::BackgroundRemovedImage() {
     init();
 }
