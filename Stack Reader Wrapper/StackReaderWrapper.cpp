@@ -3,6 +3,7 @@
 #include "highgui.h"
 #include "StackReader.h"
 #include "LinearStackCompressor.h"
+#include "WindowsThreadStackCompressor.h"
 #include "BlankMetaData.h"
 #include <sstream>
 #include <ostream>
@@ -88,11 +89,12 @@ void createSupplementalDataFile (void *SR, const char *fname) {
 void compressImageStack(const char* fstub, const char* extension, const char* outname, int startFrame, int endFrame, int diffThresh, int smallDimMinSize, int lgDimMinSize) {
 //    string stub(fstub);
     //ofstream log("c:\\cislog.txt");
-    LinearStackCompressor lsc;
+    WindowsThreadStackCompressor lsc;
     lsc.setThresholds(0, diffThresh, smallDimMinSize, lgDimMinSize);
     lsc.setIntervals(128, 1);
     lsc.setOutputFileName(outname);
     int nframes = endFrame - startFrame + 1;
+    lsc.startThreads();
     lsc.startRecording(nframes);
     stringstream s;
     string ext(extension);
