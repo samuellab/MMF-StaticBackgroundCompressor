@@ -90,6 +90,7 @@ NameValueMetaData *NameValueMetaData::fromFile(ifstream& is) {
         is.read((char *)&val, sizeof(val));
         nvmd->addData(s,val);
     }
+    return nvmd;
 }
 
 void NameValueMetaData::clear() {

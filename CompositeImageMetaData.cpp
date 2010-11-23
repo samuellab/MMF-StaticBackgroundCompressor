@@ -21,6 +21,8 @@ CompositeImageMetaData::CompositeImageMetaData(const CompositeImageMetaData& ori
 CompositeImageMetaData::~CompositeImageMetaData() {
     for(vector<ImageMetaData *>::iterator it = imd.begin(); it != imd.end(); ++it) {
         if (*it != NULL) {
+          //  cout << "*it = " << (unsigned long) *it << endl;
+          //  cout << "cimd: deleting a " << hex << (*it)->idCode()<<dec << endl;
             delete (*it);
             *it = NULL;
         }
