@@ -66,3 +66,7 @@ std::map<std::string, double> MightexMetaData::getFieldNamesAndValues() const {
     return fnav;
 
 }
+
+TProcessedDataProperty MightexMetaData::getAttributes() const{
+    return attributes;
+}

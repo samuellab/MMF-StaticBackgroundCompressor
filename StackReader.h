@@ -37,6 +37,8 @@ public:
     virtual inline int getTotalFrames () {
         return totalFrames;
     }
+
+    virtual CvRect getLargestROI ();
     
 
 protected:
@@ -54,6 +56,7 @@ protected:
     virtual void parseInputFile();
     virtual void setSBC(int frameNum);
 
+    CvRect validROI;
 private:
       StackReader(const StackReader& orig);
   

@@ -74,6 +74,7 @@ void BackgroundRemovedImage::init() {
     threshAboveBackground = threshBelowBackground = 0;
     smallDimMinSize = 2;
     lgDimMinSize = 3;
+    imOrigin.x = imOrigin.y = 0;
 }
 
 
@@ -303,7 +304,18 @@ void BackgroundRemovedImage::restoreImage(IplImage** dst) {
     if (backgroundIm == NULL) {
         return;
     }
+    setImOriginFromMetaData();
+    IplImage *tmp = NULL;
     assert(dst != NULL);
+    /* if there is an image offset, we restore the image as normal, but then copy
+       into a larger blank image, so first we store the destination in a temporary spot
+       and create a new blank image
+     */
+    if (imOrigin.x != 0 || imOrigin.y != 0) {
+        tmp = *dst;
+        *dst = NULL;
+    }
+    
     if (*dst == NULL || (*dst)->width != backgroundIm->width ||  (*dst)->height != backgroundIm->height ||
              (*dst)->nChannels != backgroundIm->nChannels ||  (*dst)->depth != backgroundIm->depth) {
         if (*dst != NULL) {
@@ -320,15 +332,42 @@ void BackgroundRemovedImage::restoreImage(IplImage** dst) {
         cvCopyImage(it->second, *dst);
     }
     cvSetImageROI(*dst, roi);
+
+    /* If there is an offset, we create storage if necessary
+     * (remember tmp points to *dst)
+     * then zero the image, and copy the bri to the correct place, then delete
+     * the untranslated image
+     */
+    if (imOrigin.x != 0 || imOrigin.y != 0) {
+        if (tmp == NULL || (tmp)->width != (backgroundIm->width + imOrigin.x) ||  (tmp)->height != (backgroundIm->height + imOrigin.y) ||
+             (tmp)->nChannels != backgroundIm->nChannels ||  (tmp)->depth != backgroundIm->depth) {
+            if (tmp != NULL) {
+                cvReleaseImage(&tmp);
+            }
+            tmp = cvCreateImage(cvSize(backgroundIm->width + imOrigin.x, backgroundIm->height + imOrigin.y), backgroundIm->depth, backgroundIm->nChannels);
+        }
+        cvSetZero(tmp);
+        CvRect r;
+        r.x = imOrigin.x; r.y = imOrigin.y; r.width = backgroundIm->width; r.height = backgroundIm->height;
+        cvSetImageROI(tmp, r);
+        cvCopyImage(*dst, tmp);
+        cvReleaseImage(dst);
+        *dst = tmp;
+    }
     
 }
 
 void BackgroundRemovedImage::annotateImage(IplImage* dst, CvScalar color, int thickness) {
     assert(dst != NULL);
+    setImOriginFromMetaData();
     for (vector< pair<CvRect, IplImage *> >::iterator it = differencesFromBackground.begin(); it != differencesFromBackground.end(); ++it) {
         CvRect r = it->first;
-        cvRectangle(dst, cvPoint(r.x, r.y), cvPoint(r.x + r.width, r.y + r.height), color, thickness, 8, 0);
+        cvRectangle(dst, cvPoint(r.x+imOrigin.x, r.y+imOrigin.y), cvPoint(r.x + r.width + imOrigin.x, r.y + r.height + imOrigin.y), color, thickness, 8, 0);
     }
+}
+
+CvPoint BackgroundRemovedImage::getImageOrigin() {
+    return imOrigin;
 }
 
 std::string BackgroundRemovedImage::saveDescription() {
@@ -357,3 +396,41 @@ int BackgroundRemovedImage::numRegions() const {
     return differencesFromBackground.size();
 }
 
+template<class subclass, class superclass> bool BackgroundRemovedImage::isa (const superclass *obj, const subclass * &dst) {
+    dst = dynamic_cast<const subclass *> (obj);
+    return (dst != NULL);
+}
+template<class subclass, class superclass> bool BackgroundRemovedImage::isa (superclass *obj, subclass * &dst) {
+    dst = dynamic_cast<subclass *> (obj);
+    return (dst != NULL);
+}
+template<class subclass, class superclass> bool BackgroundRemovedImage::isa (const superclass *obj) {
+    const subclass *dst;
+    return isa<subclass>(obj, dst);
+}
+
+void BackgroundRemovedImage::setImOriginFromMetaData() {
+    if (metadata == NULL) {
+        return;
+    }
+    const MightexMetaData *md;
+    if (isa<MightexMetaData> (metadata, md)) {
+        TProcessedDataProperty tp = md->getAttributes();
+        imOrigin.x = tp.XStart;
+        imOrigin.y = tp.YStart;
+        return;
+    }
+    CompositeImageMetaData *cmd;
+    if (isa<CompositeImageMetaData>(metadata, cmd)) {
+        vector<const ImageMetaData *> v = cmd->getMetaDataVector();
+        for (vector<const ImageMetaData *>::const_iterator it = v.begin(); it != v.end(); ++it) {
+            
+            if (isa<MightexMetaData> (*it, md)) {
+                TProcessedDataProperty tp = md->getAttributes();
+                imOrigin.x = tp.XStart;
+                imOrigin.y = tp.YStart;
+                return;
+            }
+        }
+    }
+}

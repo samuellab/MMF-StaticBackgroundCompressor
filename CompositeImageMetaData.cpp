@@ -94,3 +94,9 @@ std::map<std::string, double> CompositeImageMetaData::getFieldNamesAndValues() c
     }
     return fnav;
 }
+
+std::vector<const ImageMetaData *> CompositeImageMetaData::getMetaDataVector() {
+    std::vector<const ImageMetaData *> v;
+    v.insert(v.begin(), imd.begin(), imd.end());
+    return v;
+}

@@ -29,6 +29,8 @@ public:
     virtual void restoreImage (IplImage **dst);
     virtual void annotateImage (IplImage *dst, CvScalar color = CV_RGB(255,0,0), int thickness = 2);
 
+    CvPoint getImageOrigin();
+
     virtual int numRegions() const;
 
     const ImageMetaData *getMetaData() {
@@ -77,6 +79,11 @@ protected:
     virtual inline std::string classname() { return std::string("BackgroundRemovedImage");}
     virtual std::string headerDescription();
 
+    virtual void setImOriginFromMetaData();
+    template<class subclass, class superclass> bool isa (superclass *obj, subclass * &dst);
+    template<class subclass, class superclass> bool isa (const superclass *obj, const subclass * &dst);
+    template<class subclass, class superclass> bool isa (const superclass *obj);
+
 
     BackgroundRemovedImage();
     BackgroundRemovedImage(const BackgroundRemovedImage& orig);
@@ -87,6 +94,7 @@ protected:
     int threshAboveBackground;
     int smallDimMinSize;
     int lgDimMinSize;
+    CvPoint imOrigin;
     CvMemStorage *ms;
     ImageMetaData *metadata;
 };

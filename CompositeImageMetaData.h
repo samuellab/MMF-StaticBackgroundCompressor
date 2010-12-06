@@ -28,6 +28,8 @@ public:
     }
     virtual std::map<std::string, double> getFieldNamesAndValues(void)const;
 
+    std::vector<const ImageMetaData *> getMetaDataVector();
+
     static CompositeImageMetaData *fromFile (std::ifstream &is);
 protected:
     std::vector <ImageMetaData *> imd;

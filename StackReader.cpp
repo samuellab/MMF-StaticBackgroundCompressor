@@ -37,6 +37,7 @@ void StackReader::init() {
     totalFrames = 0;
     startFrame = 0;
     endFrame = 0;
+    validROI.x = 0; validROI.y = 0; validROI.width = -1; validROI.height = -1;
 }
 
 StackReader::StackReader(const char* fname) {
@@ -144,6 +145,7 @@ void StackReader::setSBC(int frameNum) {
         return;
     }
     endFrame = startFrame + sbc->numProcessed();
+    validROI = sbc->getValidRoi();
 }
 
 void StackReader::getBackground(int frameNum, IplImage** dst, int frameRange) {
@@ -165,11 +167,16 @@ void StackReader::getBackground(int frameNum, IplImage** dst, int frameRange) {
         start = stop - frameRange < 0 ? 0 : stop - frameRange;
         //iterate through all frames; every time the sbc changes, take the minimum of that sbc's background
         //and the accumulated background so far
+        IplImage *temp = NULL;
         for (int j = start; j < stop; ++j) {
             if (j < startFrame || j >= endFrame) {
                 setSBC(j);
-                cvMin(sbc->getBackground(), *dst, *dst);
+                sbc->copyBackground(&temp);
+                cvMin(temp, *dst, *dst);
             }
+        }
+        if (temp != NULL) {
+            cvReleaseImage(&temp);
         }
     }
 }
@@ -264,4 +271,15 @@ void StackReader::createSupplementalDataFile(const char* fname) {
     ExtraDataWriter *edw = getSupplementalData();
     edw->writeFile(fname);
     delete edw;
+}
+
+CvRect StackReader::getLargestROI() {
+    if (validROI.width <= 0 || validROI.height <= 0) {
+        if (sbc == NULL) {
+            setSBC(0);
+        }
+        assert (sbc != NULL);
+        validROI = sbc->getValidRoi();
+    }
+    return validROI;
 }

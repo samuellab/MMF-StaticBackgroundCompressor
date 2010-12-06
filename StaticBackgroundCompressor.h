@@ -38,6 +38,20 @@ public:
     virtual ~StaticBackgroundCompressor();
     static StaticBackgroundCompressor *fromDisk(std::ifstream& is);
 
+
+    /*  CvSize getFrameSize
+     *  returns the size of the frame copied out by copyBackground or
+     *  reconstructFrame
+     */
+    virtual CvSize getFrameSize ();
+
+    /* CvRect getValidRoi ();
+     * returns the region of the background or reconstructed frame that actually
+     * contains data 
+     */
+
+    virtual CvRect getValidRoi ();
+
     typedef struct {unsigned long idcode; int headerSize; int totalSize; int numframes;} HeaderInfoT;
 
     /* static headerInfoT getHeaderInfo(std::ifstream &is);
@@ -54,7 +68,7 @@ public:
         this->lgDimMinSize = lgDimMinSize;
     }
 
-    virtual const IplImage *getBackground();
+    //virtual const IplImage *getBackground();
     virtual void copyBackground(IplImage **dst);
     virtual void reconstructFrame (int frameNum, IplImage **dst);
     virtual void annotatedFrame (int frameNum, IplImage **buffer, IplImage **annotatedImage);
@@ -84,6 +98,7 @@ public:
 protected:
      StaticBackgroundCompressor(const StaticBackgroundCompressor& orig);
 
+     void setImageOriginFromBRI(void);
      typedef std::pair<IplImage *, ImageMetaData *> InputImT;
 
     IplImage *background;
@@ -101,6 +116,7 @@ protected:
 
     int updateBackgroundFrameInterval;
     int updateCount;
+    CvPoint imOrigin;
     virtual std::string headerDescription();
 };
 

@@ -24,12 +24,15 @@ public:
     virtual unsigned long idCode()const {
         return MightexMetaData::IdCode;
     }
+    virtual TProcessedDataProperty getAttributes()const;
+
     virtual std::map<std::string, double> getFieldNamesAndValues(void)const;
     /* static MightexMetaData *fromFile(std::ifstream &is);
      * assumes idCode has already been read from is, so starts at the next byte
      *
      */
     static MightexMetaData *fromFile(std::ifstream &is);
+    
 protected:
     TProcessedDataProperty attributes;
 private:

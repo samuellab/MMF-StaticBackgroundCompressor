@@ -29,6 +29,7 @@ StaticBackgroundCompressor::StaticBackgroundCompressor() {
     smallDimMinSize = lgDimMinSize = 1;
     updateBackgroundFrameInterval = -1;
     updateCount = 0;
+    imOrigin.x = imOrigin.y = 0;
 }
 
 StaticBackgroundCompressor::StaticBackgroundCompressor(const StaticBackgroundCompressor& orig) {
@@ -257,9 +258,11 @@ void StaticBackgroundCompressor::reconstructFrame(int frameNum, IplImage** dst) 
     brim->restoreImage(dst);
 }
 
+/*
 const IplImage *StaticBackgroundCompressor::getBackground() {
     return this->background;
 }
+ * */
 void StaticBackgroundCompressor::copyBackground(IplImage** dst) {
     if (dst == NULL) {
         return;
@@ -271,14 +274,19 @@ void StaticBackgroundCompressor::copyBackground(IplImage** dst) {
         }
         return;
     }
-    if (*dst == NULL || (*dst)->width != background->width || (*dst)->height != background->height || (*dst)->depth != background->depth || (*dst)->nChannels != background->nChannels) {
+    setImageOriginFromBRI();
+    if (*dst == NULL || (*dst)->width != background->width + imOrigin.x || (*dst)->height != background->height + imOrigin.y || (*dst)->depth != background->depth || (*dst)->nChannels != background->nChannels) {
         if (*dst != NULL) {
             cvReleaseImage(dst);
         }
-        *dst = cvCloneImage(background);
-    } else {
-        cvCopyImage(background, *dst);
+        *dst = cvCreateImage(cvSize(background->width + imOrigin.x, background->height+imOrigin.y), background->depth, background->nChannels);
     }
+    cvSetZero(*dst);
+    CvRect r; r.x = imOrigin.x; r.y = imOrigin.y; r.width = background->width; r.height = background->height;
+    CvRect roi = cvGetImageROI(*dst);
+    cvSetImageROI(*dst, r);
+    cvCopyImage(background, *dst);
+    cvSetImageROI(*dst, roi);
 }
 
 void StaticBackgroundCompressor::annotatedFrame(int frameNum, IplImage** buffer, IplImage** annotatedImage) {
@@ -316,4 +324,32 @@ int StaticBackgroundCompressor::numRegionsInFrame(int frameNum) const {
     }
     const BackgroundRemovedImage *brim = bri.at(frameNum);
     return brim->numRegions();
+}
+
+void StaticBackgroundCompressor::setImageOriginFromBRI() {
+    if (bri.empty()) {
+        return;
+    }
+    imOrigin = bri.front()->getImageOrigin();
+}
+
+CvSize StaticBackgroundCompressor::getFrameSize() {
+    setImageOriginFromBRI();
+    if (background == NULL) {
+        return cvSize(0,0);
+    }
+    CvSize sz = cvGetSize(background);
+    sz.width += imOrigin.x;
+    sz.height += imOrigin.y;
+}
+
+CvRect StaticBackgroundCompressor::getValidRoi() {
+    CvRect r;
+    r.x = r.y = r.width = r.height = 0;
+    if (background == NULL) {
+        return r;
+    }
+    setImageOriginFromBRI();
+    CvSize sz = cvGetSize(background);
+    r.x = imOrigin.x; r.y = imOrigin.y; r.width = sz.width; r.height = sz.height;
 }
