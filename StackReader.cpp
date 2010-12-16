@@ -64,6 +64,7 @@ void StackReader::openInputFile() {
         infile = new ifstream(fname.c_str(), ifstream::binary);
     }
     if (infile == NULL) {
+        cout << "failed to open " << fname;
         return;
     }
     parseInputFile();

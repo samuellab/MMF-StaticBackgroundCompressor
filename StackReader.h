@@ -12,6 +12,7 @@
 #include "ExtraDataWriter.h"
 #include <map>
 #include <string>
+#include <cv.h>
 
 class StackReader {
 public:
