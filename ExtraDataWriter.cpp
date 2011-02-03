@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <algorithm>
 
 #include "ExtraDataWriter.h"
 
