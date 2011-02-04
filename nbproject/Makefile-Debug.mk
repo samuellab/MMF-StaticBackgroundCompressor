@@ -54,8 +54,8 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=
-CXXFLAGS=
+CCFLAGS=-static-libgcc -static-libstdc++
+CXXFLAGS=-static-libgcc -static-libstdc++
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -72,7 +72,7 @@ LDLIBSOPTIONS=
 
 image_stack_compressor.lib: ${OBJECTFILES}
 	${RM} image_stack_compressor.lib
-	${AR} -rv -static-libgcc image_stack_compressor.lib ${OBJECTFILES} 
+	${AR} -rv image_stack_compressor.lib ${OBJECTFILES} 
 	$(RANLIB) image_stack_compressor.lib
 
 ${OBJECTDIR}/StackReader.o: StackReader.cpp 
