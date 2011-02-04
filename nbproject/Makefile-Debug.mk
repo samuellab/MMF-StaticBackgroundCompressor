@@ -72,7 +72,7 @@ LDLIBSOPTIONS=
 
 image_stack_compressor.lib: ${OBJECTFILES}
 	${RM} image_stack_compressor.lib
-	${AR} -rv image_stack_compressor.lib ${OBJECTFILES} 
+	${AR} -rv -static-libgcc image_stack_compressor.lib ${OBJECTFILES} 
 	$(RANLIB) image_stack_compressor.lib
 
 ${OBJECTDIR}/StackReader.o: StackReader.cpp 

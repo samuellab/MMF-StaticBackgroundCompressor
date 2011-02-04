@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=Image Stack Compressor
+PROJECTNAME=Image-Stack-Compressor
 
 # Active Configuration
 DEFAULTCONF=Debug
