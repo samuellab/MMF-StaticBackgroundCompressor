@@ -33,15 +33,16 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/StackReaderWrapper.o
+	${OBJECTDIR}/wtscWrapper.o \
+	${OBJECTDIR}/StackWriterWrapper.o
 
 
 # C Compiler Flags
-CFLAGS=-DBUILD_DLL
+CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=-DBUILD_DLL
-CXXFLAGS=-DBUILD_DLL
+CCFLAGS=-DBUILD_DLL -static-libgcc -static-libstdc++
+CXXFLAGS=-DBUILD_DLL -static-libgcc -static-libstdc++
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -50,35 +51,36 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../Necessary\ Libraries\ and\ Includes/CV/lib -L.. ../image_stack_compressor.lib -lcv -lcxcore -lhighgui
+LDLIBSOPTIONS=-L../Necessary\ Libraries\ and\ Includes/CV/lib -L.. -limage_stack_compressor -lcv -lcxcore -lhighgui
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-Debug.mk ./StackReaderWrapper.dll
+	"${MAKE}"  -f nbproject/Makefile-Debug.mk ./StackWriterWrapper.dll
 
-./StackReaderWrapper.dll: ../image_stack_compressor.lib
-
-./StackReaderWrapper.dll: ${OBJECTFILES}
+./StackWriterWrapper.dll: ${OBJECTFILES}
 	${MKDIR} -p .
-	${LINK.cc} -DBUILD_DLL -static-libgcc -static-libstdc++ -shared -o ./StackReaderWrapper.dll ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} -shared -o ./StackWriterWrapper.dll ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
-${OBJECTDIR}/StackReaderWrapper.o: StackReaderWrapper.cpp 
+${OBJECTDIR}/wtscWrapper.o: wtscWrapper.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -I.. -I../Necessary\ Libraries\ and\ Includes/CV/headers  -MMD -MP -MF $@.d -o ${OBJECTDIR}/StackReaderWrapper.o StackReaderWrapper.cpp
+	$(COMPILE.cc) -g -I.. -I../Necessary\ Libraries\ and\ Includes/CV/headers -I../tictoc  -MMD -MP -MF $@.d -o ${OBJECTDIR}/wtscWrapper.o wtscWrapper.cpp
+
+${OBJECTDIR}/StackWriterWrapper.o: StackWriterWrapper.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -I.. -I../Necessary\ Libraries\ and\ Includes/CV/headers -I../tictoc  -MMD -MP -MF $@.d -o ${OBJECTDIR}/StackWriterWrapper.o StackWriterWrapper.cpp
 
 # Subprojects
 .build-subprojects:
-	cd .. && ${MAKE}  -f Makefile CONF=Debug
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r build/Debug
-	${RM} ./StackReaderWrapper.dll
+	${RM} ./StackWriterWrapper.dll
 
 # Subprojects
 .clean-subprojects:
-	cd .. && ${MAKE}  -f Makefile CONF=Debug clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl
