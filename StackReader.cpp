@@ -79,9 +79,12 @@ void StackReader::openInputFile() {
 void StackReader::parseInputFile() {
    // cout << "parse input file " << fname << endl;
     infile->seekg(0, ios::end);
-    ifstream::pos_type length = infile->tellg();
+    ifstream::pos_type length = (ifstream::pos_type) infile->tellg();
     infile->seekg(0, ios::beg); //go to start
  //   cout << "infile length = " << length << endl;
+    if (length < -1) {
+        length = 4294967296 + length;
+    }
     if (length < 0 || !infile->good()) {
         stringstream ss;
         ss << "sizeof length = " << sizeof(length) << " length = " << length << " infile->fail = " << infile->fail() << " infile->good() = " << infile->good();
