@@ -6,6 +6,7 @@
  */
 
 #include <map>
+#include <iostream>
 
 #include "StackReader.h"
 #include "highgui.h"
@@ -120,6 +121,22 @@ void StackReader::parseInputFile() {
 void StackReader::setSBC(int frameNum) {
     //if the frame is out of range or the infile isn't open, abort
     if (frameNum < 0 || frameNum >= totalFrames || !dataFileOk()) {
+        if (!dataFileOk()) {
+            if (infile == NULL) {
+                std::cerr << "infile in NULL";
+            } else {
+                if (infile->bad()) {
+                    std::cerr << "infile badbit is set indicating loss of integrity of the file stream";
+                } else if (infile->fail()) {
+                    std::cerr << "infile failbit is set indicating previous operation did not complete OK";
+                } else {
+                    std::cerr << "dataFileOK returned false, but all indications are data file is OK";
+                }
+            }
+            return;
+        }
+
+            
         return;
     }
 

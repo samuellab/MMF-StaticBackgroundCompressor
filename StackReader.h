@@ -31,7 +31,7 @@ public:
     virtual void createSupplementalDataFile(const char *fname);
     virtual ExtraDataWriter *getSupplementalData();
 
-    virtual inline bool dataFileOk (){
+    virtual inline bool dataFileOk(){
         return (infile != NULL && !infile->fail());
     }
 
