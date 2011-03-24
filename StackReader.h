@@ -32,7 +32,7 @@ public:
     virtual ExtraDataWriter *getSupplementalData();
 
     virtual inline bool dataFileOk (){
-        return (infile != NULL && infile->good());
+        return (infile != NULL && !infile->fail());
     }
 
     virtual inline int getTotalFrames () {
