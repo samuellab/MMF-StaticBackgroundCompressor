@@ -35,6 +35,8 @@ StackReader::~StackReader() {
 void StackReader::init() {
     infile = NULL;
     sbc = NULL;
+    iserror = false;
+    errormessage = "no error";
     totalFrames = 0;
     startFrame = 0;
     endFrame = 0;
@@ -65,6 +67,8 @@ void StackReader::openInputFile() {
         infile = new ifstream(fname.c_str(), ifstream::binary);
     }
     if (infile == NULL) {
+        iserror = true;
+        errormessage = "failed to open " + fname;
         cout << "failed to open " << fname;
         return;
     }
@@ -78,6 +82,7 @@ void StackReader::parseInputFile() {
     infile->seekg(0, ios::beg); //go to start
  //   cout << "infile length = " << length << endl;
     if (length < 0 || !infile->good()) {
+        setError("length < 0 or !infile->good");
         delete infile;
         infile = NULL;
         return;
@@ -123,7 +128,8 @@ void StackReader::setSBC(int frameNum) {
     if (frameNum < 0 || frameNum >= totalFrames || !dataFileOk()) {
         if (!dataFileOk()) {
             if (infile == NULL) {
-                std::cerr << "infile in NULL";
+                std::cerr << "infile is NULL";
+                assert(false);
             } else {
                 if (infile->bad()) {
                     std::cerr << "infile badbit is set indicating loss of integrity of the file stream";
@@ -163,6 +169,7 @@ void StackReader::setSBC(int frameNum) {
     startFrame = it->first;
     sbc = StaticBackgroundCompressorLoader::fromFile(*infile);
     if (sbc == NULL) {
+        setError("failed to read static background compressor from disk for frame number " + frameNum);
         std::cerr << "failed to read static background compressor from disk for frame number " << frameNum;
         return;
     }

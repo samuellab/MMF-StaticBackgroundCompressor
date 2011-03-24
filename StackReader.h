@@ -39,6 +39,14 @@ public:
         return totalFrames;
     }
 
+    virtual inline bool isError() {
+        return iserror;
+    }
+
+    virtual inline std::string getError() {
+        return errormessage;
+    }
+
     virtual CvRect getLargestROI ();
     
 
@@ -56,8 +64,16 @@ protected:
 
     virtual void parseInputFile();
     virtual void setSBC(int frameNum);
+    virtual inline void setError (std::string err) {
+        iserror = true;
+        errormessage = err;
+    }
 
     CvRect validROI;
+
+    bool iserror;
+    std::string errormessage;
+
 private:
       StackReader(const StackReader& orig);
   
