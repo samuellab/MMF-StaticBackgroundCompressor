@@ -7,6 +7,7 @@
 
 #include <map>
 #include <iostream>
+#include <sstream>
 
 #include "StackReader.h"
 #include "highgui.h"
@@ -82,7 +83,10 @@ void StackReader::parseInputFile() {
     infile->seekg(0, ios::beg); //go to start
  //   cout << "infile length = " << length << endl;
     if (length < 0 || !infile->good()) {
-        setError("length < 0 or !infile->good");
+        stringstream ss;
+        ss << "sizeof length = " << sizeof(length) << " length = " << length << " infile->fail = " << infile->fail() << " infile->good() = " << infile->good();
+        setError (ss.str().c_str());
+        //setError("length < 0 or !infile->good");
         delete infile;
         infile = NULL;
         return;
