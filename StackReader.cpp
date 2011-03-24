@@ -127,10 +127,13 @@ void StackReader::setSBC(int frameNum) {
             } else {
                 if (infile->bad()) {
                     std::cerr << "infile badbit is set indicating loss of integrity of the file stream";
+                    assert(false);
                 } else if (infile->fail()) {
                     std::cerr << "infile failbit is set indicating previous operation did not complete OK";
+                    assert(false);
                 } else {
                     std::cerr << "dataFileOK returned false, but all indications are data file is OK";
+                    assert(false);
                 }
             }
             return;
@@ -160,6 +163,7 @@ void StackReader::setSBC(int frameNum) {
     startFrame = it->first;
     sbc = StaticBackgroundCompressorLoader::fromFile(*infile);
     if (sbc == NULL) {
+        std::cerr << "failed to read static background compressor from disk for frame number " << frameNum;
         return;
     }
     endFrame = startFrame + sbc->numProcessed();
