@@ -20,7 +20,7 @@ using namespace std;
 
 static void writeImageData (ofstream &os, IplImage *im);
 static IplImage *readImageData (ifstream &is, int width, int height, int depth, int nChannels);
-static ofstream logkludge("c:\\brilogstream.txt");
+//static ofstream logkludge("c:\\brilogstream.txt");
 BackgroundRemovedImage::BackgroundRemovedImage() {
     init();
 }
@@ -311,7 +311,7 @@ void BackgroundRemovedImage::restoreImage(IplImage** dst) {
        into a larger blank image, so first we store the destination in a temporary spot
        and create a new blank image
      */
-    logkludge << "imOrigin = " << imOrigin.x << " , " << imOrigin.y << endl;
+    //logkludge << "imOrigin = " << imOrigin.x << " , " << imOrigin.y << endl;
     if (imOrigin.x != 0 || imOrigin.y != 0) {
         tmp = *dst;
         *dst = NULL;
@@ -322,18 +322,18 @@ void BackgroundRemovedImage::restoreImage(IplImage** dst) {
         if (*dst != NULL) {
             cvReleaseImage(dst);
         }
-        logkludge << "calling cvCloneImage on backgroundIm" << endl;
+        //logkludge << "calling cvCloneImage on backgroundIm" << endl;
         *dst = cvCloneImage(backgroundIm);
     } else {
-        logkludge << "calling cvCopyImage on backgroundIm" << endl;
+        //logkludge << "calling cvCopyImage on backgroundIm" << endl;
         cvCopyImage(backgroundIm, *dst);
     }
     CvRect roi = cvGetImageROI(*dst);
     vector< pair<CvRect, IplImage *> >::iterator it;
-    logkludge << "num rectangles = " << differencesFromBackground.size() << endl;
+    //logkludge << "num rectangles = " << differencesFromBackground.size() << endl;
     for (it = differencesFromBackground.begin(); it != differencesFromBackground.end(); ++it) {
-        logkludge << "roi = x,y,w,h = " << it->first.x << ", " << it->first.y << ", " << it->first.width << ", " << it->first.height << endl;
-        logkludge << "imsize = (w,h) " << it->second->width << ", " << it->second->height << endl;
+        //logkludge << "roi = x,y,w,h = " << it->first.x << ", " << it->first.y << ", " << it->first.width << ", " << it->first.height << endl;
+        //logkludge << "imsize = (w,h) " << it->second->width << ", " << it->second->height << endl;
         cvSetImageROI(*dst, it->first);
         cvCopyImage(it->second, *dst);
     }
@@ -360,7 +360,7 @@ void BackgroundRemovedImage::restoreImage(IplImage** dst) {
         cvReleaseImage(dst);
         *dst = tmp;
     }
-    logkludge << "finished restoring image " << endl;
+    //logkludge << "finished restoring image " << endl;
 }
 
 void BackgroundRemovedImage::annotateImage(IplImage* dst, CvScalar color, int thickness) {
