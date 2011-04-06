@@ -330,9 +330,10 @@ void BackgroundRemovedImage::restoreImage(IplImage** dst) {
     }
     CvRect roi = cvGetImageROI(*dst);
     vector< pair<CvRect, IplImage *> >::iterator it;
+    logkludge << "num rectangles = " << differencesFromBackground.size() << endl;
     for (it = differencesFromBackground.begin(); it != differencesFromBackground.end(); ++it) {
         logkludge << "roi = x,y,w,h = " << it->first.x << ", " << it->first.y << ", " << it->first.width << ", " << it->first.height << endl;
-        logkludge << "imsize = (w,h) " << it->second->width << ", " << it->second->height;
+        logkludge << "imsize = (w,h) " << it->second->width << ", " << it->second->height << endl;
         cvSetImageROI(*dst, it->first);
         cvCopyImage(it->second, *dst);
     }
@@ -359,7 +360,7 @@ void BackgroundRemovedImage::restoreImage(IplImage** dst) {
         cvReleaseImage(dst);
         *dst = tmp;
     }
-    
+    logkludge << "finished restoring image " << endl;
 }
 
 void BackgroundRemovedImage::annotateImage(IplImage* dst, CvScalar color, int thickness) {
