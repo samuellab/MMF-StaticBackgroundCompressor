@@ -80,6 +80,7 @@
             <pElem>Necessary Libraries and Includes/CV/headers</pElem>
             <pElem>tictoc</pElem>
           </incDir>
+          <commandLine>-static-libgcc -static-libstdc++</commandLine>
         </ccTool>
         <archiverTool>
           <output>image_stack_compressor.lib</output>
