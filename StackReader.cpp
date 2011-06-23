@@ -96,14 +96,14 @@ void StackReader::parseInputFile() {
     char c = 'a';
     while (c != '\0') {
         infile->get(c);
-        cout << c;
+     //   cout << c;
         if ((infile->tellg() % 10240) == 0) {
-            cout << (infile->tellg()/1024) << " kb into header";
+       //     cout << (infile->tellg()/1024) << " kb into header";
         }
     }
     unsigned long idcode;
     infile->read((char *) &idcode, sizeof(idcode));
-    cout << "id code = " << hex << idcode << dec << "\n";
+   // cout << "id code = " << hex << idcode << dec << "\n";
     //find out headerSize & skip to end
     int headerSize;
     infile->read((char *) &headerSize, sizeof(headerSize));
@@ -169,7 +169,7 @@ void StackReader::setSBC(int frameNum) {
     if (it != keyframelocations.begin()) {
         --it;
     }
-    cout << "sbc starting with frame " << it->first << "located at " << it->second << " on disk\n";
+//    cout << "sbc starting with frame " << it->first << "located at " << it->second << " on disk\n";
     infile->seekg(it->second, ifstream::beg);
     startFrame = it->first;
     sbc = StaticBackgroundCompressorLoader::fromFile(*infile);
