@@ -290,8 +290,12 @@ ExtraDataWriter *StackReader::getSupplementalData() {
     ExtraDataWriter *edw = new ExtraDataWriter();
     for (int frameNum = 0; frameNum < totalFrames; ++frameNum) {
         setSBC(frameNum);
+        if (iserror || sbc == NULL) {
+            break;
+        }
         const ImageMetaData *imd = sbc->getMetaData(frameNum-startFrame);
         edw->goToFrame(frameNum);
+        
         if (imd != NULL) {
             edw->addElements(imd->getFieldNamesAndValues());
         }
