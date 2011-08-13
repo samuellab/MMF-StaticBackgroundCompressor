@@ -42,6 +42,7 @@
 #define	WINDOWSTHREADSTACKCOMPRESSOR_H
 
 #include "LinearStackCompressor.h"
+#include "tictoc/tictoc.h"
 #include <windows.h>
 #include <process.h>
 
@@ -105,7 +106,18 @@ public:
      */
     virtual void openOutputFile ();
     virtual void closeOutputFile ();
-    
+
+    inline const TICTOC::tictoc &NonthreadedTimer () {
+        return nonthreadedTimer;
+    }
+    inline const TICTOC::tictoc &WritingThreadTimer () {
+        return writingThreadTimer;
+    }
+    inline const TICTOC::tictoc &CompressionThreadTimer () {
+        return compressionThreadTimer;
+    }
+
+    std::string generateTimingReport();
 
 protected:
     CRITICAL_SECTION activeStackCS;
@@ -129,6 +141,10 @@ protected:
     bool stacksLeftToCompress;
     bool stacksLeftToWrite;
 
+    TICTOC::tictoc nonthreadedTimer;
+    TICTOC::tictoc compressionThreadTimer;
+    TICTOC::tictoc writingThreadTimer;
+    
 private:
      WindowsThreadStackCompressor(const WindowsThreadStackCompressor& orig);
      void init();
