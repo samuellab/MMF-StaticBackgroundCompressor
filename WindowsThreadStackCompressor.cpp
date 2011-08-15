@@ -304,4 +304,5 @@ void WindowsThreadStackCompressor::closeOutputFile() {
 std::string WindowsThreadStackCompressor::generateTimingReport() {
     std::stringstream ss;
     ss << nonthreadedTimer.generateReport() << compressionThreadTimer.generateReport() << writingThreadTimer.generateReport();
+    return ss.str();
 }

@@ -107,13 +107,13 @@ public:
     virtual void openOutputFile ();
     virtual void closeOutputFile ();
 
-    inline const TICTOC::tictoc &NonthreadedTimer () {
+    inline TICTOC::tictoc const& NonthreadedTimer () {
         return nonthreadedTimer;
     }
-    inline const TICTOC::tictoc &WritingThreadTimer () {
+    inline TICTOC::tictoc const& WritingThreadTimer () {
         return writingThreadTimer;
     }
-    inline const TICTOC::tictoc &CompressionThreadTimer () {
+    inline TICTOC::tictoc const& CompressionThreadTimer () {
         return compressionThreadTimer;
     }
 
