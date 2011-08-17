@@ -106,4 +106,5 @@ int getTimingReport (void *sw, char *dst, int maxchars) {
     if (dst != NULL) {
         s.copy(dst, maxchars);
     }
+    return 0;
 }
