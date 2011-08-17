@@ -34,6 +34,12 @@ extern "C" {
     EXPORT int startRecording (void *sw, int nframes);
 
     EXPORT int stopRecording (void *sw);
+
+    EXPORT int numBytesWritten (void *sw);
+
+    EXPORT int getTimingStatistics (void *sw, double *avgAddTime, double *avgCompressTime, double *avgWriteTime);
+
+    EXPORT int getTimingReport (void *sw, char *dst, int maxchars);
     
 #ifdef	__cplusplus
 }

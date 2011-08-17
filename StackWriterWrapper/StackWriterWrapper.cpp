@@ -71,3 +71,39 @@ int stopRecording (void *sw) {
     ww->wtsc.stopRecording();
     return 0;
 }
+
+int numBytesWritten (void *sw) {
+    if (sw == NULL) {
+        return -1;
+    }
+    wtscWrapper *ww = (wtscWrapper *) sw;
+    return ww->wtsc.numBytesWritten();
+}
+
+int getTimingStatistics (void *sw, double *avgAddTime, double *avgCompressTime, double *avgWriteTime) {
+     if (sw == NULL) {
+        return -1;
+    }
+    wtscWrapper *ww = (wtscWrapper *) sw;
+    if (avgAddTime != NULL) {
+        *avgAddTime = ww->wtsc.NonthreadedTimer().getStatistics("adding frame to stack");;
+    }
+    if (avgCompressTime != NULL) {
+        *avgCompressTime = ww->wtsc.CompressionThreadTimer().getStatistics("compressing a frame");
+    }
+    if (avgWriteTime != NULL) {
+        *avgWriteTime =  (ww->wtsc.WritingThreadTimer().getStatistics("writing a stack to disk") + ww->wtsc.WritingThreadTimer().getStatistics("deleting written stack from memory"))/ww->wtsc.getKeyFrameInterval();
+    }
+    return 0;
+}
+
+int getTimingReport (void *sw, char *dst, int maxchars) {
+    if (sw == NULL) {
+        return -1;
+    }
+    wtscWrapper *ww = (wtscWrapper *) sw;
+    string s = ww->wtsc.generateTimingReport();
+    if (dst != NULL) {
+        s.copy(dst, maxchars);
+    }
+}

@@ -306,3 +306,11 @@ std::string WindowsThreadStackCompressor::generateTimingReport() {
     ss << nonthreadedTimer.generateReport() << compressionThreadTimer.generateReport() << writingThreadTimer.generateReport();
     return ss.str();
 }
+
+
+ofstream::pos_type WindowsThreadStackCompressor::numBytesWritten() {
+    EnterCriticalSection(&outfileCS);
+    ofstream::pos_type nb = LinearStackCompressor::numBytesWritten();
+    LeaveCriticalSection(&outfileCS);
+    return nb;
+}

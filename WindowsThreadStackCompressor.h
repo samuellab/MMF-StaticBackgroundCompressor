@@ -119,6 +119,8 @@ public:
 
     std::string generateTimingReport();
 
+    virtual std::ofstream::pos_type numBytesWritten ();
+    
 protected:
     CRITICAL_SECTION activeStackCS;
     CRITICAL_SECTION compressingStackCS;

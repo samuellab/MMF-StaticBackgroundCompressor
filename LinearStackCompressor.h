@@ -39,6 +39,7 @@
 #ifndef LINEARSTACKCOMPRESSOR_H
 #define	LINEARSTACKCOMPRESSOR_H
 
+#include <stdio.h>
 #include "StaticBackgroundCompressor.h"
 
 
@@ -138,6 +139,9 @@ public:
         this->keyframeInterval = keyframeInterval;
         this->backgroundUpdateInterval = backgroundUpdateInterval;
     }
+    virtual inline int getKeyFrameInterval() {
+        return keyframeInterval;
+    }
     /* virtual inline void setFrameRate (double frameRate)
      *
      * how often the lsc should expect frames to be arriving.  lsc attempts to keep function calls under this time, but no guarantees to work
@@ -145,6 +149,8 @@ public:
     virtual inline void setFrameRate (double frameRate) {
         this->frameRate = frameRate;
     }
+
+    virtual std::ofstream::pos_type numBytesWritten ();
 
     virtual std::string saveDescription();
 

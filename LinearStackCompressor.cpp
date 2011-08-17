@@ -212,6 +212,13 @@ bool LinearStackCompressor::writeFinishedStack() {
    return false;
 }
 
+ofstream::pos_type LinearStackCompressor::numBytesWritten() {
+    if (outfile == NULL) {
+        return 0;
+    }
+    return outfile->tellp();
+}
+
 bool LinearStackCompressor::readyForCompression(StaticBackgroundCompressor* sc) {
  //   if (sc != NULL) {
 //        cout << "num to compress = " << sc->numToProccess() << "\n";
