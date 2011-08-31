@@ -6,6 +6,7 @@
  */
 
 #include <cstdlib>
+#include <limits>
 
 #include "wtscWrapper.h"
 #include "NameValueMetaData.h"
@@ -72,14 +73,16 @@ int stopRecording (void *sw) {
     return 0;
 }
 
-int numBytesWritten (void *sw) {
+uint64_t numBytesWritten (void *sw) {
     if (sw == NULL) {
         return -1;
     }
     wtscWrapper *ww = (wtscWrapper *) sw;
     return ww->wtsc.numBytesWritten();
 }
-
+uint64_t maxBytesSupported() {
+    return numeric_limits<streamoff>::max();
+}
 int getTimingStatistics (void *sw, double *avgAddTime, double *avgCompressTime, double *avgWriteTime) {
      if (sw == NULL) {
         return -1;
