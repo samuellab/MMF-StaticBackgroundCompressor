@@ -216,7 +216,12 @@ ofstream::pos_type LinearStackCompressor::numBytesWritten() {
     if (outfile == NULL) {
         return 0;
     }
-    return outfile->tellp();
+    ofstream::pos_type rv = outfile->tellp();
+    if (rv > 0) {
+        return rv;
+    } else {
+        return 0;
+    }
 }
 
 bool LinearStackCompressor::readyForCompression(StaticBackgroundCompressor* sc) {
