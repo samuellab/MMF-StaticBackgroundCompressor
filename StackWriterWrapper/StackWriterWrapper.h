@@ -35,7 +35,7 @@ extern "C" {
 
     EXPORT int stopRecording (void *sw);
 
-    EXPORT unsigned long long numBytesWritten (void *sw);
+    EXPORT long long numBytesWritten (void *sw);
 
     EXPORT int getTimingStatistics (void *sw, double *avgAddTime, double *avgCompressTime, double *avgWriteTime);
 

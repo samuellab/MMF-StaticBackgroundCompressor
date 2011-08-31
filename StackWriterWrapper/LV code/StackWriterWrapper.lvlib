@@ -11,6 +11,7 @@
    <Item Name="destroy Stack Writer.vi" Type="VI" URL="VIs/destroy Stack Writer.vi"/>
    <Item Name="get Timing Report.vi" Type="VI" URL="VIs/get Timing Report.vi"/>
    <Item Name="get Timing Statistics.vi" Type="VI" URL="VIs/get Timing Statistics.vi"/>
+   <Item Name="max Bytes Supported.vi" Type="VI" URL="VIs/max Bytes Supported.vi"/>
    <Item Name="num Bytes Written.vi" Type="VI" URL="VIs/num Bytes Written.vi"/>
    <Item Name="set Meta Data.vi" Type="VI" URL="VIs/set Meta Data.vi"/>
    <Item Name="start Recording.vi" Type="VI" URL="VIs/start Recording.vi"/>

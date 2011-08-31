@@ -73,7 +73,7 @@ int stopRecording (void *sw) {
     return 0;
 }
 
-uint64_t numBytesWritten (void *sw) {
+int64_t numBytesWritten (void *sw) {
     if (sw == NULL) {
         return -1;
     }
