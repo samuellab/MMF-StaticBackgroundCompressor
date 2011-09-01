@@ -304,6 +304,18 @@ void WindowsThreadStackCompressor::closeOutputFile() {
 std::string WindowsThreadStackCompressor::generateTimingReport() {
     std::stringstream ss;
     ss << nonthreadedTimer.generateReport() << compressionThreadTimer.generateReport() << writingThreadTimer.generateReport();
+    const char *version[100], *addons[100];
+    for (int j = 0; j < 100; ++j) {
+        version[j] = addons[j] = NULL;
+    }
+    cvGetModuleInfo(NULL, version, addons);
+    for (int j = 0; j < 100 && version[j] != 0; ++j) {
+        ss << version[j] << endl;
+    }
+    for (int j = 0; j < 100 && addons[j] != 0; ++j) {
+        ss << addons[j] << endl;
+    }
+
     return ss.str();
 }
 
