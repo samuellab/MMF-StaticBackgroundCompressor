@@ -154,6 +154,8 @@ public:
 
     virtual std::string saveDescription();
 
+    virtual void numStacksWaiting (int &numToCompress, int &numToWrite);
+    
 protected:
     int keyframeInterval;
     int backgroundUpdateInterval;

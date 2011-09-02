@@ -168,6 +168,19 @@ bool LinearStackCompressor::compressStack() {
      }
 }
 
+void LinearStackCompressor::numStacksWaiting(int& numToCompress, int& numToWrite) {
+    numToCompress = numToWrite = 0;
+    vector<StaticBackgroundCompressor *>::iterator it;
+    for (it = imageStacks.begin(); it != imageStacks.end(); ++it) {
+       if (readyForCompression(*it)) {
+           ++numToCompress;
+       }
+       if (readyForWriting(*it)) {
+           ++numToWrite;
+       }
+   }
+}
+
 void LinearStackCompressor::setCompressionStack() {
    vector<StaticBackgroundCompressor *>::iterator it;
    for (it = imageStacks.begin(); it != imageStacks.end(); ++it) {

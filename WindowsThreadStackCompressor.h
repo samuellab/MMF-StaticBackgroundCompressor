@@ -120,7 +120,9 @@ public:
     std::string generateTimingReport();
 
     virtual std::ofstream::pos_type numBytesWritten ();
-    
+
+    virtual void numStacksWaiting (int &numToCompress, int &numToWrite);
+
 protected:
     CRITICAL_SECTION activeStackCS;
     CRITICAL_SECTION compressingStackCS;

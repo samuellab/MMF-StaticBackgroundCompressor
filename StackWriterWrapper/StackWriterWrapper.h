@@ -40,6 +40,8 @@ extern "C" {
     EXPORT int getTimingStatistics (void *sw, double *avgAddTime, double *avgCompressTime, double *avgWriteTime);
 
     EXPORT int getTimingReport (void *sw, char *dst, int maxchars);
+
+    EXPORT int getNumStacksQueued (void *sw, int *numToCompress, int *numToWrite);
     
     EXPORT unsigned long long maxBytesSupported ();
 

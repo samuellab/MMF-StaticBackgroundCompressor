@@ -99,6 +99,20 @@ int getTimingStatistics (void *sw, double *avgAddTime, double *avgCompressTime, 
     }
     return 0;
 }
+int getNumStacksQueued (void *sw, int *numToCompress, int *numToWrite) {
+     if (sw == NULL) {
+        return -1;
+    }
+    wtscWrapper *ww = (wtscWrapper *) sw;
+    int ntc, ntw;
+    ww->wtsc.numStacksWaiting(ntc, ntw);
+    if (numToCompress != NULL) {
+        *numToCompress = ntc;
+    }
+    if (numToWrite != NULL) {
+        *numToWrite = ntw;
+    }
+}
 
 int getTimingReport (void *sw, char *dst, int maxchars) {
     if (sw == NULL) {
