@@ -9,6 +9,7 @@
    <Item Name="add Frame.vi" Type="VI" URL="VIs/add Frame.vi"/>
    <Item Name="create Bright Field Stack Writer.vi" Type="VI" URL="VIs/create Bright Field Stack Writer.vi"/>
    <Item Name="destroy Stack Writer.vi" Type="VI" URL="VIs/destroy Stack Writer.vi"/>
+   <Item Name="get Num Stacks Queued.vi" Type="VI" URL="VIs/get Num Stacks Queued.vi"/>
    <Item Name="get Timing Report.vi" Type="VI" URL="VIs/get Timing Report.vi"/>
    <Item Name="get Timing Statistics.vi" Type="VI" URL="VIs/get Timing Statistics.vi"/>
    <Item Name="max Bytes Supported.vi" Type="VI" URL="VIs/max Bytes Supported.vi"/>
