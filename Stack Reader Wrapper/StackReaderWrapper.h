@@ -38,6 +38,8 @@ extern "C" {
     EXPORT void compressImageStack (const char *fstub, const char *extension, const char *outname, int startFrame, int endFrame, int diffThresh, int smallDimMinSize, int lgDimMinSize);
 
     EXPORT void createSupplementalDataFile (void *SR, const char *fname);
+
+    EXPORT void decimateStack (void *SR, const char *outname, int threshAboveBackground, int smallDimMinSize, int lgDimMinSize, int decimationCount);
 #ifdef	__cplusplus
 }
 #endif

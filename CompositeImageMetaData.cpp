@@ -104,3 +104,12 @@ std::vector<const ImageMetaData *> CompositeImageMetaData::getMetaDataVector() {
     v.insert(v.begin(), imd.begin(), imd.end());
     return v;
 }
+
+ImageMetaData *CompositeImageMetaData::clone() const{
+    CompositeImageMetaData *cimd = new CompositeImageMetaData();
+     for(vector<ImageMetaData *>::const_iterator it = imd.begin(); it != imd.end(); ++it) {
+        if (*it != NULL) {
+            cimd->imd.push_back((*it)->clone());
+        }
+    }
+}

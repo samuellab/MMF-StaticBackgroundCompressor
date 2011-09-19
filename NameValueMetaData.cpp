@@ -32,6 +32,10 @@ NameValueMetaData *NameValueMetaData::copy() const {
     return nvmd;
 }
 
+ImageMetaData *NameValueMetaData::clone() const {
+    return copy();
+}
+
 map<string, double> NameValueMetaData::getFieldNamesAndValues() const {
     return data;
 }

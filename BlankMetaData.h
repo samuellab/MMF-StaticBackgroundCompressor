@@ -3,6 +3,9 @@
  * Author: Marc
  *
  * Created on October 27, 2010, 1:26 PM
+ *
+ * implements ImageMetaData but doesn't actually store any meta data
+ * if that isn't meta, what is?
  */
 
 #ifndef BLANKMETADATA_H
@@ -11,6 +14,13 @@
 #include "ImageMetaData.h"
 #include <iostream>
 #include <fstream>
+
+/*
+ * BlankMetaData
+ *
+ * implements ImageMetaData but doesn't actually store any meta data
+ * if that isn't meta, what is?
+ */
 class BlankMetaData : public ImageMetaData {
 public:
     static const unsigned long IdCode = 0x0ccd07bc; //CRC32 hash of "BlankMetaData" from fileformat.info
@@ -40,9 +50,13 @@ public:
         return rval;
     }
 
+    virtual ImageMetaData *clone() const{
+        return new BlankMetaData();
+    }
     static BlankMetaData *fromFile (std::istream &is) {
         return new BlankMetaData();
     }
+
 
 private:
 

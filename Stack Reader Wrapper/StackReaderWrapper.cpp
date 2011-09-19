@@ -86,6 +86,14 @@ void createSupplementalDataFile (void *SR, const char *fname) {
     sr->createSupplementalDataFile(fname);
 }
 
+void decimateStack (void *SR, const char *outname, int threshAboveBackground, int smallDimMinSize, int lgDimMinSize, int decimationCount) {
+    StackReader *sr = (StackReader *) SR;
+    if (sr == NULL || !sr->dataFileOk()) {
+        return;
+    }
+    sr->decimateStack(outname, threshAboveBackground, smallDimMinSize, lgDimMinSize, decimationCount);
+}
+
 void compressImageStack(const char* fstub, const char* extension, const char* outname, int startFrame, int endFrame, int diffThresh, int smallDimMinSize, int lgDimMinSize) {
 //    string stub(fstub);
     //ofstream log("c:\\cislog.txt");

@@ -11,6 +11,7 @@
 
 using namespace std;
 
+
 BackgroundRemovedImage *BackgroundRemovedImageLoader::fromFile(std::ifstream& is, const IplImage *bak) {
     unsigned long id;
     ifstream::pos_type cloc = is.tellg();

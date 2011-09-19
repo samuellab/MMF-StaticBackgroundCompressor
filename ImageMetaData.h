@@ -7,12 +7,16 @@
  * ImageMetaData is an abstract class that defines an interface for
  * storing meta data about images in binary data files
  *
- * must implement these 3 functions
+ * must implement these functions
  *
  * toDisk (ofstream &os) -- writes the meta data to disk at the current file poisition
  * saveDescription -- a text description of the information contained in the metadata
  * sizeOnDisk -- the number of bytes the ImageMetaData occupies on disk
- * should also create a unique unsigend int id code that
+ * idCode -- a unique unsigned int that identifies the type of meta data, so that it can
+ *      be properly read from disk later; crc32 hash of class name is recommended
+ * getFieldNamesAndValues -- returns a table of names and double values, (e.g. "FrameNumber", 27)
+ *                           allows generation of metadata tables
+ * clone -- generate a new copy of the metadata object
  */
 
 #ifndef IMAGEMETADATA_H
@@ -33,6 +37,7 @@ public:
     virtual ~ImageMetaData() {};
     virtual unsigned long idCode()const = 0;
     virtual std::map<std::string, double> getFieldNamesAndValues(void)const = 0;
+    virtual ImageMetaData *clone()const = 0;
     
 
 protected:

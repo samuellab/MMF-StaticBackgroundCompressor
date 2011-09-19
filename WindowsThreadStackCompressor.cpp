@@ -328,7 +328,7 @@ ofstream::pos_type WindowsThreadStackCompressor::numBytesWritten() {
 }
 
 void WindowsThreadStackCompressor::numStacksWaiting(int& numToCompress, int& numToWrite) {
-    EnterCriticalSection(&activeStackCS);
+    EnterCriticalSection(&imageStacksCS);
     LinearStackCompressor::numStacksWaiting(numToCompress, numToWrite);
-    LeaveCriticalSection(&activeStackCS);
+    LeaveCriticalSection(&imageStacksCS);
 }

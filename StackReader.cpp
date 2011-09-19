@@ -8,11 +8,13 @@
 #include <map>
 #include <iostream>
 #include <sstream>
+#include <windows.h> //required to use multithreaded stack writing
 
 #include "StackReader.h"
 #include "highgui.h"
 #include "Timer.h"
 #include "StaticBackgroundCompressorLoader.h"
+#include "WindowsThreadStackCompressor.h"
 
 using namespace std;
 
@@ -320,4 +322,66 @@ CvRect StackReader::getLargestROI() {
         validROI = sbc->getValidRoi();
     }
     return validROI;
+}
+
+int StackReader::decimateStack(const char* outputname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int decimationCount) {
+    WindowsThreadStackCompressor sc;
+    
+    sc.setThresholds(0, thresholdAboveBackground, smallDimMinSize, lgDimMinSize);
+    setSBC(0);
+    sc.setIntervals(sbc->numProcessed(), 1);
+
+    IplImage *im = NULL;
+   // IplImage *colorim = NULL;
+
+    Timer tim;
+    sc.setOutputFileName(outputname);
+    sc.openOutputFile();
+    
+    sc.setFrameRate(30);
+
+    sc.startThreads();
+
+    sc.startRecording(totalFrames);
+    tim.start();
+    int ethundred = 0;
+    for (int f = 0; f < totalFrames; f += decimationCount) {
+
+        
+        getFrame(f, &im);
+        
+        if (im == NULL) {
+            break;
+        }
+        setSBC(f);
+        const ImageMetaData* imd = sbc->getMetaData(f - startFrame);
+        if (imd != NULL) {
+            sc.newFrame(im, imd->clone());
+        } else {
+            sc.newFrame(im, NULL);
+        }
+
+        int ntc, ntw;
+        sc.numStacksWaiting(ntc, ntw);
+        while (ntc > 1 || ntw > 1) {
+            Sleep(200);
+            sc.numStacksWaiting(ntc, ntw);
+        }
+        if (((int) tim.getElapsedTimeInSec()/100) > ethundred) {
+            ethundred = (int) tim.getElapsedTimeInSec()/100;
+            cout << "et = " << tim.getElapsedTimeInSec() << ";  " << f << "/" << totalFrames << " done.  " << tim.getElapsedTimeInSec() / f *(totalFrames - f) << " s remain";
+        }
+
+    }
+
+    sc.finishRecording();
+    sc.closeOutputFile();
+    if (im != NULL) {
+        cvReleaseImage(&im);
+        return 0;
+    } else {
+        return -1;
+    }
+
+    
 }

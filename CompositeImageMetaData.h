@@ -3,6 +3,7 @@
  * Author: Marc
  *
  * Created on November 5, 2010, 10:00 AM
+ * 
  * An image metadata class that contains a list of other image meta datas
  * this way, you can combine metadata from multiple sources fairly easily
  */
@@ -31,6 +32,9 @@ public:
     std::vector<const ImageMetaData *> getMetaDataVector();
 
     static CompositeImageMetaData *fromFile (std::ifstream &is);
+
+    virtual ImageMetaData *clone() const;
+
 protected:
     std::vector <ImageMetaData *> imd;
     void removeNulls();

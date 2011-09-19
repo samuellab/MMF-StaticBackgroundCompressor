@@ -31,6 +31,7 @@ public:
     virtual NameValueMetaData *copy() const;
 
     static NameValueMetaData *fromFile (std::ifstream &is);
+    virtual ImageMetaData *clone() const;
 protected:
     std::map<std::string, double> data;
 

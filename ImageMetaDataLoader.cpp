@@ -3,6 +3,7 @@
  * Author: Marc
  * 
  * Created on November 5, 2010, 3:31 PM
+ * 
  */
 
 #include "ImageMetaDataLoader.h"

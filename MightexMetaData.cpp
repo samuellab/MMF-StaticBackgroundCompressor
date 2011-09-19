@@ -70,3 +70,7 @@ std::map<std::string, double> MightexMetaData::getFieldNamesAndValues() const {
 TProcessedDataProperty MightexMetaData::getAttributes() const{
     return attributes;
 }
+
+ImageMetaData *MightexMetaData::clone() const {
+    return new MightexMetaData(&(this->attributes));
+}

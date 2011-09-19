@@ -4,6 +4,8 @@
  *
  * Created on November 10, 2010, 3:43 PM
  * A class that supports writing extra data on a frame by frame basis
+ *
+ * used to write out metadata stored in background removed image stacks
  */
 
 #ifndef EXTRADATAWRITER_H

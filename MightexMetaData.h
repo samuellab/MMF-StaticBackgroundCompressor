@@ -3,6 +3,10 @@
  * Author: Marc
  *
  * Created on October 27, 2010, 9:38 AM
+ *
+ * stores metadata recovered from the mightex camera API
+ * used in conjunction with libraries that directly access the mightex API
+ * but otherwise probably not useful to you
  */
 
 #ifndef MIGHTEXMETADATA_H
@@ -33,6 +37,8 @@ public:
      */
     static MightexMetaData *fromFile(std::ifstream &is);
     
+    virtual ImageMetaData *clone() const;
+
 protected:
     TProcessedDataProperty attributes;
 private:
