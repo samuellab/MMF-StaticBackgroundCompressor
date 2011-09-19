@@ -17,7 +17,7 @@ StaticBackgroundCompressor *StaticBackgroundCompressorLoader::fromFile(std::ifst
             return StaticBackgroundCompressor::fromDisk(is);
             break;
         default:
-            cout << "did not recognize ID code";
+            cout << "did not recognize ID code " << hex << id << dec;
             return StaticBackgroundCompressor::fromDisk(is);
             break;
 

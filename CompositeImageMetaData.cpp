@@ -112,4 +112,5 @@ ImageMetaData *CompositeImageMetaData::clone() const{
             cimd->imd.push_back((*it)->clone());
         }
     }
+    return cimd;
 }

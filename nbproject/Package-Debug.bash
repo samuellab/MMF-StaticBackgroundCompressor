@@ -11,9 +11,9 @@ CND_CONF=Debug
 CND_DISTDIR=dist
 NBTMPDIR=build/${CND_CONF}/${CND_PLATFORM}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/image-stack-compressor
-OUTPUT_BASENAME=image-stack-compressor
-PACKAGE_TOP_DIR=image-stack-compressor/
+OUTPUT_PATH=image_stack_compressor.lib
+OUTPUT_BASENAME=image_stack_compressor.lib
+PACKAGE_TOP_DIR=Image-Stack-Compressor/
 
 # Functions
 function checkReturnCode
@@ -58,15 +58,15 @@ mkdir -p ${NBTMPDIR}
 
 # Copy files and create directories and links
 cd "${TOP}"
-makeDirectory "${NBTMPDIR}/image-stack-compressor/lib"
+makeDirectory "${NBTMPDIR}/Image-Stack-Compressor/lib"
 copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
 
 
 # Generate tar file
 cd "${TOP}"
-rm -f ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/image-stack-compressor.tar
+rm -f ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/Image-Stack-Compressor.tar
 cd ${NBTMPDIR}
-tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/image-stack-compressor.tar *
+tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/Image-Stack-Compressor.tar *
 checkReturnCode
 
 # Cleanup

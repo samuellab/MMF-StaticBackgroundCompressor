@@ -138,25 +138,26 @@ void StaticBackgroundCompressor::toDisk(std::ofstream& os) {
 }
 
 std::string StaticBackgroundCompressor::saveDescription() {
-//    cout << "entered sbc save description\n";
+    cout << "entered sbc save description\n";
     std::stringstream os;
     os << "Stack of common background images, beginning with this header:\n" << headerDescription();
- //   cout << "Stack of common background images, beginning with this header:\n" << headerDescription();
+    cout << "Stack of common background images, beginning with this header:\n" << headerDescription();
     os << "Then the background image, as an IplImage, starting with the " << sizeof (IplImage) << " byte image header, followed by the image data\n";
- //   cout << "Then the background image, as an IplImage, starting with the " << sizeof (IplImage) << " byte image header, followed by the image data\n";
+    cout << "Then the background image, as an IplImage, starting with the " << sizeof (IplImage) << " byte image header, followed by the image data\n";
     os << "Then nframes background removed images containing only differences from the background, in this format:\n";
- //   cout << "Then nframes background removed images containing only differences from the background, in this format:\n";
+    cout << "Then nframes background removed images containing only differences from the background, in this format:\n";
     if (bri.empty()) {
         os << "<no background removed images in stack>\n";
     } else {
- //       cout << "bri.front = " << (int) bri.front();
+        cout << "bri.front = " << (int) bri.front();
         if (bri.front() == NULL) {
             os << "<background removed image is a NULL pointer>\n";
         } else {
             os << bri.front()->saveDescription();
+
         }
     }
-//    cout << "ended sbc save description\n";
+    cout << "ended sbc save description\n";
     return os.str();
 }
 std::string StaticBackgroundCompressor::headerDescription() {

@@ -336,9 +336,12 @@ int StackReader::decimateStack(const char* outputname, int thresholdAboveBackgro
 
     Timer tim;
     sc.setOutputFileName(outputname);
-    sc.openOutputFile();
+    cout << outputname;
     
-    sc.setFrameRate(30);
+    sc.openOutputFile();
+
+    double frameRate = 40;
+    sc.setFrameRate(frameRate);
 
     sc.startThreads();
 
@@ -346,7 +349,7 @@ int StackReader::decimateStack(const char* outputname, int thresholdAboveBackgro
     tim.start();
     int ethundred = 0;
     for (int f = 0; f < totalFrames; f += decimationCount) {
-
+       // cout << f << ", " << f/decimationCount/tim.getElapsedTimeInSec() << " Hz" << "\t";
         
         getFrame(f, &im);
         
@@ -355,7 +358,12 @@ int StackReader::decimateStack(const char* outputname, int thresholdAboveBackgro
         }
         setSBC(f);
         const ImageMetaData* imd = sbc->getMetaData(f - startFrame);
-        if (true) {
+        if (false) {
+            cout << imd->saveDescription();
+            cout << imd->clone()->saveDescription();
+
+        }
+        if (false) {
             map<string,double>mdp = imd->getFieldNamesAndValues();
             for (map<string, double>::const_iterator it = mdp.begin(); it != mdp.end(); ++it) {
                 cout << it->first << "," << it->second << "\t";
@@ -371,9 +379,17 @@ int StackReader::decimateStack(const char* outputname, int thresholdAboveBackgro
 
         int ntc, ntw;
         sc.numStacksWaiting(ntc, ntw);
+        if (ntc > 1 || ntw > 1) {
+            cout << ntc << "waiting to be compressed " << ntw << " waiting to be written" << endl;
+        } else {
+            Sleep(1000/frameRate);
+        }
         while (ntc > 1 || ntw > 1) {
             Sleep(200);
             sc.numStacksWaiting(ntc, ntw);
+        } 
+        if (ntc > 1 || ntw > 1) {
+            cout << ntc << "ERROR: waiting to be compressed " << ntw << " waiting to be written" << endl;
         }
         if (((int) tim.getElapsedTimeInSec()/100) > ethundred) {
             ethundred = (int) tim.getElapsedTimeInSec()/100;
