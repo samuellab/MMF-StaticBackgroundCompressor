@@ -33,8 +33,9 @@ int main(int argc, char** argv) {
   //loadAndPlayTestStack();
  // testLSC();
 
+    testSR();
     //testWTSC();
-    testRecompress();
+   // testRecompress();
     return 0;
 }
 void loadAndPlayTestStack() {
@@ -94,7 +95,8 @@ void testSR() {
    // StackReader sr("\\\\labnas2\\LarvalCO2\\mess_stack.mmf");
   //  StackReader sr("c:\\teststack.bin");
    // StackReader sr("\\\\labnas2\\LarvalCO2\\Image Data\\control air only\\20101105\\CS5\\CS5_stack.mmf");
-    StackReader sr("\\\\labnas2\\Phototaxis\\exponentialstack.mmf");
+    //StackReader sr("\\\\labnas2\\Phototaxis\\exponentialstack.mmf");
+    StackReader sr("E:\\from Bruno - thermo from Janelia\\CS@CS@t10@n#n#n#n@30.mmf");
     cout << "created sr\n";
 //    sr.createSupplementalDataFile("c:\\testcs5_dat.dat");
     sr.playMovie();

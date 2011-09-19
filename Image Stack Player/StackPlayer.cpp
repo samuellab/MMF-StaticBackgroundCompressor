@@ -25,16 +25,18 @@ int parseArguments(int argc, char **argv, string &filename, int &delayms, int &s
  */
 int main(int argc, char** argv) {
     string filename;
-    int delayms, startframe, endframe;
+    int delayms, startframe = 0, endframe = -1;
     bool annotated;
     if (parseArguments(argc, argv, filename, delayms, startframe, endframe, annotated) < 0) {
         return 0;
     }
+   // cout << "opening stack reader" << endl;
     StackReader sr(filename.c_str());
     if (!sr.dataFileOk()) {
         cout << "couldn't open or parse data file: " << filename;
         return 0;
     }
+   // cout << "stack reader opened" << endl;
     sr.playMovie(startframe, endframe, delayms, "MMF Player", annotated);
     return 0;
 }

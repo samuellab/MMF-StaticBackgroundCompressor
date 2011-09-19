@@ -64,7 +64,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-LNecessary\ Libraries\ and\ Includes/CV/lib -lcv -lcvaux -lcvcam -lcxcore -lhighgui
+LDLIBSOPTIONS=-LNecessary\ Libraries\ and\ Includes/CV/lib -lcv -lcxcore -lhighgui
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}

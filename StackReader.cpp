@@ -98,7 +98,7 @@ void StackReader::parseInputFile() {
     char c = 'a';
     while (c != '\0') {
         infile->get(c);
-     //   cout << c;
+        cout << c;
         if ((infile->tellg() % 10240) == 0) {
        //     cout << (infile->tellg()/1024) << " kb into header";
         }
@@ -158,11 +158,13 @@ void StackReader::setSBC(int frameNum) {
 
     //if we have already loaded an sbc, and it's the right one for our frame, do nothing
     if (sbc != NULL && startFrame <= frameNum && frameNum < endFrame) {
+  //      cout << "frame was ok" << endl;
         return;
     }
 
     //otherwise, nuke the old sbc (if any) and load the right one
     if (sbc != NULL) {
+  //      cout << "nuking sbc" << endl;
         delete sbc;
         sbc = NULL;
     }
@@ -171,7 +173,7 @@ void StackReader::setSBC(int frameNum) {
     if (it != keyframelocations.begin()) {
         --it;
     }
-//    cout << "sbc starting with frame " << it->first << "located at " << it->second << " on disk\n";
+ //   cout << "sbc starting with frame " << it->first << "located at " << it->second << " on disk\n";
     infile->seekg(it->second, ifstream::beg);
     startFrame = it->first;
     sbc = StaticBackgroundCompressorLoader::fromFile(*infile);
@@ -248,6 +250,8 @@ void StackReader::annotatedFrame(int frameNum, IplImage** dst) {
 }
 
 void StackReader::playMovie(int startFrame, int endFrame, int delay_ms, char* windowName, bool annotated) {
+  //  cout << "entered play movie" << endl;
+    
     startFrame = startFrame < 0 ? 0 : startFrame;
     endFrame = endFrame > totalFrames ? totalFrames : endFrame;
     endFrame = endFrame < 0 ? totalFrames : endFrame;
@@ -255,18 +259,22 @@ void StackReader::playMovie(int startFrame, int endFrame, int delay_ms, char* wi
     if (windowName == NULL) {
         windowName = "background restored movie";
     }
+  //  cout << "cvNamedWindow" << windowName << endl;
     cvNamedWindow(windowName, 0);
     IplImage *im = NULL;
    // IplImage *colorim = NULL;
 
     Timer tim;
+//    cout << "starting loop" << endl;
+    Sleep(2000);
     for (int f = startFrame; f < endFrame; ++f) {
 
         tim.start();
-     //  cout << f << "\n";
+       // cout << f << "\t";//Sleep(1000);
         if (annotated) {
             annotatedFrame(f, &im);
         } else {
+         //   cout << "calling get frame" << endl;// Sleep(1000);
             getFrame(f, &im);
         }
         if (im == NULL) {
