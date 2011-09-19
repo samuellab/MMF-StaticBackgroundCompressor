@@ -61,7 +61,7 @@
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
-    <conf name="Debug" type="3">
+    <conf name="Debug" type="1">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
         <compilerSet>MinGW|MinGW</compilerSet>
@@ -82,9 +82,18 @@
           </incDir>
           <commandLine>-static-libgcc -static-libstdc++</commandLine>
         </ccTool>
-        <archiverTool>
-          <output>image_stack_compressor.lib</output>
-        </archiverTool>
+        <linkerTool>
+          <linkerAddLib>
+            <pElem>Necessary Libraries and Includes/CV/lib</pElem>
+          </linkerAddLib>
+          <linkerLibItems>
+            <linkerLibLibItem>cv</linkerLibLibItem>
+            <linkerLibLibItem>cvaux</linkerLibLibItem>
+            <linkerLibLibItem>cvcam</linkerLibLibItem>
+            <linkerLibLibItem>cxcore</linkerLibLibItem>
+            <linkerLibLibItem>highgui</linkerLibLibItem>
+          </linkerLibItems>
+        </linkerTool>
       </compileType>
     </conf>
     <conf name="Release" type="2">

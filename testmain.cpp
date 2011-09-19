@@ -26,7 +26,7 @@ void createTestStack();
 void loadAndPlayTestStack() ;
 void testLSC();
 void testWTSC();
-
+void testRecompress();
 void testSR();
 int main(int argc, char** argv) {
    // createTestStack();
@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
  // testLSC();
 
     //testWTSC();
-    testSR();
+    testRecompress();
     return 0;
 }
 void loadAndPlayTestStack() {
@@ -98,6 +98,13 @@ void testSR() {
     cout << "created sr\n";
 //    sr.createSupplementalDataFile("c:\\testcs5_dat.dat");
     sr.playMovie();
+}
+
+void testRecompress() {
+    StackReader sr("E:\\from Bruno - thermo from Janelia\\CS@CS@t10@n#n#n#n@30.mmf");
+    cout << "created sr\n";
+    sr.decimateStack("E:\\from Bruno - thermo from Janelia\\CS@CS@t10@n#n#n#n@30.mmf", 10, 4, 6, 3);
+    cout << "done!\n";
 }
 
 void testLSC() {

@@ -355,6 +355,14 @@ int StackReader::decimateStack(const char* outputname, int thresholdAboveBackgro
         }
         setSBC(f);
         const ImageMetaData* imd = sbc->getMetaData(f - startFrame);
+        if (true) {
+            map<string,double>mdp = imd->getFieldNamesAndValues();
+            for (map<string, double>::const_iterator it = mdp.begin(); it != mdp.end(); ++it) {
+                cout << it->first << "," << it->second << "\t";
+            }
+            cout << "\n";
+        }
+    
         if (imd != NULL) {
             sc.newFrame(im, imd->clone());
         } else {
