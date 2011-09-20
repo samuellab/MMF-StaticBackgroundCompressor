@@ -68,13 +68,12 @@ LDLIBSOPTIONS=-LNecessary\ Libraries\ and\ Includes/CV/lib -lcv -lcxcore -lhighg
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-Debug.mk dist/Debug/MinGW-Windows/libimage-stack-compressor.a
+	"${MAKE}"  -f nbproject/Makefile-Debug.mk image_stack_compressor.lib
 
-dist/Debug/MinGW-Windows/libimage-stack-compressor.a: ${OBJECTFILES}
-	${MKDIR} -p dist/Debug/MinGW-Windows
-	${RM} dist/Debug/MinGW-Windows/libimage-stack-compressor.a
-	${AR} -rv ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libimage-stack-compressor.a ${OBJECTFILES} 
-	$(RANLIB) dist/Debug/MinGW-Windows/libimage-stack-compressor.a
+image_stack_compressor.lib: ${OBJECTFILES}
+	${RM} image_stack_compressor.lib
+	${AR} -rv image_stack_compressor.lib ${OBJECTFILES} 
+	$(RANLIB) image_stack_compressor.lib
 
 ${OBJECTDIR}/StackReader.o: StackReader.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -157,7 +156,7 @@ ${OBJECTDIR}/LinearStackCompressor.o: LinearStackCompressor.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r build/Debug
-	${RM} dist/Debug/MinGW-Windows/libimage-stack-compressor.a
+	${RM} image_stack_compressor.lib
 
 # Subprojects
 .clean-subprojects:
