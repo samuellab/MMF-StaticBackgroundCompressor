@@ -161,7 +161,7 @@ unsigned __stdcall WindowsThreadStackCompressor::compressionThreadFunction() {
              EnterCriticalSection(&compressingStackCS);
              compressionThreadTimer.tic("compressing a frame");
              stackBeingCompressed->processFrame();
-             cout << ++numcompressed << " processed" << endl;
+            // cout << ++numcompressed << " processed" << endl;
              LeaveCriticalSection(&compressingStackCS);
              compressionThreadTimer.toc("compressing a frame");
          } else {
@@ -178,7 +178,7 @@ unsigned __stdcall WindowsThreadStackCompressor::startCompressionThread(void* pt
 }
 
 unsigned __stdcall WindowsThreadStackCompressor::writingThreadFunction() {
-    cout << "started writing thread" << endl;
+  //  cout << "started writing thread" << endl;
     while (writingThreadActive) {
         /**************writingStackCS, imageStacksCS******************/
         EnterCriticalSection(&writingStackCS);
@@ -190,14 +190,14 @@ unsigned __stdcall WindowsThreadStackCompressor::writingThreadFunction() {
 
         stacksLeftToWrite = (stackBeingWritten != NULL);
         if (stacksLeftToWrite) {
-            cout << "writing a stack\n";
+    //        cout << "writing a stack\n";
             /**********************writingStackCS******************/
             EnterCriticalSection(&writingStackCS);
             if (stacksavedescription.empty()) {
                 writingThreadTimer.tic("creating save description");
                 stacksavedescription = stackBeingWritten->saveDescription();
                 writingThreadTimer.toc("creating save description");
-                cout << "created save description\n";
+      //          cout << "created save description\n";
             }
             /*********************outfileCS***********************/
             
@@ -211,7 +211,7 @@ unsigned __stdcall WindowsThreadStackCompressor::writingThreadFunction() {
                return 1;
             }
 
-            cout << "writing a stack" << endl;
+        //    cout << "writing a stack" << endl;
            stackBeingWritten->toDisk(*outfile);
            writingThreadTimer.toc("writing a stack to disk");
            LeaveCriticalSection(&outfileCS);

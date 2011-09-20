@@ -290,13 +290,15 @@ BackgroundRemovedImage *BackgroundRemovedImage::fromDisk(std::ifstream& is, cons
     }
     bri->metadata = ImageMetaDataLoader::fromFile(is);
     is.seekg(cur_loc + (std::ifstream::pos_type) hi.headersize);
-
+ //   cout << "depth= " << hi.depth << ";  numims= " << hi.numims << ";  nchannels= " << hi.nchannels << endl;
     for (int j = 0; j < hi.numims; ++j) {
         CvRect r;
         is.read((char *) &r, sizeof(CvRect));
+   //     cout << "j: " << j << "  w: " << r.width << "  h: " << r.height << "\t";
         IplImage *im = readImageData(is, r.width, r.height, hi.depth, hi.nchannels);
         bri->differencesFromBackground.push_back(pair<CvRect, IplImage *> (r, im));
     }
+  //  cout << endl;
     return bri;
 }
 
@@ -304,6 +306,7 @@ void BackgroundRemovedImage::restoreImage(IplImage** dst) {
     if (backgroundIm == NULL) {
         return;
     }
+
     setImOriginFromMetaData();
     IplImage *tmp = NULL;
     assert(dst != NULL);
@@ -315,6 +318,7 @@ void BackgroundRemovedImage::restoreImage(IplImage** dst) {
     if (imOrigin.x != 0 || imOrigin.y != 0) {
         tmp = *dst;
         *dst = NULL;
+      //  cout << "imorigin.x = " << imOrigin.x << "imorigin.y = " << imOrigin.y;
     }
     
     if (*dst == NULL || (*dst)->width != backgroundIm->width ||  (*dst)->height != backgroundIm->height ||

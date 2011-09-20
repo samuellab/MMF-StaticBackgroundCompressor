@@ -79,17 +79,17 @@ void StackReader::openInputFile() {
 }
 
 void StackReader::parseInputFile() {
-   // cout << "parse input file " << fname << endl;
+    cout << "parse input file " << fname << endl;
     infile->seekg(0, ios::end);
     ifstream::pos_type length = (ifstream::pos_type) infile->tellg();
     infile->seekg(0, ios::beg); //go to start
- //   cout << "infile length = " << length << endl;
+    cout << "infile length = " << length << endl;
     
     if (length < 0 || !infile->good()) {
         stringstream ss;
         ss << "sizeof length = " << sizeof(length) << " length = " << length << " infile->fail = " << infile->fail() << " infile->good() = " << infile->good();
         setError (ss.str().c_str());
-        //setError("length < 0 or !infile->good");
+        setError("length < 0 or !infile->good");
         delete infile;
         infile = NULL;
         return;
@@ -105,7 +105,7 @@ void StackReader::parseInputFile() {
     }
     unsigned long idcode;
     infile->read((char *) &idcode, sizeof(idcode));
-   // cout << "id code = " << hex << idcode << dec << "\n";
+    cout << "id code = " << hex << idcode << dec << "\n";
     //find out headerSize & skip to end
     int headerSize;
     infile->read((char *) &headerSize, sizeof(headerSize));
@@ -173,7 +173,7 @@ void StackReader::setSBC(int frameNum) {
     if (it != keyframelocations.begin()) {
         --it;
     }
- //   cout << "sbc starting with frame " << it->first << "located at " << it->second << " on disk\n";
+   // cout << "sbc starting with frame " << it->first << "located at " << it->second << " on disk\n";
     infile->seekg(it->second, ifstream::beg);
     startFrame = it->first;
     sbc = StaticBackgroundCompressorLoader::fromFile(*infile);
@@ -334,21 +334,22 @@ CvRect StackReader::getLargestROI() {
 
 int StackReader::decimateStack(const char* outputname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int decimationCount) {
     WindowsThreadStackCompressor sc;
-    
+    bool showFrames = false;
     sc.setThresholds(0, thresholdAboveBackground, smallDimMinSize, lgDimMinSize);
     setSBC(0);
     sc.setIntervals(sbc->numProcessed(), 1);
+    sc.setOutputFileName(outputname);
 
     IplImage *im = NULL;
    // IplImage *colorim = NULL;
 
     Timer tim;
-    sc.setOutputFileName(outputname);
-    cout << outputname;
+   
+   // cout << outputname;
     
     sc.openOutputFile();
 
-    double frameRate = 40;
+    double frameRate = 100;
     sc.setFrameRate(frameRate);
 
     sc.startThreads();
@@ -356,6 +357,9 @@ int StackReader::decimateStack(const char* outputname, int thresholdAboveBackgro
     sc.startRecording(totalFrames);
     tim.start();
     int ethundred = 0;
+    if (showFrames) {
+        cvNamedWindow("source movie frame",0);
+    }
     for (int f = 0; f < totalFrames; f += decimationCount) {
        // cout << f << ", " << f/decimationCount/tim.getElapsedTimeInSec() << " Hz" << "\t";
         
@@ -384,14 +388,22 @@ int StackReader::decimateStack(const char* outputname, int thresholdAboveBackgro
         } else {
             sc.newFrame(im, NULL);
         }
+        if (showFrames) {
+            cvShowImage("source movie frame", im);
+            cvWaitKey(1000/frameRate);
+        }/*
+        else {
+            Sleep(1000/frameRate);
+        }*/
+
 
         int ntc, ntw;
         sc.numStacksWaiting(ntc, ntw);
+        /*
         if (ntc > 1 || ntw > 1) {
             cout << ntc << "waiting to be compressed " << ntw << " waiting to be written" << endl;
-        } else {
-            Sleep(1000/frameRate);
         }
+         * */
         while (ntc > 1 || ntw > 1) {
             Sleep(200);
             sc.numStacksWaiting(ntc, ntw);
@@ -399,9 +411,11 @@ int StackReader::decimateStack(const char* outputname, int thresholdAboveBackgro
         if (ntc > 1 || ntw > 1) {
             cout << ntc << "ERROR: waiting to be compressed " << ntw << " waiting to be written" << endl;
         }
+
         if (((int) tim.getElapsedTimeInSec()/100) > ethundred) {
             ethundred = (int) tim.getElapsedTimeInSec()/100;
-            cout << "et = " << tim.getElapsedTimeInSec() << ";  " << f << "/" << totalFrames << " done.  " << tim.getElapsedTimeInSec() / f *(totalFrames - f) << " s remain";
+            cout << "et = " << tim.getElapsedTimeInSec() << ";  " << f << "/" << totalFrames << " done.  " << tim.getElapsedTimeInSec() / f *(totalFrames - f) << " s remain" <<endl;
+            cout << (sc.numBytesWritten()>>20) << "MB written, " << f/decimationCount/tim.getElapsedTimeInSec() << " Hz" << endl;
         }
 
     }
@@ -415,5 +429,44 @@ int StackReader::decimateStack(const char* outputname, int thresholdAboveBackgro
         return -1;
     }
 
+    
+}
+
+std::string StackReader::diagnostics() {
+    stringstream s;
+    if (iserror) {
+        s << "error: " << getError();
+        return s.str();
+    }
+//    s << "no error" << endl;
+    setSBC(0);
+    if (sbc == NULL) {
+        s << getError() << endl;
+        s << "sbc was null" << endl;
+        return s.str();
+    }
+    s << "sbc save description:\n" << sbc->saveDescription() << endl;
+    //return s.str();
+    s << "sbc has " << sbc->numProcessed() << "frames" << endl;
+    s << "sbc frame size is " << sbc->getFrameSize().width << " x " << sbc->getFrameSize().height << endl;
+    s << "frame 0:" << endl << "meta data:" << endl;
+    const ImageMetaData* imd = sbc->getMetaData(0);
+    if (imd == NULL) {
+        s << "meta data is NULL" << endl;
+    } else {
+        s << imd->saveDescription() << endl;
+        map<string,double>mdp = imd->getFieldNamesAndValues();
+        for (map<string, double>::const_iterator it = mdp.begin(); it != mdp.end(); ++it) {
+            s << it->first << "," << it->second << "\t";
+        }
+        s << endl;
+    }
+    s << sbc->numRegionsInFrame(0) << " regions different from background" << endl;
+    //return s.str();
+    IplImage *im = NULL;
+    sbc->reconstructFrame(0, &im);
+    s << "im params: w= " << im->width << ", h= " << im->height << ", nchannels = " << im->nChannels << ", width step = " << im->widthStep << "imageSize = " << im->imageSize << endl;
+
+    return s.str();
     
 }

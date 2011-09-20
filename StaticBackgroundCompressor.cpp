@@ -125,7 +125,8 @@ void StaticBackgroundCompressor::toDisk(std::ofstream& os) {
     std::ofstream::pos_type start_loc = os.tellp();
     char zero[headerSizeInBytes] = {0};
     os.write(zero, headerSizeInBytes);
-    
+    cvResetImageROI(background);
+    background->roi = NULL;
     writeIplImageToByteStream(os, background);
     for (vector<BackgroundRemovedImage *>::iterator it = bri.begin(); it != bri.end(); ++it) {
         (*it)->toDisk(os);
@@ -138,18 +139,18 @@ void StaticBackgroundCompressor::toDisk(std::ofstream& os) {
 }
 
 std::string StaticBackgroundCompressor::saveDescription() {
-    cout << "entered sbc save description\n";
+  //  cout << "entered sbc save description\n";
     std::stringstream os;
     os << "Stack of common background images, beginning with this header:\n" << headerDescription();
-    cout << "Stack of common background images, beginning with this header:\n" << headerDescription();
+ //   cout << "Stack of common background images, beginning with this header:\n" << headerDescription();
     os << "Then the background image, as an IplImage, starting with the " << sizeof (IplImage) << " byte image header, followed by the image data\n";
-    cout << "Then the background image, as an IplImage, starting with the " << sizeof (IplImage) << " byte image header, followed by the image data\n";
+//    cout << "Then the background image, as an IplImage, starting with the " << sizeof (IplImage) << " byte image header, followed by the image data\n";
     os << "Then nframes background removed images containing only differences from the background, in this format:\n";
-    cout << "Then nframes background removed images containing only differences from the background, in this format:\n";
+//    cout << "Then nframes background removed images containing only differences from the background, in this format:\n";
     if (bri.empty()) {
         os << "<no background removed images in stack>\n";
     } else {
-        cout << "bri.front = " << (int) bri.front();
+ //       cout << "bri.front = " << (int) bri.front();
         if (bri.front() == NULL) {
             os << "<background removed image is a NULL pointer>\n";
         } else {
@@ -157,7 +158,7 @@ std::string StaticBackgroundCompressor::saveDescription() {
 
         }
     }
-    cout << "ended sbc save description\n";
+  //  cout << "ended sbc save description\n";
     return os.str();
 }
 std::string StaticBackgroundCompressor::headerDescription() {
@@ -181,11 +182,12 @@ StaticBackgroundCompressor * StaticBackgroundCompressor::fromDisk(std::ifstream&
     HeaderInfoT hi;
 
     hi = getHeaderInfo(is);
- //   cout << "header size is " << hi.headerSize << "  id code is " << hex << hi.idcode <<dec<< "  numframes = " << hi.numframes << std::endl;
+   // cout << "header size is " << hi.headerSize << "  id code is " << hex << hi.idcode <<dec<< "  numframes = " << hi.numframes << std::endl;
     is.seekg(start_loc + (std::ifstream::pos_type) hi.headerSize);
     StaticBackgroundCompressor *sbc = new StaticBackgroundCompressor();
+ //   cout << "reading background" << endl;
     sbc->background = readIplImageFromByteStream(is);
-  
+//    cout << "background read in" << endl;
     for (int j = 0; j < hi.numframes; ++j) {
         //BackgroundRemovedImage *bri = BackgroundRemovedImage::fromDisk(is, sbc->background);
         BackgroundRemovedImage *bri = BackgroundRemovedImageLoader::fromFile(is, sbc->background);
@@ -205,24 +207,54 @@ int StaticBackgroundCompressor::sizeOnDisk() {
 
 void StaticBackgroundCompressor::writeIplImageToByteStream(std::ofstream& os, const IplImage *src) {
     assert(src != NULL);
+  //  bool resetroi = false;
+   // CvRect roi;
     int cloc = os.tellp();
 
+    /*
+    if (src->roi != NULL) {
+        roi = cvGetImageROI(src);
+        cvResetImageROI(src);
+        src->roi = NULL;
+        resetroi = true;
+    }
+*/
     os.write((char *) src, sizeof(IplImage));
     os.write((char *) src->imageData, src->imageSize);
+
+    //if (resetroi) {
+      //  cvSetImageROI(src, roi);
+    //}
  }
 
 IplImage * StaticBackgroundCompressor::readIplImageFromByteStream(std::ifstream& is) {
     IplImage *im = (IplImage *) malloc(sizeof(IplImage));
     is.read((char *) im, sizeof(IplImage));
+    im->roi = NULL;
+  //  cout << "im params: w= " << im->width << ", h= " << im->height << ", nchannels = " << im->nChannels << ", depth = " << im->depth << ", width step = " << im->widthStep << "imageSize = " << im->imageSize << endl;
+   // cout << "hmm..." << endl;
+  //  cout << "imsize = " << cvGetSize(im).width << " x " << cvGetSize(im).height << endl;
     char *data = (char *) malloc(im->imageSize);
+   // cout << "data = " << ((unsigned long) data) << endl;
+  //  cout << "memory allocated , imsize = " << cvGetSize(im).width << " x " << cvGetSize(im).height << endl;
     is.read(data, im->imageSize);
+   // cout << "data read in; setting image data , imsize = " << cvGetSize(im).width << " x " << cvGetSize(im).height << endl;
+    
     cvSetData(im, data, im->widthStep);
+  //  cout << "image data = " << ((unsigned long) im->imageData) << ", image data origin = " << ((unsigned long) im->imageDataOrigin) << endl;
+ //   cout << "im params: w= " << im->width << ", h= " << im->height << ", nchannels = " << im->nChannels << ", depth = " << im->depth << ", width step = " << im->widthStep << "imageSize = " << im->imageSize << endl;
+   
     //IplImage *imout = cvCloneImage(im);
-    IplImage *imout = cvCreateImage(cvGetSize(im), im->depth, im->nChannels);
+   // cout << "image data set; cloning image, imsize = " << cvGetSize(im).width << " x " << cvGetSize(im).height << endl;
+    IplImage *imout = cvCreateImage(cvSize(im->width, im->height), im->depth, im->nChannels);
+    assert(imout != NULL);
+   // cout << "imout params: w= " << imout->width << ", h= " << imout->height << ", nchannels = " << imout->nChannels << ", depth = " << imout->depth << ", width step = " << imout->widthStep << "imageSize = " << imout->imageSize << endl;
+
     cvCopyImage(im, imout);
+ //   cout << "freeing memory" << endl;
     free(data);
     free(im);
-
+  //  cout << "returning" << endl;
     return imout;
 }
 
@@ -340,8 +372,14 @@ CvSize StaticBackgroundCompressor::getFrameSize() {
         return cvSize(0,0);
     }
     CvSize sz = cvGetSize(background);
+   // cout << endl << "sz.width = " << sz.width << ", sz.height = " << sz.height << endl;
+    IplImage *im = background;
+   // cout << "background params: w= " << im->width << ", h= " << im->height << ", nchannels = " << im->nChannels << ", width step = " << im->widthStep << "imageSize = " << im->imageSize << endl;
+
     sz.width += imOrigin.x;
     sz.height += imOrigin.y;
+    //cout << endl << "imorigin.x= " << imOrigin.x << ", imorigin.y= " << imOrigin.y << ", sz.width = " << sz.width << ", sz.height = " << sz.height << endl;
+    return sz;
 }
 
 CvRect StaticBackgroundCompressor::getValidRoi() {
@@ -353,4 +391,5 @@ CvRect StaticBackgroundCompressor::getValidRoi() {
     setImageOriginFromBRI();
     CvSize sz = cvGetSize(background);
     r.x = imOrigin.x; r.y = imOrigin.y; r.width = sz.width; r.height = sz.height;
+    return r;
 }

@@ -64,6 +64,8 @@ public:
         return errormessage;
     }
 
+    virtual std::string diagnostics();
+
     virtual CvRect getLargestROI ();
 
     /* virtual void decimateStack(const char *outputname, int decimationCount = 2);

@@ -33,9 +33,9 @@ int main(int argc, char** argv) {
   //loadAndPlayTestStack();
  // testLSC();
 
-    testSR();
+   // testSR();
     //testWTSC();
-   // testRecompress();
+    testRecompress();
     return 0;
 }
 void loadAndPlayTestStack() {
@@ -103,10 +103,18 @@ void testSR() {
 }
 
 void testRecompress() {
+    
     StackReader sr("E:\\from Bruno - thermo from Janelia\\CS@CS@t10@n#n#n#n@30.mmf");
     cout << "created sr\n";
-    sr.decimateStack("E:\\from Bruno - thermo from Janelia\\CS@CS@t10@n#n#n#n@30_reduced.mmf", 10, 4, 6, 3);
+    cout << sr.diagnostics();
+    sr.decimateStack("E:\\from Bruno - thermo from Janelia\\CS@CS@t10@n#n#n#n@30_reduced.mmf", 10, 4, 6, 4);
     cout << "done!\n";
+     
+    StackReader sr2("E:\\from Bruno - thermo from Janelia\\CS@CS@t10@n#n#n#n@30_reduced.mmf");
+    cout << "sr2 loaded\n" << endl;
+    cout << sr2.diagnostics();
+    sr2.playMovie(0,-1,30,"recompressed movie", true);
+
 }
 
 void testLSC() {

@@ -83,7 +83,6 @@
           <commandLine>-static-libgcc -static-libstdc++</commandLine>
         </ccTool>
         <archiverTool>
-          <output>image_stack_compressor.lib</output>
         </archiverTool>
       </compileType>
     </conf>
