@@ -10,7 +10,8 @@
 #include <string>
 #include <fstream>
 #include <algorithm>
-
+#include <iostream>
+#include <iomanip>
 #include "ExtraDataWriter.h"
 
 using namespace std;
@@ -117,7 +118,7 @@ void ExtraDataWriter::writeRow(std::ostream& os, const std::vector<std::string>&
         if (frame == NULL || (it = frame->find(*cn)) == frame->end()) {
             os << "NaN\t";
         } else {
-            os << it->second << "\t";
+            os << setprecision(12) << it->second << "\t";
         }
     }
     os << endl;
