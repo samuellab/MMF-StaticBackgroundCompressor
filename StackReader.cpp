@@ -98,9 +98,11 @@ void StackReader::parseInputFile() {
     char c = 'a';
     while (c != '\0') {
         infile->get(c);
-        cout << c;
-        if ((infile->tellg() % 10240) == 0) {
-       //     cout << (infile->tellg()/1024) << " kb into header";
+        if (false){
+            cout << c;
+            if ((infile->tellg() % 10240) == 0) {
+           //     cout << (infile->tellg()/1024) << " kb into header";
+            }
         }
     }
     unsigned long idcode;
@@ -428,8 +430,6 @@ int StackReader::decimateStack(const char* outputname, int thresholdAboveBackgro
     } else {
         return -1;
     }
-
-    
 }
 
 std::string StackReader::diagnostics() {
