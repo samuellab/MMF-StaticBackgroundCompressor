@@ -43,6 +43,7 @@
             <pElem>..</pElem>
             <pElem>../Necessary Libraries and Includes/CV/headers</pElem>
           </incDir>
+          <commandLine>-static-libgcc -static-libstdc++</commandLine>
         </ccTool>
         <linkerTool>
           <output>decimatestack.exe</output>
@@ -57,6 +58,7 @@
             <linkerLibLibItem>cxcore</linkerLibLibItem>
             <linkerLibLibItem>highgui</linkerLibLibItem>
           </linkerLibItems>
+          <commandLine>-static-libgcc -static-libstdc++</commandLine>
         </linkerTool>
       </compileType>
     </conf>

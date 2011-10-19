@@ -40,8 +40,8 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=
-CXXFLAGS=
+CCFLAGS=-static-libgcc -static-libstdc++
+CXXFLAGS=-static-libgcc -static-libstdc++
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -57,7 +57,7 @@ LDLIBSOPTIONS=-L../Necessary\ Libraries\ and\ Includes/CV/lib -L.. -limage_stack
 	"${MAKE}"  -f nbproject/Makefile-Debug.mk decimatestack.exe
 
 decimatestack.exe: ${OBJECTFILES}
-	${LINK.cc} -o decimatestack.exe ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} -static-libgcc -static-libstdc++ -o decimatestack.exe ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/StackDecimator.o: StackDecimator.cpp 
 	${MKDIR} -p ${OBJECTDIR}

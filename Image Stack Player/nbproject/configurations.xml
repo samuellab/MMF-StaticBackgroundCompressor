@@ -43,6 +43,7 @@
             <pElem>../Necessary Libraries and Includes/CV/headers</pElem>
             <pElem>..</pElem>
           </incDir>
+          <commandLine>-static-libgcc -static-libstdc++</commandLine>
         </ccTool>
         <linkerTool>
           <output>./mmf_player</output>
