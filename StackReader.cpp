@@ -188,6 +188,21 @@ void StackReader::setSBC(int frameNum) {
     validROI = sbc->getValidRoi();
 }
 
+CvSize StackReader::getImageSize() {
+    if (sbc == NULL) {
+        if (!dataFileOk()) {
+            setError("data file not properly opened prior to asking for image size");
+            return cvSize(0,0);
+        }
+        setSBC(startFrame);
+    }
+    if (sbc == NULL) {
+        return cvSize(0,0);
+    }
+    return sbc->getFrameSize();
+
+}
+
 void StackReader::getBackground(int frameNum, IplImage** dst, int frameRange) {
 
     setSBC(frameNum);

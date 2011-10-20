@@ -45,6 +45,8 @@ public:
     virtual void annotatedFrame (int frameNum, IplImage **dst);
     virtual void playMovie (int startFrame = 0, int endFrame = -1, int delay_ms = 50, char *windowName = NULL, bool annotated = true);
 
+    virtual CvSize getImageSize ();
+
     virtual void createSupplementalDataFile(const char *fname);
     virtual ExtraDataWriter *getSupplementalData();
 

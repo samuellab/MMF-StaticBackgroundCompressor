@@ -78,6 +78,17 @@ int getTotalFrames(void* SR) {
 
 }
 
+void getImageSize(void* SR, int *width, int *height) {
+    StackReader *sr = (StackReader *) SR;
+    if (sr == NULL || !sr->dataFileOk()) {
+        return;
+    }
+    CvSize sz = sr->getImageSize();
+    *width = sz.width;
+    *height = sz.height;
+
+}
+
 void createSupplementalDataFile (void *SR, const char *fname) {
     StackReader *sr = (StackReader *) SR;
     if (sr == NULL || !sr->dataFileOk()) {
