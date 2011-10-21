@@ -60,7 +60,7 @@ LDLIBSOPTIONS=-L../Necessary\ Libraries\ and\ Includes/CV/lib ../image_stack_com
 
 ./mmf_player.exe: ${OBJECTFILES}
 	${MKDIR} -p .
-	${LINK.cc} -o ./mmf_player ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} -static-libgcc -static-libstdc++ -o ./mmf_player ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/StackPlayer.o: StackPlayer.cpp 
 	${MKDIR} -p ${OBJECTDIR}
