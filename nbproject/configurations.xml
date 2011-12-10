@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="69">
+  <logicalFolder name="root" displayName="root" projectFiles="true">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true"
+                   kind="SOURCE_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true"
+                   kind="SOURCE_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true"
+                   kind="SOURCE_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+    <itemPath>BackgroundRemovedImage.cpp</itemPath>
+    <itemPath>BackgroundRemovedImage.h</itemPath>
+    <itemPath>BackgroundRemovedImageLoader.cpp</itemPath>
+    <itemPath>BackgroundRemovedImageLoader.h</itemPath>
+    <itemPath>BlankMetaData.h</itemPath>
+    <itemPath>CompositeImageMetaData.cpp</itemPath>
+    <itemPath>CompositeImageMetaData.h</itemPath>
+    <itemPath>ExtraDataWriter.cpp</itemPath>
+    <itemPath>ExtraDataWriter.h</itemPath>
+    <itemPath>ImageMetaData.h</itemPath>
+    <itemPath>ImageMetaDataLoader.cpp</itemPath>
+    <itemPath>ImageMetaDataLoader.h</itemPath>
+    <itemPath>LinearStackCompressor.cpp</itemPath>
+    <itemPath>LinearStackCompressor.h</itemPath>
+    <itemPath>MightexMetaData.cpp</itemPath>
+    <itemPath>MightexMetaData.h</itemPath>
+    <itemPath>NameValueMetaData.cpp</itemPath>
+    <itemPath>NameValueMetaData.h</itemPath>
+    <itemPath>StackReader.cpp</itemPath>
+    <itemPath>StackReader.h</itemPath>
+    <itemPath>StaticBackgroundCompressor.cpp</itemPath>
+    <itemPath>StaticBackgroundCompressor.h</itemPath>
+    <itemPath>StaticBackgroundCompressorLoader.cpp</itemPath>
+    <itemPath>StaticBackgroundCompressorLoader.h</itemPath>
+    <itemPath>tictoc/Timer.cpp</itemPath>
+    <itemPath>tictoc/Timer.h</itemPath>
+    <itemPath>WindowsThreadStackCompressor.cpp</itemPath>
+    <itemPath>WindowsThreadStackCompressor.h</itemPath>
+    <itemPath>testmain.cpp</itemPath>
+    <itemPath>tictoc/tictoc.cpp</itemPath>
+    <itemPath>tictoc/tictoc.h</itemPath>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="3">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>MinGW|MinGW</compilerSet>
+        <platform>3</platform>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <incDir>
+            <pElem>Necessary Libraries and Includes/CV/headers</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>Necessary Libraries and Includes</pElem>
+            <pElem>Necessary Libraries and Includes/CV/headers</pElem>
+            <pElem>tictoc</pElem>
+          </incDir>
+          <commandLine>-static-libgcc -static-libstdc++</commandLine>
+        </ccTool>
+        <archiverTool>
+          <output>image_stack_compressor.lib</output>
+        </archiverTool>
+      </compileType>
+    </conf>
+    <conf name="Release" type="2">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>MinGW|MinGW</compilerSet>
+        <platform>3</platform>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+      </compileType>
+    </conf>
+  </confs>
+</configurationDescriptor>
