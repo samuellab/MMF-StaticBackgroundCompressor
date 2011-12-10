@@ -6,6 +6,11 @@
  * A class that supports writing extra data on a frame by frame basis
  *
  * used to write out metadata stored in background removed image stacks
+ *
+ * (C) Marc Gershow; licensed under the Creative Commons Attribution Share Alike 3.0 United States License.
+ * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/us/ or send a letter to
+ * Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.
+ *
  */
 
 #ifndef EXTRADATAWRITER_H

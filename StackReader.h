@@ -20,6 +20,10 @@
  *   StackReader sr("\\\\labnas2\\Phototaxis\\exponentialstack.mmf"); //open stack for reading
  *   sr.createSupplementalDataFile("c:\\testcs5_dat.dat"); //create a metadata file
  *   sr.playMovie(); //play a movie on the screen
+ * (C) Marc Gershow; licensed under the Creative Commons Attribution Share Alike 3.0 United States License.
+ * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/us/ or send a letter to
+ * Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.
+ *
  */
 
 #ifndef STACKREADER_H

@@ -1,11 +1,16 @@
 /* 
  * File:   BlankMetaData.h
- * Author: Marc
+ * Author: Marc Gershow
  *
  * Created on October 27, 2010, 1:26 PM
  *
  * implements ImageMetaData but doesn't actually store any meta data
  * if that isn't meta, what is?
+ * 
+ * (C) Marc Gershow; licensed under the Creative Commons Attribution Share Alike 3.0 United States License.
+ * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/us/ or send a letter to
+ * Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.
+ *
  */
 
 #ifndef BLANKMETADATA_H

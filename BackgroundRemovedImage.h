@@ -1,6 +1,6 @@
 /* 
  * File:   BackgroundRemovedImage.h
- * Author: Marc
+ * Author: Marc Gershow
  *
  * Created on October 4, 2010, 9:17 AM
  *
@@ -13,6 +13,11 @@
  *
  * optionally meta data can be stored with the image; see the ImageMetaData class
  * and its subclasses
+ *
+ * (C) Marc Gershow; licensed under the Creative Commons Attribution Share Alike 3.0 United States License.
+ * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/us/ or send a letter to
+ * Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.
+ * 
  */
 
 #ifndef BACKGROUNDREMOVEDIMAGE_H
