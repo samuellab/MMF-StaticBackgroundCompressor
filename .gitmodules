@@ -1,0 +1,3 @@
+[submodule "tictoc"]
+	path = tictoc
+	url = git@github.com:samuellab/Marc-TicToc.git
