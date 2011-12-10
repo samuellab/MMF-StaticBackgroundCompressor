@@ -1,0 +1,13 @@
+All code in this directory is copyright by other authors.
+
+CV (OpenCV) 
+http://opencv.willowgarage.com/wiki/
+distributed under BSD license
+
+Yaml (yaml-cpp) 
+by Jesse Beder
+distributed under the MIT license
+
+BUF_USBCamera_SDK (mightex buffered usb camera SDK)
+Mightex Systems
+http://www.mightexsystems.com/index.php
