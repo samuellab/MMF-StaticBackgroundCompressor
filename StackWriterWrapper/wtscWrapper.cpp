@@ -11,3 +11,18 @@
 
 #include "wtscWrapper.h"
 
+wtscWrapper::wtscWrapper() {
+    InitializeCriticalSection(&protectedAction);
+}
+
+wtscWrapper::~wtscWrapper() {
+    DeleteCriticalSection(&protectedAction);
+}
+
+void wtscWrapper::enterCS() {
+    EnterCriticalSection(&protectedAction);
+}
+
+void wtscWrapper::leaveCS() {
+    LeaveCriticalSection(&protectedAction);
+}

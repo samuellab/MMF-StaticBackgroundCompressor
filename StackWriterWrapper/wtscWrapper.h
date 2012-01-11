@@ -9,16 +9,23 @@
  * Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.
  */
 #include "WindowsThreadStackCompressor.h"
+#include <windows.h>
 #include "NameValueMetaData.h"
 #include "Timer.h"
 #ifndef WTSCWRAPPER_H
 #define	WTSCWRAPPER_H
 
-struct wtscWrapper {
+class wtscWrapper {
     public:
+        wtscWrapper();
+        virtual ~wtscWrapper();
         WindowsThreadStackCompressor wtsc;
         NameValueMetaData md;
         Timer tim;
+        void enterCS();
+        void leaveCS();
+    protected:
+        CRITICAL_SECTION protectedAction;
 };
 
 

@@ -7,6 +7,7 @@ distributed under BSD license
 Yaml (yaml-cpp) 
 by Jesse Beder
 distributed under the MIT license
+http://code.google.com/p/yaml-cpp/
 
 BUF_USBCamera_SDK (mightex buffered usb camera SDK)
 Mightex Systems
