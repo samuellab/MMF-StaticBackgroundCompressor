@@ -82,7 +82,7 @@ public:
      *
      * returns 0 on sucess, < 0 on error
      */
-    virtual int decimateStack(const char *outputname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int decimationCount = 2);
+//    virtual int decimateStack(const char *outputname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int decimationCount = 2);
 
 protected:
     std::string fname;

@@ -31,6 +31,7 @@
 #include <ostream>
 #include <string>
 #include <map>
+#include <stdint.h> // We need this in linux
 
 class ImageMetaData {
 public:
