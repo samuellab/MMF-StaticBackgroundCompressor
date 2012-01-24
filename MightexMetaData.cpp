@@ -32,7 +32,7 @@ MightexMetaData::MightexMetaData(const TProcessedDataProperty *attributes) {
 }
 
 void MightexMetaData::toDisk(std::ofstream& os) const{
-    unsigned long id = idCode();
+    uint32_t id = idCode();
     os.write ((char *) &id, sizeof(id));
     os.write((char *)&attributes, sizeof(attributes));
 }

@@ -25,7 +25,7 @@ ImageMetaDataLoader::~ImageMetaDataLoader() {
 }
 
 ImageMetaData *ImageMetaDataLoader::fromFile (std::ifstream &is) {
-        unsigned long id;
+        uint32_t id;
         std::ifstream::pos_type cloc = is.tellg();
         is.read((char *) &id, sizeof(id));
      //   std::cout << "id = " << id << "\n";

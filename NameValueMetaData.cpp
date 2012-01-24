@@ -54,7 +54,7 @@ void NameValueMetaData::replaceData(std::string name, double value) {
 }
 
 void NameValueMetaData::toDisk(ofstream& os) const {
-    unsigned long id = idCode();
+    uint32_t id = idCode();
     os.write((char *) &id, sizeof(id));
     int numElems = data.size();
     os.write((char *) &numElems, sizeof(numElems));
@@ -68,13 +68,13 @@ void NameValueMetaData::toDisk(ofstream& os) const {
 
 string NameValueMetaData::saveDescription() const {
     stringstream os;
-    os << "Name-Value MetaData: idcode (unsigned long) = " << hex << idCode() << dec << ", int number of key-value pairs stored, then each pair" << endl;
+    os << "Name-Value MetaData: idcode (uint32_t) = " << hex << idCode() << dec << ", int number of key-value pairs stored, then each pair" << endl;
     os << "in the format \\0-terminated string of chars then " << sizeof(double) << " byte double value" <<endl;
     return os.str();
 }
 
 int NameValueMetaData::sizeOnDisk() const {
-    int sod = sizeof(unsigned long) + sizeof(int);
+    int sod = sizeof(uint32_t) + sizeof(int);
     for (map<string, double>::const_iterator it = data.begin(); it != data.end(); ++it) {
         sod += it->first.length() + 1 + sizeof(double);
     }

@@ -19,10 +19,11 @@
 #include <iostream>
 #include <fstream>
 
+
 class StaticBackgroundCompressor {
 public:
 
-    static const unsigned long IdCode = 0xbb67ca20; //CRC32 hash of "StaticBackgroundCompressor" from fileformat.info
+    static const uint32_t IdCode = 0xbb67ca20; //CRC32 hash of "StaticBackgroundCompressor" from fileformat.info
 
     static const int headerSizeInBytes = 512;
 
@@ -57,7 +58,7 @@ public:
 
     virtual CvRect getValidRoi ();
 
-    typedef struct {unsigned long idcode; int headerSize; int totalSize; int numframes;} HeaderInfoT;
+    typedef struct {uint32_t idcode; int headerSize; int totalSize; int numframes;} HeaderInfoT;
 
     /* static headerInfoT getHeaderInfo(std::ifstream &is);
      * gets header info, then returns file pointer to starting location
@@ -94,7 +95,7 @@ public:
 
     virtual std::string saveDescription();
 
-    virtual inline unsigned long idCode () {
+    virtual inline uint32_t idCode () {
         return StaticBackgroundCompressor::IdCode;
     }
 

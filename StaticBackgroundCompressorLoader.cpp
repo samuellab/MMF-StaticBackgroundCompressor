@@ -13,7 +13,7 @@
 #include "StaticBackgroundCompressorLoader.h"
 using namespace std;
 StaticBackgroundCompressor *StaticBackgroundCompressorLoader::fromFile(std::ifstream& is) {
-    unsigned long id;
+    uint32_t id;
     ifstream::pos_type cloc = is.tellg();
     is.read((char *) &id, sizeof(id));
     is.seekg(cloc);
@@ -30,7 +30,7 @@ StaticBackgroundCompressor *StaticBackgroundCompressorLoader::fromFile(std::ifst
 }
 
 StaticBackgroundCompressor::HeaderInfoT StaticBackgroundCompressorLoader::getHeaderInfo(std::ifstream& is) {
-    unsigned long id;
+    uint32_t id;
     ifstream::pos_type cloc = is.tellg();
     is.read((char *) &id, sizeof(id));
     is.seekg(cloc);

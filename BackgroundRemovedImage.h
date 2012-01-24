@@ -45,7 +45,7 @@
 class BackgroundRemovedImage {
 public:
 
-    static const unsigned long IdCode =  0xf80921af; //CRC32 hash of "BackgroundRemovedImage" from fileformat.info
+    static const uint32_t IdCode =  0xf80921af; //CRC32 hash of "BackgroundRemovedImage" from fileformat.info
 
     /* BackgroundRemovedImage (IplImage *src, const IplImage *bak, int threshBelowBackground = 0, int threshAboveBackground = 0, int smallDimMinSize = 1, int lgDimMinSize = 1, ImageMetaData *metadata = NULL);
      *
@@ -143,11 +143,11 @@ public:
         return 1;
     }
 
-    virtual inline unsigned long idCode () {
+    virtual inline uint32_t idCode () {
         return BackgroundRemovedImage::IdCode;
     }
 
-    typedef struct {unsigned long idcode; int headersize; int depth; int nchannels; int numims;} HeaderInfoT;
+    typedef struct {uint32_t idcode; int headersize; int depth; int nchannels; int numims;} HeaderInfoT;
 
 protected:
     virtual void extractDifferences(IplImage *src);

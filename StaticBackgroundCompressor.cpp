@@ -169,7 +169,7 @@ std::string StaticBackgroundCompressor::saveDescription() {
 std::string StaticBackgroundCompressor::headerDescription() {
     std::stringstream os;
     os << headerSizeInBytes << " byte zero-padded header, with the following fields (all " << sizeof(int) << " byte ints, except idcode):\n";
-    os << sizeof(unsigned long) << " byte unsigned long idcode = " << hex << idCode() << dec << ", header size in bytes, total size of stack on disk, nframes: number of images in stack\n";
+    os << sizeof(uint32_t) << " byte uint32_t idcode = " << hex << idCode() << dec << ", header size in bytes, total size of stack on disk, nframes: number of images in stack\n";
     return os.str();
 }
 
@@ -240,13 +240,13 @@ IplImage * StaticBackgroundCompressor::readIplImageFromByteStream(std::ifstream&
    // cout << "hmm..." << endl;
   //  cout << "imsize = " << cvGetSize(im).width << " x " << cvGetSize(im).height << endl;
     char *data = (char *) malloc(im->imageSize);
-   // cout << "data = " << ((unsigned long) data) << endl;
+   // cout << "data = " << ((unsigned long long) data) << endl;
   //  cout << "memory allocated , imsize = " << cvGetSize(im).width << " x " << cvGetSize(im).height << endl;
     is.read(data, im->imageSize);
    // cout << "data read in; setting image data , imsize = " << cvGetSize(im).width << " x " << cvGetSize(im).height << endl;
     
     cvSetData(im, data, im->widthStep);
-  //  cout << "image data = " << ((unsigned long) im->imageData) << ", image data origin = " << ((unsigned long) im->imageDataOrigin) << endl;
+  //  cout << "image data = " << ((unsigned long long) im->imageData) << ", image data origin = " << ((unsigned long) im->imageDataOrigin) << endl;
  //   cout << "im params: w= " << im->width << ", h= " << im->height << ", nchannels = " << im->nChannels << ", depth = " << im->depth << ", width step = " << im->widthStep << "imageSize = " << im->imageSize << endl;
    
     //IplImage *imout = cvCloneImage(im);

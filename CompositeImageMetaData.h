@@ -21,7 +21,7 @@
 
 class CompositeImageMetaData : public ImageMetaData {
 public:
-    static const unsigned long IdCode = 0x9844e951; //CRC32 hash of "CompositeImageMetaData" from http://www.fileformat.info/tool/hash.htm?text=CompositeImageMetaData
+    static const uint32_t IdCode = 0x9844e951; //CRC32 hash of "CompositeImageMetaData" from http://www.fileformat.info/tool/hash.htm?text=CompositeImageMetaData
 
     CompositeImageMetaData();
     virtual ~CompositeImageMetaData();
@@ -29,7 +29,7 @@ public:
     virtual void toDisk (std::ofstream &os)const;
     virtual std::string saveDescription ()const;
     virtual int sizeOnDisk ()const;
-    virtual unsigned long idCode()const {
+    virtual uint32_t idCode()const {
         return CompositeImageMetaData::IdCode;
     }
     virtual std::map<std::string, double> getFieldNamesAndValues(void)const;

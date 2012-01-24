@@ -151,12 +151,12 @@ void BackgroundRemovedImage::extractBlobs(IplImage *src, IplImage *mask) {
     if (freems) {
         ms = cvCreateMemStorage(src->width*src->depth); //big block to save having to reallocate later
     }
-    //logkludge << "created memstorage at " << (unsigned long) ms << endl;
+    //logkludge << "created memstorage at " << (unsigned long long) ms << endl;
     CvSeq *contour;
     cvSetImageROI(mask, cvGetImageROI(src));
     cvFindContours(mask, ms, &contour, sizeof(CvContour), CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE, cvPoint(0,0));
     CvPoint offset = (mask->roi == NULL) ? cvPoint(0,0) : cvPoint(mask->roi->xOffset, mask->roi->yOffset);
-    //logkludge << "contour = " << (unsigned long) contour << endl;
+    //logkludge << "contour = " << (unsigned long long) contour << endl;
 
     IplImage *copy;
     CvRect roi = cvGetImageROI(src);
@@ -397,7 +397,7 @@ std::string BackgroundRemovedImage::saveDescription() {
 std::string BackgroundRemovedImage::headerDescription() {
     std::stringstream os;
     os << headerSizeInBytes << " byte zero padded header with the following data fields (all " << sizeof(int) << " byte ints, except id code)\n";
-    os << sizeof(unsigned long) << " byte unsigned long idcode = " << hex << idCode() << dec << "headersize (number of bytes in header), depth (IplImage depth), nChannels (IplImage number of channels), numims (number of image blocks that differ from background) then metadata:\n";
+    os << sizeof(uint32_t) << " byte uint32_t idcode = " << hex << idCode() << dec << "headersize (number of bytes in header), depth (IplImage depth), nChannels (IplImage number of channels), numims (number of image blocks that differ from background) then metadata:\n";
     if (metadata != NULL) {
  //       cout << metadata->saveDescription();
         os << metadata->saveDescription();

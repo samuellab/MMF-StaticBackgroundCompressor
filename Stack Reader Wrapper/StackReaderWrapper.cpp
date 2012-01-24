@@ -58,7 +58,7 @@ void *getFrame(void* SR, int frameNumber) {
 
     sr->getFrame(frameNumber, &dst);
   //  ofstream os("c:\\stackreadlog.txt");
-//    os << "dst = " << (unsigned long) dst << "  dst has width " << dst->width << " and height " << dst->height << endl;
+//    os << "dst = " << (unsigned long long) dst << "  dst has width " << dst->width << " and height " << dst->height << endl;
  //   os.close();
     return (void *) dst;
 }

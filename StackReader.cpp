@@ -110,7 +110,7 @@ void StackReader::parseInputFile() {
             }
         }
     }
-    unsigned long idcode;
+    uint32_t idcode;
     infile->read((char *) &idcode, sizeof(idcode));
     cout << "id code = " << hex << idcode << dec << "\n";
     //find out headerSize & skip to end

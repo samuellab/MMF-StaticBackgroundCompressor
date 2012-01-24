@@ -40,7 +40,7 @@ public:
     virtual std::string saveDescription ()const = 0;
     virtual int sizeOnDisk ()const = 0;
     virtual ~ImageMetaData() {};
-    virtual unsigned long idCode()const = 0;
+    virtual uint32_t idCode()const = 0;
     virtual std::map<std::string, double> getFieldNamesAndValues(void)const = 0;
     virtual ImageMetaData *clone()const = 0;
     

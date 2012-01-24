@@ -28,13 +28,13 @@
  */
 class BlankMetaData : public ImageMetaData {
 public:
-    static const unsigned long IdCode = 0x0ccd07bc; //CRC32 hash of "BlankMetaData" from fileformat.info
+    static const uint32_t IdCode = 0x0ccd07bc; //CRC32 hash of "BlankMetaData" from fileformat.info
 
     BlankMetaData() {};
     BlankMetaData(const BlankMetaData& orig);
     virtual ~BlankMetaData() {};
     virtual void toDisk (std::ofstream &os)const {
-        unsigned long id = idCode();
+        uint32_t id = idCode();
         os.write((char *) &id, sizeof(id));
         return;
     }
@@ -44,9 +44,9 @@ public:
         return s;
     }
     virtual int sizeOnDisk () const{
-        return sizeof(unsigned long);
+        return sizeof(uint32_t);
     }
-    virtual unsigned long idCode() const {
+    virtual uint32_t idCode() const {
         return BlankMetaData::IdCode;
     }
 

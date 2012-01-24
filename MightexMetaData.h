@@ -22,7 +22,7 @@
 
 class MightexMetaData : public ImageMetaData {
 public:
-    static const unsigned long IdCode = 0xdf4f1592; //CRC32 hash of "MightexMetaData" from fileformat.info
+    static const uint32_t IdCode = 0xdf4f1592; //CRC32 hash of "MightexMetaData" from fileformat.info
 
     
     MightexMetaData(const TProcessedDataProperty *attributes);
@@ -30,7 +30,7 @@ public:
     virtual void toDisk (std::ofstream &os)const;
     virtual std::string saveDescription ()const;
     virtual int sizeOnDisk ()const;
-    virtual unsigned long idCode()const {
+    virtual uint32_t idCode()const {
         return MightexMetaData::IdCode;
     }
     virtual TProcessedDataProperty getAttributes()const;
