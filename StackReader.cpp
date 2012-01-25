@@ -281,7 +281,7 @@ void StackReader::annotatedFrame(int frameNum, IplImage** dst) {
     cvReleaseImage(&buffer);
 }
 
-void StackReader::playMovie(int startFrame, int endFrame, int delay_ms, char* windowName, bool annotated) {
+void StackReader::playMovie(int startFrame, int endFrame, int delay_ms, const char* windowName, bool annotated) {
   //  cout << "entered play movie" << endl;
     
     startFrame = startFrame < 0 ? 0 : startFrame;
@@ -289,7 +289,7 @@ void StackReader::playMovie(int startFrame, int endFrame, int delay_ms, char* wi
     endFrame = endFrame < 0 ? totalFrames : endFrame;
 
     if (windowName == NULL) {
-        windowName = "background restored movie";
+        windowName =  "background restored movie";
     }
   //  cout << "cvNamedWindow" << windowName << endl;
     cvNamedWindow(windowName, 0);
@@ -445,16 +445,13 @@ int StackReader::decimateStack(const char* outputname, int thresholdAboveBackgro
             cout << ntc << "waiting to be compressed " << ntw << " waiting to be written" << endl;
         }
          * */
-
+        #ifdef _WIN32
         while (ntc > 1 || ntw > 1) {
-            #ifdef _WIN32
-                Sleep(200);
-            #else
-                if (ntc > 1)
-                    sc.
-            #endif
+            Sleep(200);
             sc.numStacksWaiting(ntc, ntw);
-        } 
+        }
+        #endif
+
         if (ntc > 1 || ntw > 1) {
             cout << ntc << "ERROR: waiting to be compressed " << ntw << " waiting to be written" << endl;
         }

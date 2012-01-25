@@ -263,7 +263,7 @@ IplImage * StaticBackgroundCompressor::readIplImageFromByteStream(std::ifstream&
     return imout;
 }
 
-void StaticBackgroundCompressor::playMovie(char* windowName) {
+void StaticBackgroundCompressor::playMovie(const char* windowName) {
     if (windowName == NULL) {
         windowName = "Movie of stack";
     }

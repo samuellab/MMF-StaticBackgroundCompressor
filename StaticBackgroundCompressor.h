@@ -81,7 +81,7 @@ public:
 
     int numRegionsInFrame (int frameNum) const;
 
-    virtual void playMovie (char *windowName = NULL);
+    virtual void playMovie (const char *windowName = NULL);
 
     inline void setAutomaticUpdateInterval (int interval) {
         updateBackgroundFrameInterval = interval;
