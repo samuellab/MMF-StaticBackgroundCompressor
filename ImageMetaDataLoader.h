@@ -22,7 +22,7 @@
 
 #include "ImageMetaData.h"
 #include "BlankMetaData.h"
-//#include "MightexMetaData.h"
+#include "MightexMetaData.h"
 #include "CompositeImageMetaData.h"
 
 #include <istream>

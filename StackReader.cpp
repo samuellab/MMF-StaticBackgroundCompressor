@@ -13,16 +13,25 @@
 #include <map>
 #include <iostream>
 #include <sstream>
+#ifdef _WIN32
 // Hopefully one day the code may be less windows-centric :)
-// #include <windows.h> //required to use multithreaded stack writing
-
+    #include <windows.h> //required to use multithreaded stack writing
+#endif
 #include "StackReader.h"
 #include "highgui.h"
 #include "Timer.h"
 #include "StaticBackgroundCompressorLoader.h"
-//#include "WindowsThreadStackCompressor.h"
-
+#ifdef _WIN32
+    #include "WindowsThreadStackCompressor.h"
+#endif
 using namespace std;
+
+#ifndef _WIN32
+    void Sleep (int t);
+    void Sleep (int t) {
+        cvWaitKey(t);
+    }
+#endif
 
 StackReader::StackReader() {
     init();
@@ -289,7 +298,7 @@ void StackReader::playMovie(int startFrame, int endFrame, int delay_ms, char* wi
 
     Timer tim;
 //    cout << "starting loop" << endl;
-    //Sleep(2000); // removed on linux branch
+    Sleep(2000); // removed on linux branch
     for (int f = startFrame; f < endFrame; ++f) {
 
         tim.start();
@@ -355,103 +364,118 @@ CvRect StackReader::getLargestROI() {
     return validROI;
 }
 
-//int StackReader::decimateStack(const char* outputname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int decimationCount) {
-//    WindowsThreadStackCompressor sc;
-//    bool showFrames = false;
-//    sc.setThresholds(0, thresholdAboveBackground, smallDimMinSize, lgDimMinSize);
-//    setSBC(0);
-//    sc.setIntervals(sbc->numProcessed(), 1);
-//    sc.setOutputFileName(outputname);
-//
-//    IplImage *im = NULL;
-//   // IplImage *colorim = NULL;
-//
-//    Timer tim;
-//   
-//   // cout << outputname;
-//    
-//    sc.openOutputFile();
-//
-//    double frameRate = 100;
-//    sc.setFrameRate(frameRate);
-//
-//    sc.startThreads();
-//
-//    sc.startRecording(totalFrames);
-//    tim.start();
-//    int ethundred = 0;
-//    if (showFrames) {
-//        cvNamedWindow("source movie frame",0);
-//    }
-//    for (int f = 0; f < totalFrames; f += decimationCount) {
-//       // cout << f << ", " << f/decimationCount/tim.getElapsedTimeInSec() << " Hz" << "\t";
-//        
-//        getFrame(f, &im);
-//        
-//        if (im == NULL) {
-//            break;
-//        }
-//        setSBC(f);
-//        const ImageMetaData* imd = sbc->getMetaData(f - startFrame);
-//        if (false) {
-//            cout << imd->saveDescription();
-//            cout << imd->clone()->saveDescription();
-//
-//        }
-//        if (false) {
-//            map<string,double>mdp = imd->getFieldNamesAndValues();
-//            for (map<string, double>::const_iterator it = mdp.begin(); it != mdp.end(); ++it) {
-//                cout << it->first << "," << it->second << "\t";
-//            }
-//            cout << "\n";
-//        }
-//    
-//        if (imd != NULL) {
-//            sc.newFrame(im, imd->clone());
-//        } else {
-//            sc.newFrame(im, NULL);
-//        }
-//        if (showFrames) {
-//            cvShowImage("source movie frame", im);
-//            cvWaitKey(1000/frameRate);
-//        }/*
-//        else {
-//            Sleep(1000/frameRate);
-//        }*/
-//
-//
-//        int ntc, ntw;
-//        sc.numStacksWaiting(ntc, ntw);
-//        /*
-//        if (ntc > 1 || ntw > 1) {
-//            cout << ntc << "waiting to be compressed " << ntw << " waiting to be written" << endl;
-//        }
-//         * */
-//        while (ntc > 1 || ntw > 1) {
-//            Sleep(200);
-//            sc.numStacksWaiting(ntc, ntw);
-//        } 
-//        if (ntc > 1 || ntw > 1) {
-//            cout << ntc << "ERROR: waiting to be compressed " << ntw << " waiting to be written" << endl;
-//        }
-//
-//        if (((int) tim.getElapsedTimeInSec()/100) > ethundred) {
-//            ethundred = (int) tim.getElapsedTimeInSec()/100;
-//            cout << "et = " << tim.getElapsedTimeInSec() << ";  " << f << "/" << totalFrames << " done.  " << tim.getElapsedTimeInSec() / f *(totalFrames - f) << " s remain" <<endl;
-//            cout << (sc.numBytesWritten()>>20) << "MB written, " << f/decimationCount/tim.getElapsedTimeInSec() << " Hz" << endl;
-//        }
-//
-//    }
-//
-//    sc.finishRecording();
-//    sc.closeOutputFile();
-//    if (im != NULL) {
-//        cvReleaseImage(&im);
-//        return 0;
-//    } else {
-//        return -1;
-//    }
-//}
+int StackReader::decimateStack(const char* outputname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int decimationCount) {
+    #ifdef _WIN32
+    WindowsThreadStackCompressor sc;
+    #else
+    LinearStackCompressor sc;
+    #endif
+    bool showFrames = false;
+    sc.setThresholds(0, thresholdAboveBackground, smallDimMinSize, lgDimMinSize);
+    setSBC(0);
+    sc.setIntervals(sbc->numProcessed(), 1);
+    sc.setOutputFileName(outputname);
+
+    IplImage *im = NULL;
+   // IplImage *colorim = NULL;
+
+    Timer tim;
+   
+   // cout << outputname;
+    
+    sc.openOutputFile();
+
+    double frameRate = 100;
+    #ifndef _WIN32
+    frameRate = 10;
+    #endif
+    sc.setFrameRate(frameRate);
+
+    #ifdef _WIN32
+    sc.startThreads();
+    #endif
+
+    sc.startRecording(totalFrames);
+    tim.start();
+    int ethundred = 0;
+    if (showFrames) {
+        cvNamedWindow("source movie frame",0);
+    }
+    for (int f = 0; f < totalFrames; f += decimationCount) {
+       // cout << f << ", " << f/decimationCount/tim.getElapsedTimeInSec() << " Hz" << "\t";
+        
+        getFrame(f, &im);
+        
+        if (im == NULL) {
+            break;
+        }
+        setSBC(f);
+        const ImageMetaData* imd = sbc->getMetaData(f - startFrame);
+        if (false) {
+            cout << imd->saveDescription();
+            cout << imd->clone()->saveDescription();
+
+        }
+        if (false) {
+            map<string,double>mdp = imd->getFieldNamesAndValues();
+            for (map<string, double>::const_iterator it = mdp.begin(); it != mdp.end(); ++it) {
+                cout << it->first << "," << it->second << "\t";
+            }
+            cout << "\n";
+        }
+    
+        if (imd != NULL) {
+            sc.newFrame(im, imd->clone());
+        } else {
+            sc.newFrame(im, NULL);
+        }
+        if (showFrames) {
+            cvShowImage("source movie frame", im);
+            cvWaitKey(1000/frameRate);
+        }/*
+        else {
+            Sleep(1000/frameRate);
+        }*/
+
+
+        int ntc, ntw;
+        sc.numStacksWaiting(ntc, ntw);
+        /*
+        if (ntc > 1 || ntw > 1) {
+            cout << ntc << "waiting to be compressed " << ntw << " waiting to be written" << endl;
+        }
+         * */
+
+        while (ntc > 1 || ntw > 1) {
+            #ifdef _WIN32
+                Sleep(200);
+            #else
+                if (ntc > 1)
+                    sc.
+            #endif
+            sc.numStacksWaiting(ntc, ntw);
+        } 
+        if (ntc > 1 || ntw > 1) {
+            cout << ntc << "ERROR: waiting to be compressed " << ntw << " waiting to be written" << endl;
+        }
+
+        if (((int) tim.getElapsedTimeInSec()/100) > ethundred) {
+            ethundred = (int) tim.getElapsedTimeInSec()/100;
+            cout << "et = " << tim.getElapsedTimeInSec() << ";  " << f << "/" << totalFrames << " done.  " << tim.getElapsedTimeInSec() / f *(totalFrames - f) << " s remain" <<endl;
+            cout << (sc.numBytesWritten()>>20) << "MB written, " << f/decimationCount/tim.getElapsedTimeInSec() << " Hz" << endl;
+        }
+
+    }
+
+    sc.finishRecording();
+    sc.closeOutputFile();
+    if (im != NULL) {
+        cvReleaseImage(&im);
+        return 0;
+    } else {
+        return -1;
+    }
+}
 
 std::string StackReader::diagnostics() {
     stringstream s;

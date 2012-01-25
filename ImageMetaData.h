@@ -31,7 +31,7 @@
 #include <ostream>
 #include <string>
 #include <map>
-#include <stdint.h> // We need this in linux
+#include <stdint.h> //if you don't have stdint (not C99 compatible), use google, or see http://stackoverflow.com/questions/126279/c99-stdint-h-header-and-ms-visual-studio
 
 class ImageMetaData {
 public:

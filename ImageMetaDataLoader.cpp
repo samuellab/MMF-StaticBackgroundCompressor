@@ -12,6 +12,7 @@
 
 #include "ImageMetaDataLoader.h"
 #include "NameValueMetaData.h"
+
 #include <iostream>
 #include <fstream>
 #include <iosfwd>
@@ -33,9 +34,9 @@ ImageMetaData *ImageMetaDataLoader::fromFile (std::ifstream &is) {
             case BlankMetaData::IdCode:
                 return BlankMetaData::fromFile(is);
                 break;
-//            case MightexMetaData::IdCode:
-//                return MightexMetaData::fromFile(is);
-//                break;
+            case MightexMetaData::IdCode:
+                return MightexMetaData::fromFile(is);
+                break;
             case CompositeImageMetaData::IdCode:
                 return CompositeImageMetaData::fromFile(is);
                 break;
@@ -44,7 +45,7 @@ ImageMetaData *ImageMetaDataLoader::fromFile (std::ifstream &is) {
                 break;
             default://this is a kludge but we have some old data files that just stored mightex meta data directly
                 is.seekg(cloc);
-//                return MightexMetaData::fromFile(is);
+                return MightexMetaData::fromFile(is);
                 break;
         }
         return NULL;
