@@ -16,12 +16,30 @@
 extern "C" {
 #endif
 
-#ifdef BUILD_DLL
-/* DLL export */
-#define EXPORT __declspec(dllexport)
-#else
-/* EXE import */
-#define EXPORT __declspec(dllimport)
+#ifndef EXPORT
+    #ifdef BUILD_DLL
+    /* DLL export */
+    // Generic helper definitions for shared library support
+    #if defined _WIN32 || defined __CYGWIN__
+        #define EXPORT __declspec(dllexport)
+    #else
+        #if __GNUC__ >= 4
+            #define EXPORT __attribute__ ((visibility ("default")))
+        #else
+            #define EXPORT
+        #endif
+    #endif
+    #else
+        #if defined _WIN32 || defined __CYGWIN__
+            #define EXPORT __declspec(dllimport)
+        #else
+            #if __GNUC__ >= 4
+                #define EXPORT __attribute__ ((visibility ("default")))
+            #else
+                #define EXPORT
+            #endif
+        #endif
+    #endif
 #endif
 
     EXPORT void *createStackReader (const char *fname);

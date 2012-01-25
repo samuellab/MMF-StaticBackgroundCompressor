@@ -16,7 +16,7 @@
 
 #ifndef MIGHTEXMETADATA_H
 #define	MIGHTEXMETADATA_H
-#include "BUF_USBCamera_SDK.h"
+#include "Necessary Libraries and Includes/BUF_USBCamera_SDK.h"
 #include "ImageMetaData.h"
 
 
