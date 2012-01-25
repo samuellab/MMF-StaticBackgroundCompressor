@@ -226,7 +226,7 @@ void BackgroundRemovedImage::writeHeader(std::ofstream& os) {
     
 }
 
-int BackgroundRemovedImage::sizeOnDisk() {
+int32_t BackgroundRemovedImage::sizeOnDisk() {
     int totalbytes = headerSizeInBytes;
     for (vector<pair<CvRect, IplImage *> >::iterator it = differencesFromBackground.begin(); it != differencesFromBackground.end(); ++it) {
         IplImage *im = it->second;
@@ -297,7 +297,8 @@ BackgroundRemovedImage *BackgroundRemovedImage::fromDisk(std::ifstream& is, cons
     is.seekg(cur_loc + (std::ifstream::pos_type) hi.headersize);
  //   cout << "depth= " << hi.depth << ";  numims= " << hi.numims << ";  nchannels= " << hi.nchannels << endl;
     for (int j = 0; j < hi.numims; ++j) {
-        CvRect r;
+        CvRect r; //BUG CHECK: possible problem if int is not 32 bits on your system
+        assert (sizeof(CvRect) == 16);
         is.read((char *) &r, sizeof(CvRect));
    //     cout << "j: " << j << "  w: " << r.width << "  h: " << r.height << "\t";
         IplImage *im = readImageData(is, r.width, r.height, hi.depth, hi.nchannels);

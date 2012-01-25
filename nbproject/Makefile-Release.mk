@@ -46,6 +46,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/StaticBackgroundCompressorLoader.o \
 	${OBJECTDIR}/BackgroundRemovedImageLoader.o \
 	${OBJECTDIR}/MightexMetaData.o \
+	${OBJECTDIR}/IplImageLoaderFixedWidth.o \
 	${OBJECTDIR}/ImageMetaDataLoader.o \
 	${OBJECTDIR}/LinearStackCompressor.o
 
@@ -138,6 +139,11 @@ ${OBJECTDIR}/MightexMetaData.o: MightexMetaData.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -O2  -MMD -MP -MF $@.d -o ${OBJECTDIR}/MightexMetaData.o MightexMetaData.cpp
+
+${OBJECTDIR}/IplImageLoaderFixedWidth.o: IplImageLoaderFixedWidth.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2  -MMD -MP -MF $@.d -o ${OBJECTDIR}/IplImageLoaderFixedWidth.o IplImageLoaderFixedWidth.cpp
 
 ${OBJECTDIR}/ImageMetaDataLoader.o: ImageMetaDataLoader.cpp 
 	${MKDIR} -p ${OBJECTDIR}

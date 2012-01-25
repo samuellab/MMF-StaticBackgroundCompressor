@@ -18,6 +18,7 @@
 
 #include "ImageMetaData.h"
 #include <vector>
+#include <stdint.h>
 
 class CompositeImageMetaData : public ImageMetaData {
 public:
@@ -28,7 +29,7 @@ public:
     void addMetaData(ImageMetaData *md);
     virtual void toDisk (std::ofstream &os)const;
     virtual std::string saveDescription ()const;
-    virtual int sizeOnDisk ()const;
+    virtual int32_t sizeOnDisk ()const;
     virtual uint32_t idCode()const {
         return CompositeImageMetaData::IdCode;
     }

@@ -20,6 +20,7 @@
 #include "highgui.h"
 #include "BackgroundRemovedImageLoader.h"
 #include "StackReader.h"
+#include "IplImageLoaderFixedWidth.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -211,56 +212,15 @@ int StaticBackgroundCompressor::sizeOnDisk() {
 }
 
 void StaticBackgroundCompressor::writeIplImageToByteStream(std::ofstream& os, const IplImage *src) {
-    assert(src != NULL);
-  //  bool resetroi = false;
-   // CvRect roi;
-    int cloc = os.tellp();
+   assert(src != NULL);
+   ofstream::pos_type cloc = os.tellp(); 
+   os.write((char *) src, sizeof(IplImage));
+   os.write((char *) src->imageData, src->imageSize);
 
-    /*
-    if (src->roi != NULL) {
-        roi = cvGetImageROI(src);
-        cvResetImageROI(src);
-        src->roi = NULL;
-        resetroi = true;
-    }
-*/
-    os.write((char *) src, sizeof(IplImage));
-    os.write((char *) src->imageData, src->imageSize);
-
-    //if (resetroi) {
-      //  cvSetImageROI(src, roi);
-    //}
  }
 
 IplImage * StaticBackgroundCompressor::readIplImageFromByteStream(std::ifstream& is) {
-    IplImage *im = (IplImage *) malloc(sizeof(IplImage));
-    is.read((char *) im, sizeof(IplImage));
-    im->roi = NULL;
-  //  cout << "im params: w= " << im->width << ", h= " << im->height << ", nchannels = " << im->nChannels << ", depth = " << im->depth << ", width step = " << im->widthStep << "imageSize = " << im->imageSize << endl;
-   // cout << "hmm..." << endl;
-  //  cout << "imsize = " << cvGetSize(im).width << " x " << cvGetSize(im).height << endl;
-    char *data = (char *) malloc(im->imageSize);
-   // cout << "data = " << ((unsigned long long) data) << endl;
-  //  cout << "memory allocated , imsize = " << cvGetSize(im).width << " x " << cvGetSize(im).height << endl;
-    is.read(data, im->imageSize);
-   // cout << "data read in; setting image data , imsize = " << cvGetSize(im).width << " x " << cvGetSize(im).height << endl;
-    
-    cvSetData(im, data, im->widthStep);
-  //  cout << "image data = " << ((unsigned long long) im->imageData) << ", image data origin = " << ((unsigned long) im->imageDataOrigin) << endl;
- //   cout << "im params: w= " << im->width << ", h= " << im->height << ", nchannels = " << im->nChannels << ", depth = " << im->depth << ", width step = " << im->widthStep << "imageSize = " << im->imageSize << endl;
-   
-    //IplImage *imout = cvCloneImage(im);
-   // cout << "image data set; cloning image, imsize = " << cvGetSize(im).width << " x " << cvGetSize(im).height << endl;
-    IplImage *imout = cvCreateImage(cvSize(im->width, im->height), im->depth, im->nChannels);
-    assert(imout != NULL);
-   // cout << "imout params: w= " << imout->width << ", h= " << imout->height << ", nchannels = " << imout->nChannels << ", depth = " << imout->depth << ", width step = " << imout->widthStep << "imageSize = " << imout->imageSize << endl;
-
-    cvCopyImage(im, imout);
- //   cout << "freeing memory" << endl;
-    free(data);
-    free(im);
-  //  cout << "returning" << endl;
-    return imout;
+    return IplImageLoaderFixedWidth::loadIplImageFromByteStream(is);
 }
 
 void StaticBackgroundCompressor::playMovie(const char* windowName) {

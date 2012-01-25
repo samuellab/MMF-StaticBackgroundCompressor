@@ -43,7 +43,7 @@ public:
         std::string s ("no meta data\n");
         return s;
     }
-    virtual int sizeOnDisk () const{
+    virtual int32_t sizeOnDisk () const{
         return sizeof(uint32_t);
     }
     virtual uint32_t idCode() const {

@@ -40,6 +40,8 @@
     <itemPath>ImageMetaData.h</itemPath>
     <itemPath>ImageMetaDataLoader.cpp</itemPath>
     <itemPath>ImageMetaDataLoader.h</itemPath>
+    <itemPath>IplImageLoaderFixedWidth.cpp</itemPath>
+    <itemPath>IplImageLoaderFixedWidth.h</itemPath>
     <itemPath>License.txt</itemPath>
     <itemPath>LinearStackCompressor.cpp</itemPath>
     <itemPath>LinearStackCompressor.h</itemPath>

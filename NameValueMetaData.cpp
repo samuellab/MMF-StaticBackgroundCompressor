@@ -16,6 +16,7 @@
 #include <iostream>
 #include <ostream>
 #include <istream>
+#include <assert.h>
 using namespace std;
 
 NameValueMetaData::NameValueMetaData() {
@@ -73,7 +74,7 @@ string NameValueMetaData::saveDescription() const {
     return os.str();
 }
 
-int NameValueMetaData::sizeOnDisk() const {
+int32_t NameValueMetaData::sizeOnDisk() const {
     int sod = sizeof(uint32_t) + sizeof(int);
     for (map<string, double>::const_iterator it = data.begin(); it != data.end(); ++it) {
         sod += it->first.length() + 1 + sizeof(double);
@@ -96,6 +97,7 @@ NameValueMetaData *NameValueMetaData::fromFile(ifstream& is) {
             is.read(&c, 1);
         }
         double val;
+        assert (sizeof(double) == 8); //if size of double is not 8, we need to adjust code to make compatible
         is.read((char *)&val, sizeof(val));
         nvmd->addData(s,val);
     }

@@ -90,7 +90,7 @@ public:
      * returns the size the image will take up on disk/ currently takes up in memory (not including the background image)
      */
 
-    virtual int sizeOnDisk();
+    virtual int32_t sizeOnDisk();
     virtual int sizeInMemory();
 
     /* void restoreImage (IplImage **dst);
@@ -147,7 +147,7 @@ public:
         return BackgroundRemovedImage::IdCode;
     }
 
-    typedef struct {uint32_t idcode; int headersize; int depth; int nchannels; int numims;} HeaderInfoT;
+    typedef struct {uint32_t idcode; int32_t headersize; int32_t depth; int32_t nchannels; int32_t numims;} HeaderInfoT;
 
 protected:
     virtual void extractDifferences(IplImage *src);

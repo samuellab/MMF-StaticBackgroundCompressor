@@ -71,8 +71,8 @@ void CompositeImageMetaData::addMetaData(ImageMetaData* md) {
     }
 }
 
-int CompositeImageMetaData::sizeOnDisk()const {
-    int sod = sizeof(uint32_t) + sizeof(int);
+int32_t CompositeImageMetaData::sizeOnDisk()const {
+    int sod = sizeof(uint32_t) + sizeof(int32_t);
     for(vector<ImageMetaData *>::const_iterator it = imd.begin(); it != imd.end(); ++it) {
         if (*it != NULL) {
             sod+= (*it)->sizeOnDisk();

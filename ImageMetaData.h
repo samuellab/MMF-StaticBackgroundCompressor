@@ -39,7 +39,7 @@ public:
     
     virtual void toDisk (std::ofstream &os)const = 0;
     virtual std::string saveDescription ()const = 0;
-    virtual int sizeOnDisk ()const = 0;
+    virtual int32_t sizeOnDisk ()const = 0;
     virtual ~ImageMetaData() {};
     virtual uint32_t idCode()const = 0;
     virtual std::map<std::string, double> getFieldNamesAndValues(void)const = 0;

@@ -37,7 +37,7 @@ void MightexMetaData::toDisk(std::ofstream& os) const{
     os.write((char *)&attributes, sizeof(attributes));
 }
 
-int MightexMetaData::sizeOnDisk()const {
+int32_t MightexMetaData::sizeOnDisk()const {
     return (sizeof(attributes));
 }
 

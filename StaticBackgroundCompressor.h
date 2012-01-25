@@ -58,7 +58,7 @@ public:
 
     virtual CvRect getValidRoi ();
 
-    typedef struct {uint32_t idcode; int headerSize; int totalSize; int numframes;} HeaderInfoT;
+    typedef struct {uint32_t idcode; int32_t headerSize; int32_t totalSize; int32_t numframes;} HeaderInfoT;
 
     /* static headerInfoT getHeaderInfo(std::ifstream &is);
      * gets header info, then returns file pointer to starting location
