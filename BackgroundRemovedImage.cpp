@@ -428,24 +428,24 @@ void BackgroundRemovedImage::setImOriginFromMetaData() {
     if (metadata == NULL) {
         return;
     }
-    const MightexMetaData *md;
-    if (isa<MightexMetaData> (metadata, md)) {
-        TProcessedDataProperty tp = md->getAttributes();
-        imOrigin.x = tp.XStart;
-        imOrigin.y = tp.YStart;
-        return;
-    }
+//    const MightexMetaData *md;
+//    if (isa<MightexMetaData> (metadata, md)) {
+//        TProcessedDataProperty tp = md->getAttributes();
+//        imOrigin.x = tp.XStart;
+//        imOrigin.y = tp.YStart;
+//        return;
+//    }
     CompositeImageMetaData *cmd;
     if (isa<CompositeImageMetaData>(metadata, cmd)) {
         vector<const ImageMetaData *> v = cmd->getMetaDataVector();
         for (vector<const ImageMetaData *>::const_iterator it = v.begin(); it != v.end(); ++it) {
             
-            if (isa<MightexMetaData> (*it, md)) {
-                TProcessedDataProperty tp = md->getAttributes();
-                imOrigin.x = tp.XStart;
-                imOrigin.y = tp.YStart;
-                return;
-            }
+//            if (isa<MightexMetaData> (*it, md)) {
+//                TProcessedDataProperty tp = md->getAttributes();
+//                imOrigin.x = tp.XStart;
+//                imOrigin.y = tp.YStart;
+//                return;
+//            }
         }
     }
 }
