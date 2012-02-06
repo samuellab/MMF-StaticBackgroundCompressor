@@ -57,6 +57,7 @@ int main(int argc, char** argv) {
     cout << "20*sizeof(int) + 6*sizeof(pointer) + 8 (2 char arrays[4]) = " << 20*sizeof(int) + 6 * sizeof (void *) + 8 << endl;
     cout << "sizeof (CvRect) = " << sizeof(CvRect) << "  win32 size = 16" << endl;
     cout << "sizeof (double) = " << sizeof(double) << "  win32 size = 8" << endl;
+    //you can comment out the next 4 lines if you don't want to link to the cv libraries
     IplImage *im = cvCreateImage(cvSize(1024,1024), IPL_DEPTH_8U, 1);
     cout << "im->nsize = " << im->nSize << endl;
     cout << "*(int *) im = " << *(int *) im << endl;
