@@ -3,3 +3,4 @@
 *.o
 *.d
 !mmf_player.exe
+/CvSizeTester/nbproject/private/
