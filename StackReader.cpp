@@ -23,6 +23,8 @@
 #include "StaticBackgroundCompressorLoader.h"
 #ifdef _WIN32
     #include "WindowsThreadStackCompressor.h"
+#else
+    #include "LinearStackCompressor.h"
 #endif
 using namespace std;
 
@@ -464,7 +466,7 @@ int StackReader::decimateStack(const char* outputname, int thresholdAboveBackgro
 
     }
 
-    sc.finishRecording();
+//    sc.finishRecording();
     sc.closeOutputFile();
     if (im != NULL) {
         cvReleaseImage(&im);
