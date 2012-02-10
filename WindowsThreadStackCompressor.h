@@ -46,119 +46,125 @@
 #ifndef WINDOWSTHREADSTACKCOMPRESSOR_H
 #define	WINDOWSTHREADSTACKCOMPRESSOR_H
 
-#include "LinearStackCompressor.h"
-#include "tictoc/tictoc.h"
-#include <windows.h>
-#include <process.h>
+#ifdef WIN32
 
-class WindowsThreadStackCompressor : public LinearStackCompressor {
-public:
-    /* WindowsThreadStackCompressor();
-     *
-     * creates a wtsc and initializes it, but does not open a data file or start recording
-     * also, does not start required threads;  user must call startThreads prior to
-     * calling newFrame
-     */
-    
-    WindowsThreadStackCompressor();
-    /* virtual ~WindowsThreadStackCompressor();
-     * finishes recording (compresses & writes any outstanding frames to disk)
-     * then closes output file (if open), stops threads and frees memory
-     *
-     */
-    virtual ~WindowsThreadStackCompressor();
+    #include "LinearStackCompressor.h"
+    #include "tictoc/tictoc.h"
+    #include <windows.h>
+    #include <process.h>
 
-    /* virtual int startThreads(); //returns -1 on error, 0 on ok
-     * 
-     * starts compression and writing threads that run in background
-     * 
-     * may be called at any time after construction, must be called before first newFrame
-     */
-    virtual int startThreads(); //returns -1 on error, 0 on ok
+    class WindowsThreadStackCompressor : public LinearStackCompressor {
+    public:
+        /* WindowsThreadStackCompressor();
+        *
+        * creates a wtsc and initializes it, but does not open a data file or start recording
+        * also, does not start required threads;  user must call startThreads prior to
+        * calling newFrame
+        */
 
-    /* virtual void newFrame(const IplImage *im, ImageMetaData *metadata = NULL);
-     *
-     * adds an image and any associated metadata to the stack of images to be compressed
-     *
-     * a copy of the IplImage is made and stored; the user is free to delete or reuse the image after calling
-     * the metadata becomes the property and responsibility of the lsc;
-     * the user should make no further use of the metadata and lsc will free it when appropriate
-     *
-     * a note on timing: a few memory allocations, copying the image over, and updating of the background via a comparison
-     * are all carried out prior to this function returning;  the total overhead of these function calls is small
-     * the function must also acquire one or more mutexes before proceeding; however, the code has been written to minimize the
-     * amount of time any thread holds on to the mutexes required by next frame
-     *
-     * it is up to the user to determine the maximum rate at which frames can be added in the environment in which this code is used
-     * it has been tested at 5 Hz with 5 MP images without problems on a typical windows machine
-     */
-    virtual void newFrame(const IplImage *im, ImageMetaData *metadata);
-    /* virtual void finishRecording();
-     *
-     * stops recording and waits for all images to be written to disk before proceeding
-     * does not close output file
-     */
-    virtual void finishRecording();
+        WindowsThreadStackCompressor();
+        /* virtual ~WindowsThreadStackCompressor();
+        * finishes recording (compresses & writes any outstanding frames to disk)
+        * then closes output file (if open), stops threads and frees memory
+        *
+        */
+        virtual ~WindowsThreadStackCompressor();
 
-    /* virtual void openOutputFile ();
-     * virtual void closeOutputFile ();
-     *
-     * opens, closes output files;  neither needs to be called explicitly by user, but functionality is provided anyway
-     *
-     * writing thread will automatically open the output file as soon as it has stacks to write, so
-     * user should be sure to set a file name prior to starting recording
-     * output file is closed automatically on destruction, or on creation of a new output file
-     */
-    virtual void openOutputFile ();
-    virtual void closeOutputFile ();
+        /* virtual int startThreads(); //returns -1 on error, 0 on ok
+        * 
+        * starts compression and writing threads that run in background
+        * 
+        * may be called at any time after construction, must be called before first newFrame
+        */
+        virtual int startThreads(); //returns -1 on error, 0 on ok
 
-    inline TICTOC::tictoc const& NonthreadedTimer () {
-        return nonthreadedTimer;
-    }
-    inline TICTOC::tictoc const& WritingThreadTimer () {
-        return writingThreadTimer;
-    }
-    inline TICTOC::tictoc const& CompressionThreadTimer () {
-        return compressionThreadTimer;
-    }
+        /* virtual void newFrame(const IplImage *im, ImageMetaData *metadata = NULL);
+        *
+        * adds an image and any associated metadata to the stack of images to be compressed
+        *
+        * a copy of the IplImage is made and stored; the user is free to delete or reuse the image after calling
+        * the metadata becomes the property and responsibility of the lsc;
+        * the user should make no further use of the metadata and lsc will free it when appropriate
+        *
+        * a note on timing: a few memory allocations, copying the image over, and updating of the background via a comparison
+        * are all carried out prior to this function returning;  the total overhead of these function calls is small
+        * the function must also acquire one or more mutexes before proceeding; however, the code has been written to minimize the
+        * amount of time any thread holds on to the mutexes required by next frame
+        *
+        * it is up to the user to determine the maximum rate at which frames can be added in the environment in which this code is used
+        * it has been tested at 5 Hz with 5 MP images without problems on a typical windows machine
+        */
+        virtual void newFrame(const IplImage *im, ImageMetaData *metadata);
+        /* virtual void finishRecording();
+        *
+        * stops recording and waits for all images to be written to disk before proceeding
+        * does not close output file
+        */
+        virtual void finishRecording();
 
-    std::string generateTimingReport();
+        /* virtual void openOutputFile ();
+        * virtual void closeOutputFile ();
+        *
+        * opens, closes output files;  neither needs to be called explicitly by user, but functionality is provided anyway
+        *
+        * writing thread will automatically open the output file as soon as it has stacks to write, so
+        * user should be sure to set a file name prior to starting recording
+        * output file is closed automatically on destruction, or on creation of a new output file
+        */
+        virtual void openOutputFile ();
+        virtual void closeOutputFile ();
 
-    virtual std::ofstream::pos_type numBytesWritten ();
+        inline TICTOC::tictoc const& NonthreadedTimer () {
+            return nonthreadedTimer;
+        }
+        inline TICTOC::tictoc const& WritingThreadTimer () {
+            return writingThreadTimer;
+        }
+        inline TICTOC::tictoc const& CompressionThreadTimer () {
+            return compressionThreadTimer;
+        }
 
-    virtual void numStacksWaiting (int &numToCompress, int &numToWrite);
+        std::string generateTimingReport();
 
-protected:
-    CRITICAL_SECTION activeStackCS;
-    CRITICAL_SECTION compressingStackCS;
-    CRITICAL_SECTION imageStacksCS;
-    CRITICAL_SECTION outfileCS;
-    CRITICAL_SECTION writingStackCS;
+        virtual std::ofstream::pos_type numBytesWritten ();
 
-    HANDLE compressionThread;
-    HANDLE writingThread;
+        virtual void numStacksWaiting (int &numToCompress, int &numToWrite);
 
-    unsigned __stdcall compressionThreadFunction();
-    unsigned __stdcall writingThreadFunction();
-    static unsigned __stdcall startCompressionThread(void *ptr);
-    static unsigned __stdcall startWritingThread(void *ptr);
-    
-    virtual void addFrameToStack(IplImage **im, ImageMetaData *metadata);
-    bool compressionThreadActive;
-    bool writingThreadActive;
+    protected:
+        CRITICAL_SECTION activeStackCS;
+        CRITICAL_SECTION compressingStackCS;
+        CRITICAL_SECTION imageStacksCS;
+        CRITICAL_SECTION outfileCS;
+        CRITICAL_SECTION writingStackCS;
 
-    bool stacksLeftToCompress;
-    bool stacksLeftToWrite;
+        HANDLE compressionThread;
+        HANDLE writingThread;
 
-    TICTOC::tictoc nonthreadedTimer;
-    TICTOC::tictoc compressionThreadTimer;
-    TICTOC::tictoc writingThreadTimer;
-    
-private:
-     WindowsThreadStackCompressor(const WindowsThreadStackCompressor& orig);
-     void init();
+        unsigned __stdcall compressionThreadFunction();
+        unsigned __stdcall writingThreadFunction();
+        static unsigned __stdcall startCompressionThread(void *ptr);
+        static unsigned __stdcall startWritingThread(void *ptr);
 
-};
+        virtual void addFrameToStack(IplImage **im, ImageMetaData *metadata);
+        bool compressionThreadActive;
+        bool writingThreadActive;
+
+        bool stacksLeftToCompress;
+        bool stacksLeftToWrite;
+
+        TICTOC::tictoc nonthreadedTimer;
+        TICTOC::tictoc compressionThreadTimer;
+        TICTOC::tictoc writingThreadTimer;
+
+    private:
+        WindowsThreadStackCompressor(const WindowsThreadStackCompressor& orig);
+        void init();
+
+    };
+#else
+    #include "LinearStackCompressor.h"
+    typedef LinearStackCompressor WindowsThreadStackCompressor;
+#endif
 
 #endif	/* WINDOWSTHREADSTACKCOMPRESSOR_H */
 

@@ -22,7 +22,7 @@ AS=as
 
 # Macros
 CND_PLATFORM=GNU-Linux-x86
-CND_CONF=Debug
+CND_CONF=linux
 CND_DISTDIR=dist
 CND_BUILDDIR=build
 
@@ -55,8 +55,8 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=-static-libgcc -static-libstdc++
-CXXFLAGS=-static-libgcc -static-libstdc++
+CCFLAGS=-static-libstdc++ -static-libgcc
+CXXFLAGS=-static-libstdc++ -static-libgcc
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -69,12 +69,12 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk image_stack_compressor.lib
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk image-stack-compressor.lib
 
-image_stack_compressor.lib: ${OBJECTFILES}
-	${RM} image_stack_compressor.lib
-	${AR} -rv image_stack_compressor.lib ${OBJECTFILES} 
-	$(RANLIB) image_stack_compressor.lib
+image-stack-compressor.lib: ${OBJECTFILES}
+	${RM} image-stack-compressor.lib
+	${AR} -rv image-stack-compressor.lib ${OBJECTFILES} 
+	$(RANLIB) image-stack-compressor.lib
 
 ${OBJECTDIR}/StackReader.o: StackReader.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -157,7 +157,7 @@ ${OBJECTDIR}/LinearStackCompressor.o: LinearStackCompressor.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} image_stack_compressor.lib
+	${RM} image-stack-compressor.lib
 
 # Subprojects
 .clean-subprojects:
