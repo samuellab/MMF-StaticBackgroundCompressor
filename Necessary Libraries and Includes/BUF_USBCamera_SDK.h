@@ -94,21 +94,21 @@
     #else
         #include <stdint.h>
         typedef struct {
-            int_32 CameraID;
-            int_32 Row;
-            int_32 Column;
-            int_32 Bin;
-            int_32 XStart;
-            int_32 YStart;
-            int_32 ExposureTime;
-            int_32 RedGain;
-            int_32 GreenGain;
-            int_32 BlueGain;
-            int_32 TimeStamp;
-            int_32 TriggerOccurred;
-            int_32 TriggerEventCount;
-            int_32 ProcessFrameType;
-            int_32 FilterAcceptForFile;
+            int32_t CameraID;
+            int32_t Row;
+            int32_t Column;
+            int32_t Bin;
+            int32_t XStart;
+            int32_t YStart;
+            int32_t ExposureTime;
+            int32_t RedGain;
+            int32_t GreenGain;
+            int32_t BlueGain;
+            int32_t TimeStamp;
+            int32_t TriggerOccurred;
+            int32_t TriggerEventCount;
+            int32_t ProcessFrameType;
+            int32_t FilterAcceptForFile;
         } TProcessedDataProperty;
     #endif
 #endif

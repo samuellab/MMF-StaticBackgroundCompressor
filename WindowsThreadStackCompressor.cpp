@@ -9,6 +9,7 @@
  *
  *
  */
+#ifdef WIN32
 
 #include "WindowsThreadStackCompressor.h"
 #include <windows.h>
@@ -338,3 +339,5 @@ void WindowsThreadStackCompressor::numStacksWaiting(int& numToCompress, int& num
     LinearStackCompressor::numStacksWaiting(numToCompress, numToWrite);
     LeaveCriticalSection(&imageStacksCS);
 }
+
+#endif

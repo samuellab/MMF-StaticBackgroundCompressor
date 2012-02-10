@@ -6,12 +6,13 @@
 
 # Macros
 TOP=`pwd`
-CND_PLATFORM=MinGW-Windows
-CND_CONF=Debug
+CND_PLATFORM=GNU-Linux-x86
+CND_CONF=Linux
 CND_DISTDIR=dist
-NBTMPDIR=build/${CND_CONF}/${CND_PLATFORM}/tmp-packaging
+CND_BUILDDIR=build
+NBTMPDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=./mmf_player
+OUTPUT_PATH=../LinuxBinaries/mmf_player
 OUTPUT_BASENAME=mmf_player
 PACKAGE_TOP_DIR=imagestackplayer/
 
@@ -59,7 +60,7 @@ mkdir -p ${NBTMPDIR}
 # Copy files and create directories and links
 cd "${TOP}"
 makeDirectory "${NBTMPDIR}/imagestackplayer/bin"
-copyFileToTmpDir "${OUTPUT_PATH}.exe" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}.exe" 0755
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}" 0755
 
 
 # Generate tar file

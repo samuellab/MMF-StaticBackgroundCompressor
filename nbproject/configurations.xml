@@ -1,21 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="69">
-  <logicalFolder name="root" displayName="root" projectFiles="true">
+<configurationDescriptor version="80">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
-                   projectFiles="true"
-                   kind="SOURCE_LOGICAL_FOLDER">
+                   projectFiles="true">
       <itemPath>Necessary Libraries and Includes/BUF_USBCamera_SDK.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
-                   projectFiles="true"
-                   kind="SOURCE_LOGICAL_FOLDER">
+                   projectFiles="true">
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
-                   projectFiles="true"
-                   kind="SOURCE_LOGICAL_FOLDER">
+                   projectFiles="true">
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -59,17 +56,16 @@
     <itemPath>tictoc/Timer.h</itemPath>
     <itemPath>WindowsThreadStackCompressor.cpp</itemPath>
     <itemPath>WindowsThreadStackCompressor.h</itemPath>
-    <itemPath>testmain.cpp</itemPath>
     <itemPath>tictoc/tictoc.cpp</itemPath>
     <itemPath>tictoc/tictoc.h</itemPath>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
-    <conf name="Debug" type="3">
+    <conf name="Windows" type="3">
       <toolsSet>
-        <developmentServer>localhost</developmentServer>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>MinGW|MinGW</compilerSet>
-        <platform>3</platform>
+        <rebuildPropChanged>true</rebuildPropChanged>
       </toolsSet>
       <compileType>
         <cTool>
@@ -87,15 +83,14 @@
           <commandLine>-static-libgcc -static-libstdc++</commandLine>
         </ccTool>
         <archiverTool>
-          <output>image_stack_compressor.lib</output>
+          <output>WindowsBinaries/image_stack_compressor.lib</output>
         </archiverTool>
       </compileType>
     </conf>
     <conf name="Release" type="2">
       <toolsSet>
-        <developmentServer>localhost</developmentServer>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>MinGW|MinGW</compilerSet>
-        <platform>3</platform>
       </toolsSet>
       <compileType>
         <cTool>
@@ -110,6 +105,26 @@
         <asmTool>
           <developmentMode>5</developmentMode>
         </asmTool>
+      </compileType>
+    </conf>
+    <conf name="linux" type="3">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>default</compilerSet>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>Necessary Libraries and Includes</pElem>
+            <pElem>Necessary Libraries and Includes/CV/headers</pElem>
+            <pElem>tictoc</pElem>
+          </incDir>
+          <commandLine>-static-libstdc++ -static-libgcc</commandLine>
+        </ccTool>
+        <archiverTool>
+          <output>LinuxBinaries/image_stack_compressor.lib</output>
+        </archiverTool>
       </compileType>
     </conf>
   </confs>

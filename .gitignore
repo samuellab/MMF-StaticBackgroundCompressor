@@ -3,3 +3,5 @@
 *.o
 *.d
 !mmf_player.exe
+/CvSizeTester/nbproject/private/
+/Image Stack Player/..WindowsBinaries/

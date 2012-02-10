@@ -17,19 +17,20 @@ RANLIB=ranlib
 CC=gcc.exe
 CCC=g++.exe
 CXX=g++.exe
-FC=
+FC=gfortran
 AS=as.exe
 
 # Macros
 CND_PLATFORM=MinGW-Windows
 CND_CONF=Debug
 CND_DISTDIR=dist
+CND_BUILDDIR=build
 
 # Include project Makefile
 include Makefile
 
 # Object Directory
-OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
+OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
@@ -54,7 +55,7 @@ LDLIBSOPTIONS=-L../Necessary\ Libraries\ and\ Includes/CV/lib -lcv -lcxcore -lhi
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-Debug.mk ./IPLtoLV.dll
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ./IPLtoLV.dll
 
 ./IPLtoLV.dll: ${OBJECTFILES}
 	${MKDIR} -p .
@@ -70,7 +71,7 @@ ${OBJECTDIR}/IPLtoLV.o: IPLtoLV.c
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
-	${RM} -r build/Debug
+	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
 	${RM} ./IPLtoLV.dll
 
 # Subprojects

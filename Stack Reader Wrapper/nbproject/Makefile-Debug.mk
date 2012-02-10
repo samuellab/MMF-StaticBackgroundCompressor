@@ -17,19 +17,20 @@ RANLIB=ranlib
 CC=gcc.exe
 CCC=g++.exe
 CXX=g++.exe
-FC=
+FC=gfortran
 AS=as.exe
 
 # Macros
 CND_PLATFORM=MinGW-Windows
 CND_CONF=Debug
 CND_DISTDIR=dist
+CND_BUILDDIR=build
 
 # Include project Makefile
 include Makefile
 
 # Object Directory
-OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
+OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
@@ -54,7 +55,7 @@ LDLIBSOPTIONS=-L../Necessary\ Libraries\ and\ Includes/CV/lib -L.. ../image_stac
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-Debug.mk ./StackReaderWrapper.dll
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ./StackReaderWrapper.dll
 
 ./StackReaderWrapper.dll: ../image_stack_compressor.lib
 
@@ -73,7 +74,7 @@ ${OBJECTDIR}/StackReaderWrapper.o: StackReaderWrapper.cpp
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
-	${RM} -r build/Debug
+	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
 	${RM} ./StackReaderWrapper.dll
 
 # Subprojects

@@ -17,19 +17,20 @@ RANLIB=ranlib
 CC=gcc.exe
 CCC=g++.exe
 CXX=g++.exe
-FC=
+FC=gfortran
 AS=as.exe
 
 # Macros
 CND_PLATFORM=MinGW-Windows
 CND_CONF=Release
 CND_DISTDIR=dist
+CND_BUILDDIR=build
 
 # Include project Makefile
 include Makefile
 
 # Object Directory
-OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
+OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
@@ -55,10 +56,10 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-Release.mk dist/Release/MinGW-Windows/libStackWriterWrapper.dll
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libStackWriterWrapper.dll
 
-dist/Release/MinGW-Windows/libStackWriterWrapper.dll: ${OBJECTFILES}
-	${MKDIR} -p dist/Release/MinGW-Windows
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libStackWriterWrapper.dll: ${OBJECTFILES}
+	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -shared -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libStackWriterWrapper.dll ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/wtscWrapper.o: wtscWrapper.cpp 
@@ -76,8 +77,8 @@ ${OBJECTDIR}/StackWriterWrapper.o: StackWriterWrapper.cpp
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
-	${RM} -r build/Release
-	${RM} dist/Release/MinGW-Windows/libStackWriterWrapper.dll
+	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libStackWriterWrapper.dll
 
 # Subprojects
 .clean-subprojects:

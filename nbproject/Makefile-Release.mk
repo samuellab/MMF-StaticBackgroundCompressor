@@ -17,19 +17,20 @@ RANLIB=ranlib
 CC=gcc.exe
 CCC=g++.exe
 CXX=g++.exe
-FC=
+FC=gfortran
 AS=as.exe
 
 # Macros
 CND_PLATFORM=MinGW-Windows
 CND_CONF=Release
 CND_DISTDIR=dist
+CND_BUILDDIR=build
 
 # Include project Makefile
 include Makefile
 
 # Object Directory
-OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
+OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
@@ -42,7 +43,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/tictoc/tictoc.o \
 	${OBJECTDIR}/CompositeImageMetaData.o \
 	${OBJECTDIR}/StaticBackgroundCompressor.o \
-	${OBJECTDIR}/testmain.o \
 	${OBJECTDIR}/StaticBackgroundCompressorLoader.o \
 	${OBJECTDIR}/BackgroundRemovedImageLoader.o \
 	${OBJECTDIR}/MightexMetaData.o \
@@ -69,10 +69,10 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-Release.mk dist/Release/MinGW-Windows/libImage-Stack-Compressor.dll
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libImage-Stack-Compressor.dll
 
-dist/Release/MinGW-Windows/libImage-Stack-Compressor.dll: ${OBJECTFILES}
-	${MKDIR} -p dist/Release/MinGW-Windows
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libImage-Stack-Compressor.dll: ${OBJECTFILES}
+	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -shared -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libImage-Stack-Compressor.dll ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/StackReader.o: StackReader.cpp 
@@ -120,11 +120,6 @@ ${OBJECTDIR}/StaticBackgroundCompressor.o: StaticBackgroundCompressor.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O2  -MMD -MP -MF $@.d -o ${OBJECTDIR}/StaticBackgroundCompressor.o StaticBackgroundCompressor.cpp
 
-${OBJECTDIR}/testmain.o: testmain.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -O2  -MMD -MP -MF $@.d -o ${OBJECTDIR}/testmain.o testmain.cpp
-
 ${OBJECTDIR}/StaticBackgroundCompressorLoader.o: StaticBackgroundCompressorLoader.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
@@ -160,8 +155,8 @@ ${OBJECTDIR}/LinearStackCompressor.o: LinearStackCompressor.cpp
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
-	${RM} -r build/Release
-	${RM} dist/Release/MinGW-Windows/libImage-Stack-Compressor.dll
+	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libImage-Stack-Compressor.dll
 
 # Subprojects
 .clean-subprojects:
