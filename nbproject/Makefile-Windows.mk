@@ -14,15 +14,15 @@ GREP=grep
 NM=nm
 CCADMIN=CCadmin
 RANLIB=ranlib
-CC=gcc
-CCC=g++
-CXX=g++
+CC=gcc.exe
+CCC=g++.exe
+CXX=g++.exe
 FC=gfortran
-AS=as
+AS=as.exe
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
-CND_CONF=Debug
+CND_PLATFORM=MinGW-Windows
+CND_CONF=Windows
 CND_DISTDIR=dist
 CND_BUILDDIR=build
 
@@ -69,84 +69,85 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk image_stack_compressor.lib
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk WindowsBinaries/image_stack_compressor.lib
 
-image_stack_compressor.lib: ${OBJECTFILES}
-	${RM} image_stack_compressor.lib
-	${AR} -rv image_stack_compressor.lib ${OBJECTFILES} 
-	$(RANLIB) image_stack_compressor.lib
+WindowsBinaries/image_stack_compressor.lib: ${OBJECTFILES}
+	${MKDIR} -p WindowsBinaries
+	${RM} WindowsBinaries/image_stack_compressor.lib
+	${AR} -rv WindowsBinaries/image_stack_compressor.lib ${OBJECTFILES} 
+	$(RANLIB) WindowsBinaries/image_stack_compressor.lib
 
-${OBJECTDIR}/StackReader.o: StackReader.cpp 
+${OBJECTDIR}/StackReader.o: nbproject/Makefile-${CND_CONF}.mk StackReader.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/StackReader.o StackReader.cpp
 
-${OBJECTDIR}/WindowsThreadStackCompressor.o: WindowsThreadStackCompressor.cpp 
+${OBJECTDIR}/WindowsThreadStackCompressor.o: nbproject/Makefile-${CND_CONF}.mk WindowsThreadStackCompressor.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/WindowsThreadStackCompressor.o WindowsThreadStackCompressor.cpp
 
-${OBJECTDIR}/BackgroundRemovedImage.o: BackgroundRemovedImage.cpp 
+${OBJECTDIR}/BackgroundRemovedImage.o: nbproject/Makefile-${CND_CONF}.mk BackgroundRemovedImage.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/BackgroundRemovedImage.o BackgroundRemovedImage.cpp
 
-${OBJECTDIR}/ExtraDataWriter.o: ExtraDataWriter.cpp 
+${OBJECTDIR}/ExtraDataWriter.o: nbproject/Makefile-${CND_CONF}.mk ExtraDataWriter.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/ExtraDataWriter.o ExtraDataWriter.cpp
 
-${OBJECTDIR}/tictoc/Timer.o: tictoc/Timer.cpp 
+${OBJECTDIR}/tictoc/Timer.o: nbproject/Makefile-${CND_CONF}.mk tictoc/Timer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/tictoc
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/tictoc/Timer.o tictoc/Timer.cpp
 
-${OBJECTDIR}/NameValueMetaData.o: NameValueMetaData.cpp 
+${OBJECTDIR}/NameValueMetaData.o: nbproject/Makefile-${CND_CONF}.mk NameValueMetaData.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/NameValueMetaData.o NameValueMetaData.cpp
 
-${OBJECTDIR}/tictoc/tictoc.o: tictoc/tictoc.cpp 
+${OBJECTDIR}/tictoc/tictoc.o: nbproject/Makefile-${CND_CONF}.mk tictoc/tictoc.cpp 
 	${MKDIR} -p ${OBJECTDIR}/tictoc
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/tictoc/tictoc.o tictoc/tictoc.cpp
 
-${OBJECTDIR}/CompositeImageMetaData.o: CompositeImageMetaData.cpp 
+${OBJECTDIR}/CompositeImageMetaData.o: nbproject/Makefile-${CND_CONF}.mk CompositeImageMetaData.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/CompositeImageMetaData.o CompositeImageMetaData.cpp
 
-${OBJECTDIR}/StaticBackgroundCompressor.o: StaticBackgroundCompressor.cpp 
+${OBJECTDIR}/StaticBackgroundCompressor.o: nbproject/Makefile-${CND_CONF}.mk StaticBackgroundCompressor.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/StaticBackgroundCompressor.o StaticBackgroundCompressor.cpp
 
-${OBJECTDIR}/StaticBackgroundCompressorLoader.o: StaticBackgroundCompressorLoader.cpp 
+${OBJECTDIR}/StaticBackgroundCompressorLoader.o: nbproject/Makefile-${CND_CONF}.mk StaticBackgroundCompressorLoader.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/StaticBackgroundCompressorLoader.o StaticBackgroundCompressorLoader.cpp
 
-${OBJECTDIR}/BackgroundRemovedImageLoader.o: BackgroundRemovedImageLoader.cpp 
+${OBJECTDIR}/BackgroundRemovedImageLoader.o: nbproject/Makefile-${CND_CONF}.mk BackgroundRemovedImageLoader.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/BackgroundRemovedImageLoader.o BackgroundRemovedImageLoader.cpp
 
-${OBJECTDIR}/MightexMetaData.o: MightexMetaData.cpp 
+${OBJECTDIR}/MightexMetaData.o: nbproject/Makefile-${CND_CONF}.mk MightexMetaData.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/MightexMetaData.o MightexMetaData.cpp
 
-${OBJECTDIR}/IplImageLoaderFixedWidth.o: IplImageLoaderFixedWidth.cpp 
+${OBJECTDIR}/IplImageLoaderFixedWidth.o: nbproject/Makefile-${CND_CONF}.mk IplImageLoaderFixedWidth.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/IplImageLoaderFixedWidth.o IplImageLoaderFixedWidth.cpp
 
-${OBJECTDIR}/ImageMetaDataLoader.o: ImageMetaDataLoader.cpp 
+${OBJECTDIR}/ImageMetaDataLoader.o: nbproject/Makefile-${CND_CONF}.mk ImageMetaDataLoader.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/ImageMetaDataLoader.o ImageMetaDataLoader.cpp
 
-${OBJECTDIR}/LinearStackCompressor.o: LinearStackCompressor.cpp 
+${OBJECTDIR}/LinearStackCompressor.o: nbproject/Makefile-${CND_CONF}.mk LinearStackCompressor.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/LinearStackCompressor.o LinearStackCompressor.cpp
@@ -157,7 +158,7 @@ ${OBJECTDIR}/LinearStackCompressor.o: LinearStackCompressor.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} image_stack_compressor.lib
+	${RM} WindowsBinaries/image_stack_compressor.lib
 
 # Subprojects
 .clean-subprojects:

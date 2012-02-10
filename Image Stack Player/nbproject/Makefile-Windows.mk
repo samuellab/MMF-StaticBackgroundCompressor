@@ -17,19 +17,20 @@ RANLIB=ranlib
 CC=gcc.exe
 CCC=g++.exe
 CXX=g++.exe
-FC=
+FC=gfortran
 AS=as.exe
 
 # Macros
 CND_PLATFORM=MinGW-Windows
-CND_CONF=Debug
+CND_CONF=Windows
 CND_DISTDIR=dist
+CND_BUILDDIR=build
 
 # Include project Makefile
 include Makefile
 
 # Object Directory
-OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
+OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
@@ -50,35 +51,35 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../Necessary\ Libraries\ and\ Includes/CV/lib ../image_stack_compressor.lib -lcv -lcxcore -lhighgui
+LDLIBSOPTIONS=-L../Necessary\ Libraries\ and\ Includes/CV/lib ../WindowsBinaries/image_stack_compressor.lib -lcv -lcxcore -lhighgui
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-Debug.mk ./mmf_player.exe
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../WindowsBinaries/mmf_player.exe
 
-./mmf_player.exe: ../image_stack_compressor.lib
+../WindowsBinaries/mmf_player.exe: ../WindowsBinaries/image_stack_compressor.lib
 
-./mmf_player.exe: ${OBJECTFILES}
-	${MKDIR} -p .
-	${LINK.cc} -static-libgcc -static-libstdc++ -o ./mmf_player ${OBJECTFILES} ${LDLIBSOPTIONS} 
+../WindowsBinaries/mmf_player.exe: ${OBJECTFILES}
+	${MKDIR} -p ../WindowsBinaries
+	${LINK.cc} -static-libgcc -static-libstdc++ -o ../WindowsBinaries/mmf_player ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
-${OBJECTDIR}/StackPlayer.o: StackPlayer.cpp 
+${OBJECTDIR}/StackPlayer.o: nbproject/Makefile-${CND_CONF}.mk StackPlayer.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -I../Necessary\ Libraries\ and\ Includes/CV/headers -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/StackPlayer.o StackPlayer.cpp
 
 # Subprojects
 .build-subprojects:
-	cd .. && ${MAKE}  -f Makefile CONF=Debug
+	cd .. && ${MAKE}  -f Makefile CONF=Windows
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
-	${RM} -r build/Debug
-	${RM} ./mmf_player.exe
+	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
+	${RM} ../WindowsBinaries/mmf_player.exe
 
 # Subprojects
 .clean-subprojects:
-	cd .. && ${MAKE}  -f Makefile CONF=Debug clean
+	cd .. && ${MAKE}  -f Makefile CONF=Windows clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

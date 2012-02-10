@@ -61,10 +61,11 @@
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
-    <conf name="Debug" type="3">
+    <conf name="Windows" type="3">
       <toolsSet>
         <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
-        <compilerSet>GNU|GNU</compilerSet>
+        <compilerSet>MinGW|MinGW</compilerSet>
+        <rebuildPropChanged>true</rebuildPropChanged>
       </toolsSet>
       <compileType>
         <cTool>
@@ -82,7 +83,7 @@
           <commandLine>-static-libgcc -static-libstdc++</commandLine>
         </ccTool>
         <archiverTool>
-          <output>image_stack_compressor.lib</output>
+          <output>WindowsBinaries/image_stack_compressor.lib</output>
         </archiverTool>
       </compileType>
     </conf>

@@ -27,11 +27,11 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 PROJECTNAME=Image Stack Player
 
 # Active Configuration
-DEFAULTCONF=Debug
+DEFAULTCONF=Windows
 CONF=${DEFAULTCONF}
 
 # All Configurations
-ALLCONFS=Debug Release 
+ALLCONFS=Windows Release 
 
 
 # build

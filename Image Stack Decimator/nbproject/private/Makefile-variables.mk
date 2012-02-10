@@ -5,4 +5,3 @@
 #
 # Windows configuration
 # Release configuration
-# linux configuration

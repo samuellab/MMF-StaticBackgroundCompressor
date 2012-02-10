@@ -13,7 +13,7 @@
             <sourceRootList/>
             <confList>
                 <confElem>
-                    <name>Debug</name>
+                    <name>Windows</name>
                     <type>3</type>
                 </confElem>
                 <confElem>

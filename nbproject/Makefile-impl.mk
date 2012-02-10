@@ -27,11 +27,11 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 PROJECTNAME=Image-Stack-Compressor
 
 # Active Configuration
-DEFAULTCONF=Debug
+DEFAULTCONF=Windows
 CONF=${DEFAULTCONF}
 
 # All Configurations
-ALLCONFS=Debug Release linux 
+ALLCONFS=Windows Release linux 
 
 
 # build
