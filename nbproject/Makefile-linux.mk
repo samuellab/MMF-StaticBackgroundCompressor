@@ -69,12 +69,13 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk image-stack-compressor.lib
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk LinuxBinaries/image_stack_compressor.lib
 
-image-stack-compressor.lib: ${OBJECTFILES}
-	${RM} image-stack-compressor.lib
-	${AR} -rv image-stack-compressor.lib ${OBJECTFILES} 
-	$(RANLIB) image-stack-compressor.lib
+LinuxBinaries/image_stack_compressor.lib: ${OBJECTFILES}
+	${MKDIR} -p LinuxBinaries
+	${RM} LinuxBinaries/image_stack_compressor.lib
+	${AR} -rv LinuxBinaries/image_stack_compressor.lib ${OBJECTFILES} 
+	$(RANLIB) LinuxBinaries/image_stack_compressor.lib
 
 ${OBJECTDIR}/StackReader.o: StackReader.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -157,7 +158,7 @@ ${OBJECTDIR}/LinearStackCompressor.o: LinearStackCompressor.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} image-stack-compressor.lib
+	${RM} LinuxBinaries/image_stack_compressor.lib
 
 # Subprojects
 .clean-subprojects:

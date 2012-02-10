@@ -22,6 +22,14 @@ CND_ARTIFACT_PATH_Release=dist/Release/MinGW-Windows/image_stack_decimator
 CND_PACKAGE_DIR_Release=dist/Release/MinGW-Windows/package
 CND_PACKAGE_NAME_Release=imagestackdecimator.tar
 CND_PACKAGE_PATH_Release=dist/Release/MinGW-Windows/package/imagestackdecimator.tar
+# Linux configuration
+CND_PLATFORM_Linux=GNU-Linux-x86
+CND_ARTIFACT_DIR_Linux=../LinuxBinaries
+CND_ARTIFACT_NAME_Linux=decimatestack.exe
+CND_ARTIFACT_PATH_Linux=../LinuxBinaries/decimatestack.exe
+CND_PACKAGE_DIR_Linux=dist/Linux/GNU-Linux-x86/package
+CND_PACKAGE_NAME_Linux=imagestackdecimator.tar
+CND_PACKAGE_PATH_Linux=dist/Linux/GNU-Linux-x86/package/imagestackdecimator.tar
 #
 # include compiler specific variables
 #

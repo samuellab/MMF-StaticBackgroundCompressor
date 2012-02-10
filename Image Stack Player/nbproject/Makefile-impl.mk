@@ -31,7 +31,7 @@ DEFAULTCONF=Windows
 CONF=${DEFAULTCONF}
 
 # All Configurations
-ALLCONFS=Windows Release 
+ALLCONFS=Windows Release Linux 
 
 
 # build

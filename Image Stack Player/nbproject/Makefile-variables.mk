@@ -22,6 +22,14 @@ CND_ARTIFACT_PATH_Release=dist/Release/MinGW-Windows/image_stack_player
 CND_PACKAGE_DIR_Release=dist/Release/MinGW-Windows/package
 CND_PACKAGE_NAME_Release=imagestackplayer.tar
 CND_PACKAGE_PATH_Release=dist/Release/MinGW-Windows/package/imagestackplayer.tar
+# Linux configuration
+CND_PLATFORM_Linux=GNU-Linux-x86
+CND_ARTIFACT_DIR_Linux=../LinuxBinaries
+CND_ARTIFACT_NAME_Linux=mmf_player
+CND_ARTIFACT_PATH_Linux=../LinuxBinaries/mmf_player
+CND_PACKAGE_DIR_Linux=dist/Linux/GNU-Linux-x86/package
+CND_PACKAGE_NAME_Linux=imagestackplayer.tar
+CND_PACKAGE_PATH_Linux=dist/Linux/GNU-Linux-x86/package/imagestackplayer.tar
 #
 # include compiler specific variables
 #

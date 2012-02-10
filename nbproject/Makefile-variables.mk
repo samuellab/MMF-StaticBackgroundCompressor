@@ -24,9 +24,9 @@ CND_PACKAGE_NAME_Release=libImage-Stack-Compressor.dll.tar
 CND_PACKAGE_PATH_Release=dist/Release/MinGW-Windows/package/libImage-Stack-Compressor.dll.tar
 # linux configuration
 CND_PLATFORM_linux=GNU-Linux-x86
-CND_ARTIFACT_DIR_linux=
-CND_ARTIFACT_NAME_linux=image-stack-compressor.lib
-CND_ARTIFACT_PATH_linux=image-stack-compressor.lib
+CND_ARTIFACT_DIR_linux=LinuxBinaries
+CND_ARTIFACT_NAME_linux=image_stack_compressor.lib
+CND_ARTIFACT_PATH_linux=LinuxBinaries/image_stack_compressor.lib
 CND_PACKAGE_DIR_linux=dist/linux/GNU-Linux-x86/package
 CND_PACKAGE_NAME_linux=Image-Stack-Compressor.tar
 CND_PACKAGE_PATH_linux=dist/linux/GNU-Linux-x86/package/Image-Stack-Compressor.tar

@@ -123,7 +123,7 @@
           <commandLine>-static-libstdc++ -static-libgcc</commandLine>
         </ccTool>
         <archiverTool>
-          <output>image-stack-compressor.lib</output>
+          <output>LinuxBinaries/image_stack_compressor.lib</output>
         </archiverTool>
       </compileType>
     </conf>

@@ -88,5 +88,45 @@
         </asmTool>
       </compileType>
     </conf>
+    <conf name="Linux" type="1">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>default</compilerSet>
+        <rebuildPropChanged>true</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <incDir>
+            <pElem>../Necessary Libraries and Includes/CV/headers</pElem>
+            <pElem>..</pElem>
+          </incDir>
+          <commandLine>-static-libgcc -static-libstdc++</commandLine>
+        </ccTool>
+        <linkerTool>
+          <output>../LinuxBinaries/mmf_player</output>
+          <linkerAddLib>
+            <pElem>../Necessary Libraries and Includes/CV/linuxlib</pElem>
+          </linkerAddLib>
+          <linkerLibItems>
+            <linkerLibProjectItem>
+              <makeArtifact PL=".."
+                            CT="3"
+                            CN="linux"
+                            AC="true"
+                            BL="true"
+                            WD=".."
+                            BC="${MAKE}  -f Makefile CONF=linux"
+                            CC="${MAKE}  -f Makefile CONF=linux clean"
+                            OP="LinuxBinaries/image_stack_compressor.lib">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibLibItem>cv</linkerLibLibItem>
+            <linkerLibLibItem>cxcore</linkerLibLibItem>
+            <linkerLibLibItem>highgui</linkerLibLibItem>
+          </linkerLibItems>
+          <commandLine>-static-libgcc -static-libstdc++</commandLine>
+        </linkerTool>
+      </compileType>
+    </conf>
   </confs>
 </configurationDescriptor>
