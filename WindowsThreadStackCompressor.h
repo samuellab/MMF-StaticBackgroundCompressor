@@ -102,6 +102,19 @@
         */
         virtual void finishRecording();
 
+        /* virtual bool nothingLeftToCompressOrWrite();
+         * returns true if all images have been compressed and written to disk
+         */
+         
+        virtual bool nothingLeftToCompressOrWrite();
+        
+        virtual void goIdle();
+        /* virtual void goIdle();
+         * stops recording; adds any queued images to last static background compressor
+         * then returns (does not wait for threads to finish)
+         *
+         */
+        
         /* virtual void openOutputFile ();
         * virtual void closeOutputFile ();
         *

@@ -45,6 +45,8 @@ extern "C" {
 
     EXPORT void *createBrightFieldStackWriter (const char *fname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSizem, int keyFrameInterval, double frameRate);
 
+    EXPORT void *createBrightFieldStackWriterWithSizeLimit (const char *fstub, const char *ext, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int keyFrameInterval, double frameRate, uint64_t maxBytesToWrite);
+
 
     EXPORT void destroyStackWriter (void *sw);
     

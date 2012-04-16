@@ -200,6 +200,7 @@ protected:
     virtual inline uint32_t idCode () {
         return 0xa3d2d45d; //CRC32 hash of "LinearStackCompressor" from fileformat.info
     }
+    std::ofstream::pos_type currentFileSize;
 private:
      LinearStackCompressor(const LinearStackCompressor& orig);
      void init();

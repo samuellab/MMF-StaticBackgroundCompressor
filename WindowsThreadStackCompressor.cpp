@@ -219,6 +219,7 @@ unsigned __stdcall WindowsThreadStackCompressor::writingThreadFunction() {
 
         //    cout << "writing a stack" << endl;
            stackBeingWritten->toDisk(*outfile);
+           currentFileSize = outfile->tellp();
            writingThreadTimer.toc("writing a stack to disk");
            LeaveCriticalSection(&outfileCS);
            /*******************-outfile, writing still active****************/
@@ -254,8 +255,7 @@ unsigned __stdcall WindowsThreadStackCompressor::startWritingThread(void* ptr) {
     return wtsc->writingThreadFunction();
 }
 
-
-void WindowsThreadStackCompressor::finishRecording() {
+void WindowsThreadStackCompressor::goIdle() {
     recordingState = idle;
     /*****************activeStackCS*********************/
     EnterCriticalSection(&activeStackCS);
@@ -273,8 +273,51 @@ void WindowsThreadStackCompressor::finishRecording() {
         activeStack = NULL;
     }
     LeaveCriticalSection(&activeStackCS);
+}
+
+bool WindowsThreadStackCompressor::nothingLeftToCompressOrWrite() {
+    if (recordingState == recording) {
+        //more images may be coming, so we're not done
+        return false;
+    }
+    bool done = false;
+    EnterCriticalSection(&activeStackCS);
+    done = (activeStack == NULL || activeStack->numToProccess() == 0);
+    LeaveCriticalSection(&activeStackCS);
+    if (!done) {
+        return false;
+    }
+    EnterCriticalSection(&imageStacksCS);
+    done = imageStacks.empty();
+    LeaveCriticalSection(&imageStacksCS);
+    if (!done) {
+        return false;
+    }
+    return !(stacksLeftToCompress || stacksLeftToWrite);
+}
+
+void WindowsThreadStackCompressor::finishRecording() {
+//    recordingState = idle;
+//    /*****************activeStackCS*********************/
+//    EnterCriticalSection(&activeStackCS);
+//    recordingState = idle;
+//    if (activeStack != NULL) {
+//        if (activeStack->numToProccess() > 0) {
+//            /********imageStackCS (+activeStack)*********/
+//            EnterCriticalSection(&imageStacksCS);
+//            imageStacks.push_back(activeStack);
+//            LeaveCriticalSection(&imageStacksCS);
+//            /**********-imageStack (activeStack still on)*************/
+//        } else {
+//            delete activeStack;
+//        }
+//        activeStack = NULL;
+//    }
+//    LeaveCriticalSection(&activeStackCS);
     /******************************************************************/
 
+    goIdle();
+    
     //wait for active stacks to empty out --
     //if it doesn't after ~10 seconds, then we'll check to see if anything is still be written
     bool done = false;
@@ -286,6 +329,7 @@ void WindowsThreadStackCompressor::finishRecording() {
         /****************************************************/
         Sleep(10);
     }
+    done = false;
     while (!done) {
         done = !(stacksLeftToCompress || stacksLeftToWrite); //changed by MHG without full understanding 3/15/11 -- added !()
         //logkludge << "stacks left to compress = " << stacksLeftToCompress << "\t stacks left to write = " << stacksLeftToWrite << endl;

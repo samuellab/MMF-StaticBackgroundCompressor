@@ -52,11 +52,13 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../Necessary\ Libraries\ and\ Includes/CV/lib -L.. -limage_stack_compressor -lcv -lcxcore -lhighgui
+LDLIBSOPTIONS=-L../Necessary\ Libraries\ and\ Includes/CV/lib -L.. ../../Marc-Mightex-Camera-Software/Image-Stack-Compressor/image_stack_compressor.lib -lcv -lcxcore -lhighgui
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ./StackWriterWrapper.dll
+
+./StackWriterWrapper.dll: ../../Marc-Mightex-Camera-Software/Image-Stack-Compressor/image_stack_compressor.lib
 
 ./StackWriterWrapper.dll: ${OBJECTFILES}
 	${MKDIR} -p .
@@ -74,6 +76,7 @@ ${OBJECTDIR}/StackWriterWrapper.o: StackWriterWrapper.cpp
 
 # Subprojects
 .build-subprojects:
+	cd ../../Marc-Mightex-Camera-Software/Image-Stack-Compressor && ${MAKE}  -f Makefile CONF=Debug
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -82,6 +85,7 @@ ${OBJECTDIR}/StackWriterWrapper.o: StackWriterWrapper.cpp
 
 # Subprojects
 .clean-subprojects:
+	cd ../../Marc-Mightex-Camera-Software/Image-Stack-Compressor && ${MAKE}  -f Makefile CONF=Debug clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

@@ -19,21 +19,19 @@
 using namespace std;
 
 void *createBrightFieldStackWriter (const char *fname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int keyFrameInterval, double frameRate) {
-    wtscWrapper *ww = new wtscWrapper();
-    ww->wtsc.setOutputFileName(fname);
-    ww->wtsc.setIntervals(keyFrameInterval, 1);
-    ww->wtsc.setThresholds(0, thresholdAboveBackground, smallDimMinSize, lgDimMinSize);
-    ww->wtsc.setFrameRate(frameRate);
-    ww->wtsc.startThreads();
+    wtscWrapper *ww = new wtscWrapper(fname, thresholdAboveBackground, smallDimMinSize, lgDimMinSize, keyFrameInterval, frameRate);
+    return (void *) ww;
+}
+void *createBrightFieldStackWriterWithSizeLimit (const char *fstub, const char *ext, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int keyFrameInterval, double frameRate, uint64_t maxBytesToWrite) {
+    wtscWrapper *ww = new wtscWrapper(fstub, ext, thresholdAboveBackground, smallDimMinSize, lgDimMinSize, keyFrameInterval, frameRate, maxBytesToWrite);
     return (void *) ww;
 }
 
  void destroyStackWriter (void *sw) {
+     if (sw == NULL) {
+        return;
+    }
      wtscWrapper *ww = (wtscWrapper *) sw;
-     
-     ww->wtsc.finishRecording(); //these are already done by deleting ww, but it's not the biggest deal to short-cut the process
-     ww->wtsc.closeOutputFile(); //to make clear this happens here
-
      delete (ww);
  }
 
@@ -41,16 +39,9 @@ int addFrame (void *sw, void *ipl_im) {
     if (sw == NULL) {
         return -1;
     }
-    if (ipl_im == NULL) {
-        return -1;
-    }
+   
     wtscWrapper *ww = (wtscWrapper *) sw;
-    ww->enterCS();
-    ww->md.replaceData("frameAddedTimeStamp", ww->tim.getElapsedTimeInMilliSec());
-    ww->wtsc.newFrame((IplImage *) ipl_im, ww->md.copy());
-    ww->md.clear();
-    ww->leaveCS();
-    return 0;
+    return ww->addFrame(ipl_im);
 }
 
 int setMetaData(void* sw, char* fieldname, double fieldvalue) {
@@ -58,10 +49,7 @@ int setMetaData(void* sw, char* fieldname, double fieldvalue) {
         return -1;
     }
     wtscWrapper *ww = (wtscWrapper *) sw;
-    ww->enterCS();
-    ww->md.replaceData(string(fieldname), fieldvalue);
-    ww->leaveCS();
-    return 0;
+    return ww->setMetaData(fieldname, fieldvalue);
 }
 
 int startRecording (void *sw, int nframes) {
@@ -69,11 +57,7 @@ int startRecording (void *sw, int nframes) {
         return -1;
     }
     wtscWrapper *ww = (wtscWrapper *) sw;
-    ww->enterCS();
-    ww->tim.start();
-    ww->wtsc.startRecording(nframes);
-    ww->leaveCS();
-    return 0;
+    return ww->startRecording(nframes);
 }
 
 int stopRecording (void *sw) {
@@ -81,10 +65,7 @@ int stopRecording (void *sw) {
         return -1;
     }
     wtscWrapper *ww = (wtscWrapper *) sw;
-    ww->enterCS();
-    ww->wtsc.stopRecording();
-    ww->leaveCS();
-    return 0;
+    return ww->stopRecording();
 }
 
 int64_t numBytesWritten (void *sw) {
@@ -92,48 +73,24 @@ int64_t numBytesWritten (void *sw) {
         return -1;
     }
     wtscWrapper *ww = (wtscWrapper *) sw;
-    ww->enterCS();
-    int64_t nbr = ww->wtsc.numBytesWritten();
-    ww->leaveCS();
-    return nbr;
+    return ww->numBytesWritten();
 }
 uint64_t maxBytesSupported() {
-    return numeric_limits<streamoff>::max();
+    return wtscWrapper::maxFileSizeSupported();
 }
 int getTimingStatistics (void *sw, double *avgAddTime, double *avgCompressTime, double *avgWriteTime) {
      if (sw == NULL) {
         return -1;
     }
     wtscWrapper *ww = (wtscWrapper *) sw;
-    ww->enterCS();
-    if (avgAddTime != NULL) {
-        *avgAddTime = ww->wtsc.NonthreadedTimer().getStatistics("adding frame to stack");;
-    }
-    if (avgCompressTime != NULL) {
-        *avgCompressTime = ww->wtsc.CompressionThreadTimer().getStatistics("compressing a frame");
-    }
-    if (avgWriteTime != NULL) {
-        *avgWriteTime =  (ww->wtsc.WritingThreadTimer().getStatistics("writing a stack to disk") + ww->wtsc.WritingThreadTimer().getStatistics("deleting written stack from memory"))/ww->wtsc.getKeyFrameInterval();
-    }
-    ww->leaveCS();
-    return 0;
+    return ww->getTimingStatistics(avgAddTime, avgCompressTime, avgWriteTime);
 }
 int getNumStacksQueued (void *sw, int *numToCompress, int *numToWrite) {
      if (sw == NULL) {
         return -1;
     }
     wtscWrapper *ww = (wtscWrapper *) sw;
-    ww->enterCS();
-    int ntc, ntw;
-    ww->wtsc.numStacksWaiting(ntc, ntw);
-    if (numToCompress != NULL) {
-        *numToCompress = ntc;
-    }
-    if (numToWrite != NULL) {
-        *numToWrite = ntw;
-    }
-    ww->leaveCS();
-    return 0;
+    return ww->getNumStacksQueued(numToCompress, numToWrite);
 }
 
 int getTimingReport (void *sw, char *dst, int maxchars) {
@@ -141,11 +98,5 @@ int getTimingReport (void *sw, char *dst, int maxchars) {
         return -1;
     }
     wtscWrapper *ww = (wtscWrapper *) sw;
-    ww->enterCS();
-    string s = ww->wtsc.generateTimingReport();
-    if (dst != NULL) {
-        s.copy(dst, maxchars);
-    }
-    ww->leaveCS();
-    return 0;
+    return ww->getTimingReport(dst, maxchars);
 }

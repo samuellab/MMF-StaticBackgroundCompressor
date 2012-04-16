@@ -57,6 +57,7 @@ void LinearStackCompressor::init() {
     smallDimMinSize = 3;
     processing = false; //really should be a mutex, but whatever
     lockActiveStack = false; //really should be a mutex, but whatever
+    currentFileSize = 0;
 }
 
 void LinearStackCompressor::newFrame(const IplImage* im, ImageMetaData *metadata) {
@@ -211,13 +212,14 @@ bool LinearStackCompressor::writeFinishedStack() {
                return false;
            }
            StaticBackgroundCompressor *sbc = *it;
-           ofstream::pos_type sp = outfile->tellp();
-           int sod = sbc->sizeOnDisk();
+          // ofstream::pos_type sp = outfile->tellp();
+         //  int sod = sbc->sizeOnDisk();
            if (stacksavedescription.empty()) {
                 stacksavedescription = sbc->saveDescription();
             }
            //cout << "sbc to disk\n";
            sbc->toDisk(*outfile);
+           currentFileSize = outfile->tellp();
          //  cout << "delete sbc\n";
            delete sbc;
        //    cout << "imageStacks.erase\n";
@@ -231,15 +233,16 @@ bool LinearStackCompressor::writeFinishedStack() {
 }
 
 ofstream::pos_type LinearStackCompressor::numBytesWritten() {
-    if (outfile == NULL) {
-        return 0;
-    }
-    ofstream::pos_type rv = outfile->tellp();
-    if (rv > 0) {
-        return rv;
-    } else {
-        return 0;
-    }
+//    if (outfile == NULL) {
+//        return 0;
+//    }
+//    ofstream::pos_type rv = outfile->tellp();
+//    if (rv > 0) {
+//        return rv;
+//    } else {
+//        return 0;
+//    }
+    return currentFileSize;
 }
 
 bool LinearStackCompressor::readyForCompression(StaticBackgroundCompressor* sc) {

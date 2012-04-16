@@ -10,6 +10,7 @@
  */
 #include "WindowsThreadStackCompressor.h"
 #include <windows.h>
+#include <limits>
 #include "NameValueMetaData.h"
 #include "Timer.h"
 #ifndef WTSCWRAPPER_H
@@ -18,14 +19,47 @@
 class wtscWrapper {
     public:
         wtscWrapper();
+        wtscWrapper(const char *fname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int keyFrameInterval, double frameRate);
+        wtscWrapper(const char *fstub, const char *ext, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int keyFrameInterval, double frameRate, uint64_t maxBytesToWrite);
+
         virtual ~wtscWrapper();
-        WindowsThreadStackCompressor wtsc;
+        WindowsThreadStackCompressor *wtsc;
+        WindowsThreadStackCompressor *wtsc_old;
+        uint64_t maximumBytesToWriteInOneFile;
+        bool limitFileSize;
         NameValueMetaData md;
         Timer tim;
         void enterCS();
         void leaveCS();
+        
+        int addFrame (void *ipl_im);
+
+        int setMetaData(char* fieldname, double fieldvalue);
+
+        int startRecording (int nframes);
+        int stopRecording ();
+
+        int64_t numBytesWritten ();
+        static inline uint64_t maxFileSizeSupported() {
+            return std::numeric_limits<std::streamoff>::max();
+        }
+        int getTimingStatistics (double *avgAddTime, double *avgCompressTime, double *avgWriteTime);
+        int getNumStacksQueued (int *numToCompress, int *numToWrite);
+        int getTimingReport (char *dst, int maxchars);
+
+        
     protected:
         CRITICAL_SECTION protectedAction;
+        std::string filestub;
+        std::string ext;
+        void init();
+        int thresholdAboveBackground;
+        int smallDimMinSize;
+        int lgDimMinSize;
+        int keyFrameInterval;
+        double frameRate;
+        int fileNumber;
+        void newStackWriter();
 };
 
 
