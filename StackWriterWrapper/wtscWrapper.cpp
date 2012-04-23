@@ -109,19 +109,21 @@ void wtscWrapper::newStackWriter() {
     os << "creating wtsc" << endl;
     wtsc = new WindowsThreadStackCompressor();
     assert (wtsc != NULL);
-    string fname;
+    stringstream ss;
     if (limitFileSize) {
         os << "limit file size is true" << endl;
-        stringstream ss;
+        
         ss << filestub << "-" << setw(3) << setfill('0') << fileNumber << "." << ext;
-        fname = ss.str();
+       // fname = ss.str();
         fileNumber++;
     } else {
         os << "limit file size is false" << endl;
-        fname = filestub + "." + ext;
+        ss << filestub << "." << ext;
     }
-        
-    wtsc->setOutputFileName(fname.c_str());
+    
+    os << "fname = " << ss.str() << endl;
+    
+    wtsc->setOutputFileName(ss.str().c_str());
     wtsc->setIntervals(keyFrameInterval, 1);
     wtsc->setThresholds(0, thresholdAboveBackground, smallDimMinSize, lgDimMinSize);
     wtsc->setFrameRate(frameRate);
