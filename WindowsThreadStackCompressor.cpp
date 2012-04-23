@@ -384,4 +384,10 @@ void WindowsThreadStackCompressor::numStacksWaiting(int& numToCompress, int& num
     LeaveCriticalSection(&imageStacksCS);
 }
 
+void WindowsThreadStackCompressor::createStack() {
+    activeStack = new WindowsThreadedStaticBackgroundCompressor();
+    activeStack->setAutomaticUpdateInterval(backgroundUpdateInterval);
+    activeStack->setThresholds(threshBelowBackground, threshAboveBackground, smallDimMinSize, lgDimMinSize);
+}
+
 #endif

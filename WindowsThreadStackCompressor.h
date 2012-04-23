@@ -158,6 +158,7 @@
         static unsigned __stdcall startCompressionThread(void *ptr);
         static unsigned __stdcall startWritingThread(void *ptr);
 
+        virtual void createStack();
         virtual void addFrameToStack(IplImage **im, ImageMetaData *metadata);
         bool compressionThreadActive;
         bool writingThreadActive;

@@ -56,6 +56,8 @@
     <itemPath>tictoc/Timer.h</itemPath>
     <itemPath>WindowsThreadStackCompressor.cpp</itemPath>
     <itemPath>WindowsThreadStackCompressor.h</itemPath>
+    <itemPath>WindowsThreadedStaticBackgroundCompressor.cpp</itemPath>
+    <itemPath>WindowsThreadedStaticBackgroundCompressor.h</itemPath>
     <itemPath>tictoc/tictoc.cpp</itemPath>
     <itemPath>tictoc/tictoc.h</itemPath>
   </logicalFolder>
