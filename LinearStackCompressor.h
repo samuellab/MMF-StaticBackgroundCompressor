@@ -151,7 +151,7 @@ public:
      *
      * how often the lsc should expect frames to be arriving.  lsc attempts to keep function calls under this time, but no guarantees to work
      */
-    virtual inline void setFrameRate (double frameRate) {
+    virtual void setFrameRate (double frameRate) {
         this->frameRate = frameRate;
     }
 
