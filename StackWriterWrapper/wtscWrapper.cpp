@@ -109,6 +109,7 @@ void wtscWrapper::newStackWriter() {
     os << "creating wtsc" << endl;
     wtsc = new WindowsThreadStackCompressor();
     assert (wtsc != NULL);
+    os << "wtsc created and points to " << (intptr_t) wtsc << endl;
     stringstream ss;
     if (limitFileSize) {
         os << "limit file size is true" << endl;
@@ -124,8 +125,13 @@ void wtscWrapper::newStackWriter() {
     os << "fname = " << ss.str() << endl;
     
     wtsc->setOutputFileName(ss.str().c_str());
+    
+    os << "set output filename returned ok " << endl;
     wtsc->setIntervals(keyFrameInterval, 1);
+    
+    os << "set intervals passed " << endl;
     wtsc->setThresholds(0, thresholdAboveBackground, smallDimMinSize, lgDimMinSize);
+    os << "about to set frame rate " << endl;
     wtsc->setFrameRate(frameRate);
     os << "about to call start threads " << endl;
     wtsc->startThreads();
