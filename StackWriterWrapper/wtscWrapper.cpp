@@ -158,14 +158,17 @@ int wtscWrapper::addFrame (void *ipl_im) {
         }
     }
     if (limitFileSize && wtsc->numBytesWritten() >= (0.99*maximumBytesToWriteInOneFile)) {
-        if (wtsc_old != NULL) {
-            wtsc_old->finishRecording();
-            wtsc_old->closeOutputFile();
-            delete (wtsc_old);
-            wtsc_old == NULL;
-        }
-        wtsc_old = wtsc;
-        wtsc_old->goIdle();
+//        if (wtsc_old != NULL) {
+//            wtsc_old->finishRecording();
+//            wtsc_old->closeOutputFile();
+//            delete (wtsc_old);
+//            wtsc_old == NULL;
+//        }
+//        wtsc_old = wtsc;
+//        wtsc_old->goIdle();
+        wtsc->finishRecording();
+        delete(wtsc);
+        wtsc = NULL;
         newStackWriter();
     }
     md.replaceData("frameAddedTimeStamp", tim.getElapsedTimeInMilliSec());
