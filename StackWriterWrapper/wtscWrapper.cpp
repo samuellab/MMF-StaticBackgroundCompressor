@@ -19,15 +19,15 @@
 using namespace std;
 
 void wtscWrapper::init() {
-    std::ofstream os("c:\\testingcs.txt");
-    os << "initialize critical section called" << endl;
+ //   std::ofstream os("c:\\testingcs.txt");
+  //  os << "initialize critical section called" << endl;
     InitializeCriticalSection(&protectedAction);
-    os << "initialize critical section returned" << endl;
+ //   os << "initialize critical section returned" << endl;
     wtsc = NULL;
     wtsc_old = NULL;
     limitFileSize = false;
     maximumBytesToWriteInOneFile = 2000000000;
-    os << "init returned " << endl;
+  //  os << "init returned " << endl;
 }
 
 wtscWrapper::wtscWrapper() {
@@ -59,13 +59,13 @@ void wtscWrapper::leaveCS() {
 
 wtscWrapper::wtscWrapper(const char *fname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int keyFrameInterval, double frameRate) {
     init();
-    std::ofstream os("c:\\wtscwrapperargs.txt");
-    os << "fname = " << fname << endl;
-    os << "thresholdAboveBackground = " << thresholdAboveBackground << endl;
-    os << "smallDimMinSize = " << smallDimMinSize << endl;
-    os << "lgDimMinSize = " << lgDimMinSize << endl;
-    os << "keyFrameInterval = " << keyFrameInterval << endl;
-    os << "frameRate = " << frameRate << endl;
+ //   std::ofstream os("c:\\wtscwrapperargs.txt");
+//    os << "fname = " << fname << endl;
+  //  os << "thresholdAboveBackground = " << thresholdAboveBackground << endl;
+ //   os << "smallDimMinSize = " << smallDimMinSize << endl;
+  //  os << "lgDimMinSize = " << lgDimMinSize << endl;
+  //  os << "keyFrameInterval = " << keyFrameInterval << endl;
+ //   os << "frameRate = " << frameRate << endl;
     
     this->thresholdAboveBackground = thresholdAboveBackground;
     this->smallDimMinSize = smallDimMinSize;
@@ -77,13 +77,13 @@ wtscWrapper::wtscWrapper(const char *fname, int thresholdAboveBackground, int sm
     filestub = fn.substr(0,ind);
     ext = fn.substr(ind+1);    
     
-    os << "filestub = " << filestub << endl;
-    os << "ext = " << ext << endl;
+   // os << "filestub = " << filestub << endl;
+  //  os << "ext = " << ext << endl;
     
     
     newStackWriter();       
     assert (wtsc != NULL);
-    os << "wtsc created and points to " << (intptr_t) wtsc << endl;
+  //  os << "wtsc created and points to " << (intptr_t) wtsc << endl;
     
 }
 
@@ -105,41 +105,41 @@ wtscWrapper::wtscWrapper(const char *fstub, const char *ext, int thresholdAboveB
 }
 
 void wtscWrapper::newStackWriter() {
-    ofstream os("c:\\newstackwriter.txt");
-    os << "creating wtsc" << endl;
+  //  ofstream os("c:\\newstackwriter.txt");
+ //   os << "creating wtsc" << endl;
     wtsc = new WindowsThreadStackCompressor();
     assert (wtsc != NULL);
-    os << "wtsc created and points to " << (intptr_t) wtsc << endl;
+ //   os << "wtsc created and points to " << (intptr_t) wtsc << endl;
     stringstream ss;
     if (limitFileSize) {
-        os << "limit file size is true" << endl;
+ //       os << "limit file size is true" << endl;
         
         ss << filestub << "-" << setw(3) << setfill('0') << fileNumber << "." << ext;
        // fname = ss.str();
         fileNumber++;
     } else {
-        os << "limit file size is false" << endl;
+   //     os << "limit file size is false" << endl;
         ss << filestub << "." << ext;
     }
     
-    os << "fname = " << ss.str() << endl;
+  //  os << "fname = " << ss.str() << endl;
     
     wtsc->setOutputFileName(ss.str().c_str());
     
-    os << "set output filename returned ok " << endl;
+  //  os << "set output filename returned ok " << endl;
     
-    os << "about to set frame rate (commented out) " << endl << flush;
+ //   os << "about to set frame rate (commented out) " << endl << flush;
     //wtsc->setFrameRate(frameRate);
     
-    os << "set frame rate passed " << endl << flush;
+ //   os << "set frame rate passed " << endl << flush;
     wtsc->setIntervals(keyFrameInterval, 1);
     
-    os << "set intervals passed " << endl;
+ //   os << "set intervals passed " << endl;
     wtsc->setThresholds(0, thresholdAboveBackground, smallDimMinSize, lgDimMinSize);
     
-    os << "about to call start threads " << endl << flush;
+ //   os << "about to call start threads " << endl << flush;
     wtsc->startThreads();
-    os << "new stack writer completed OK" << endl << flush;
+ //   os << "new stack writer completed OK" << endl << flush;
 }
 
 int wtscWrapper::addFrame (void *ipl_im) {
@@ -162,6 +162,7 @@ int wtscWrapper::addFrame (void *ipl_im) {
             wtsc_old->finishRecording();
             wtsc_old->closeOutputFile();
             delete (wtsc_old);
+            wtsc_old == NULL;
         }
         wtsc_old = wtsc;
         wtsc_old->goIdle();

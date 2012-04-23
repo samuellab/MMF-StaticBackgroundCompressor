@@ -26,7 +26,7 @@
 #include <io.h>
 using namespace std;
 
-static ofstream logkludge("c:\\wtsckludge.txt");
+//static ofstream logkludge("c:\\wtsckludge.txt");
 
 WindowsThreadStackCompressor::WindowsThreadStackCompressor() {
     init();
@@ -86,15 +86,15 @@ int WindowsThreadStackCompressor::startThreads() {
 );
 
      */
-    logkludge << "startThreads: compressionThread points to " << (intptr_t) compressionThread << endl << flush;
+    //logkludge << "startThreads: compressionThread points to " << (intptr_t) compressionThread << endl << flush;
     if (compressionThread == NULL) {
         compressionThread = (HANDLE) _beginthreadex(NULL, 0, WindowsThreadStackCompressor::startCompressionThread, this, 0, NULL);
     }
-    logkludge << "startThreads: compressionThread created and points to " << (intptr_t) compressionThread << endl << flush;
+    //logkludge << "startThreads: compressionThread created and points to " << (intptr_t) compressionThread << endl << flush;
     if (writingThread == NULL) {
         writingThread = (HANDLE) _beginthreadex(NULL, 0, WindowsThreadStackCompressor::startWritingThread, this, 0, NULL);
     }
-    logkludge << "started threads " << " compressionThread = " << (intptr_t) compressionThread << " writingThread = " << (intptr_t) writingThread << endl;
+    //logkludge << "started threads " << " compressionThread = " << (intptr_t) compressionThread << " writingThread = " << (intptr_t) writingThread << endl;
     if (compressionThread == NULL || writingThread == NULL) {
         return -1;
     }
@@ -103,7 +103,7 @@ int WindowsThreadStackCompressor::startThreads() {
 
 void WindowsThreadStackCompressor::newFrame(const IplImage* im, ImageMetaData *metadata) {
 
-    logkludge << "new frame called" << endl;
+    //logkludge << "new frame called" << endl;
     nonthreadedTimer.tic("cloning image");
     IplImage *imcpy = cvCloneImage(im);
     nonthreadedTimer.toc("cloning image");
@@ -178,7 +178,7 @@ unsigned __stdcall WindowsThreadStackCompressor::compressionThreadFunction() {
              Sleep((int) (1000/frameRate));
          }
     }
-    logkludge << "leaving compression thread";
+    //logkludge << "leaving compression thread";
     return 0;
 }
 
@@ -251,7 +251,7 @@ unsigned __stdcall WindowsThreadStackCompressor::writingThreadFunction() {
         }
         
     }
-    logkludge << "leaving writing thread" << endl;
+    //logkludge << "leaving writing thread" << endl;
     return 0;
 }
 unsigned __stdcall WindowsThreadStackCompressor::startWritingThread(void* ptr) {
@@ -272,7 +272,7 @@ void WindowsThreadStackCompressor::goIdle() {
             LeaveCriticalSection(&imageStacksCS);
             /**********-imageStack (activeStack still on)*************/
         } else {
-            delete activeStack;
+            delete (activeStack);
         }
         activeStack = NULL;
     }
