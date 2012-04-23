@@ -131,11 +131,11 @@ void wtscWrapper::newStackWriter() {
     
     os << "set intervals passed " << endl;
     wtsc->setThresholds(0, thresholdAboveBackground, smallDimMinSize, lgDimMinSize);
-    os << "about to set frame rate " << endl;
+    os << "about to set frame rate " << endl << flush;
     wtsc->setFrameRate(frameRate);
-    os << "about to call start threads " << endl;
+    os << "about to call start threads " << endl << flush;
     wtsc->startThreads();
-    os << "new stack writer completed OK" << endl;
+    os << "new stack writer completed OK" << endl << flush;
 }
 
 int wtscWrapper::addFrame (void *ipl_im) {
