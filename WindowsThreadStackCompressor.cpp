@@ -23,6 +23,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iosfwd>
+#include <io.h>
 using namespace std;
 
 static ofstream logkludge("c:\\wtsckludge.txt");
@@ -85,13 +86,15 @@ int WindowsThreadStackCompressor::startThreads() {
 );
 
      */
+    logkludge << "startThreads: compressionThread points to " << (intptr_t) compressionThread << endl << flush;
     if (compressionThread == NULL) {
         compressionThread = (HANDLE) _beginthreadex(NULL, 0, WindowsThreadStackCompressor::startCompressionThread, this, 0, NULL);
     }
+    logkludge << "startThreads: compressionThread created and points to " << (intptr_t) compressionThread << endl << flush;
     if (writingThread == NULL) {
         writingThread = (HANDLE) _beginthreadex(NULL, 0, WindowsThreadStackCompressor::startWritingThread, this, 0, NULL);
     }
-    logkludge << "started threads " << " compressionThread = " << (unsigned long) compressionThread << " writingThread = " << (unsigned long) writingThread << endl;
+    logkludge << "started threads " << " compressionThread = " << (intptr_t) compressionThread << " writingThread = " << (intptr_t) writingThread << endl;
     if (compressionThread == NULL || writingThread == NULL) {
         return -1;
     }
