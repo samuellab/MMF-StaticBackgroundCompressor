@@ -105,41 +105,28 @@ wtscWrapper::wtscWrapper(const char *fstub, const char *ext, int thresholdAboveB
 }
 
 void wtscWrapper::newStackWriter() {
-  //  ofstream os("c:\\newstackwriter.txt");
- //   os << "creating wtsc" << endl;
+
     wtsc = new WindowsThreadStackCompressor();
     assert (wtsc != NULL);
- //   os << "wtsc created and points to " << (intptr_t) wtsc << endl;
     stringstream ss;
     if (limitFileSize) {
- //       os << "limit file size is true" << endl;
         
         ss << filestub << "-" << setw(3) << setfill('0') << fileNumber << "." << ext;
-       // fname = ss.str();
         fileNumber++;
     } else {
-   //     os << "limit file size is false" << endl;
         ss << filestub << "." << ext;
     }
     
-  //  os << "fname = " << ss.str() << endl;
     
     wtsc->setOutputFileName(ss.str().c_str());
     
-  //  os << "set output filename returned ok " << endl;
+    wtsc->setFrameRate(frameRate);
     
- //   os << "about to set frame rate (commented out) " << endl << flush;
-    //wtsc->setFrameRate(frameRate);
-    
- //   os << "set frame rate passed " << endl << flush;
     wtsc->setIntervals(keyFrameInterval, 1);
     
- //   os << "set intervals passed " << endl;
     wtsc->setThresholds(0, thresholdAboveBackground, smallDimMinSize, lgDimMinSize);
     
- //   os << "about to call start threads " << endl << flush;
     wtsc->startThreads();
- //   os << "new stack writer completed OK" << endl << flush;
 }
 
 int wtscWrapper::addFrame (void *ipl_im) {
@@ -150,13 +137,13 @@ int wtscWrapper::addFrame (void *ipl_im) {
         return -3;
     }
     enterCS();
-    if (wtsc_old != NULL) {
-        if (wtsc_old->nothingLeftToCompressOrWrite()) {
-            wtsc_old->closeOutputFile();
-            delete(wtsc_old);
-            wtsc_old == NULL;
-        }
-    }
+//    if (wtsc_old != NULL) {
+//        if (wtsc_old->nothingLeftToCompressOrWrite()) {
+//            wtsc_old->closeOutputFile();
+//            delete(wtsc_old);
+//            wtsc_old == NULL;
+//        }
+//    }
     if (limitFileSize && wtsc->numBytesWritten() >= (0.99*maximumBytesToWriteInOneFile)) {
 //        if (wtsc_old != NULL) {
 //            wtsc_old->finishRecording();
@@ -166,10 +153,13 @@ int wtscWrapper::addFrame (void *ipl_im) {
 //        }
 //        wtsc_old = wtsc;
 //        wtsc_old->goIdle();
+        int nframes = wtsc->numFramesLeftToRecord();
         wtsc->finishRecording();
+        
         delete(wtsc);
         wtsc = NULL;
         newStackWriter();
+        wtsc->startRecording(nframes);
     }
     md.replaceData("frameAddedTimeStamp", tim.getElapsedTimeInMilliSec());
     wtsc->newFrame((IplImage *) ipl_im, md.copy());
@@ -193,6 +183,7 @@ int wtscWrapper::startRecording (int nframes) {
     enterCS();
     tim.start();
     wtsc->startRecording(nframes);
+    this->nframes = nframes;
     leaveCS();
     return 0;
 }

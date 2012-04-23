@@ -161,6 +161,10 @@ public:
 
     virtual void numStacksWaiting (int &numToCompress, int &numToWrite);
     
+    virtual inline int numFramesLeftToRecord() {
+        return framesToRecord;
+    }
+    
 protected:
     int keyframeInterval;
     int backgroundUpdateInterval;

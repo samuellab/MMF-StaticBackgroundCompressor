@@ -60,6 +60,7 @@ class wtscWrapper {
         double frameRate;
         int fileNumber;
         void newStackWriter();
+        int nframes;
 };
 
 
