@@ -13,11 +13,16 @@
 #include <sstream>
 #include <iomanip>
 #include <io.h>
+#include <iostream>
+#include <fstream>
 
 using namespace std;
 
 void wtscWrapper::init() {
+    std::ofstream os("c:\\testingcs.txt");
+    os << "initialize critical section called" << endl;
     InitializeCriticalSection(&protectedAction);
+    os << "initialize critical section returned" << endl;
     wtsc = NULL;
     wtsc_old = NULL;
     limitFileSize = false;
