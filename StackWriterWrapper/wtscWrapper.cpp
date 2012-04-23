@@ -27,6 +27,7 @@ void wtscWrapper::init() {
     wtsc_old = NULL;
     limitFileSize = false;
     maximumBytesToWriteInOneFile = 2000000000;
+    os << "init returned " << endl;
 }
 
 wtscWrapper::wtscWrapper() {
