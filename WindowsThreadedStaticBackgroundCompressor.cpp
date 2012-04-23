@@ -9,13 +9,13 @@
 #include <windows.h>
 #include <process.h>
 struct processingInfo {
-public:
-    int imageNumber;
-    IplImage *im;
-    ImageMetaData *metadata;
-    WindowsThreadedStaticBackgroundCompressor *sbc;
-    processingInfo (int ImageNumber, IplImage *Im, ImageMetaData *Metadata, WindowsThreadedStaticBackgroundCompressor *Sbc) : imageNumber(ImageNumber), im(Im), metadata(Metadata), sbc(Sbc) {        
-    }
+    public:
+        int imageNumber;
+        IplImage *im;
+        ImageMetaData *metadata;
+        WindowsThreadedStaticBackgroundCompressor *sbc;
+        processingInfo (int ImageNumber, IplImage *Im, ImageMetaData *Metadata, WindowsThreadedStaticBackgroundCompressor *Sbc) : imageNumber(ImageNumber), im(Im), metadata(Metadata), sbc(Sbc) {        
+        }
 };
 
 
@@ -24,7 +24,6 @@ WindowsThreadedStaticBackgroundCompressor::WindowsThreadedStaticBackgroundCompre
     InitializeCriticalSection(&backgroundRemovedImageStackCS);
     InitializeCriticalSection(&imsToProcessCS);
     compressionThreadSemaphore = CreateSemaphore(NULL, maxCompressionThreads, maxCompressionThreads, NULL);
-    numBeingCompressedRightNow = 0;
 }
 
 WindowsThreadedStaticBackgroundCompressor::WindowsThreadedStaticBackgroundCompressor(const WindowsThreadedStaticBackgroundCompressor& orig) {
@@ -38,18 +37,31 @@ WindowsThreadedStaticBackgroundCompressor::~WindowsThreadedStaticBackgroundCompr
 }
 
 int WindowsThreadedStaticBackgroundCompressor::numProcessed() {
-    EnterCriticalSection(&backgroundRemovedImageStackCS);
-    int sz = bri.size();
-    LeaveCriticalSection(&backgroundRemovedImageStackCS);
+    
+    /***start backgroundRemovedImageStackCS ****/
+        EnterCriticalSection(&backgroundRemovedImageStackCS);
+        int sz = bri.size();
+        LeaveCriticalSection(&backgroundRemovedImageStackCS);
+    /****end backgroundRemovedImageStackCS ****/
     return sz;
 }
 
 int WindowsThreadedStaticBackgroundCompressor::numToProccess() {
-    EnterCriticalSection(&imsToProcessCS);
-    int sz = imsToProcess.size();
-    LeaveCriticalSection(&imsToProcessCS);
+    /***start imsToProcessCS  ****/
+        EnterCriticalSection(&imsToProcessCS);
+        int sz = imsToProcess.size();
+        LeaveCriticalSection(&imsToProcessCS);
+    /*****end imsToProcessCS****/
     
-    return sz + (numBeingCompressedRightNow < 0 ? 0 : numBeingCompressedRightNow);
+    DWORD timeout_ms = 10L;
+    DWORD dwWaitResult = WaitForSingleObject(compressionThreadSemaphore,   timeout_ms);
+    long numSemaphoresLeft = 0;
+    if (dwWaitResult == WAIT_OBJECT_0) {
+        ReleaseSemaphore(compressionThreadSemaphore, 1, &numSemaphoresLeft);
+        ++numSemaphoresLeft;
+    }
+  //  std::cout << "sz = " << sz << "; numSemaphoresLeft = " << numSemaphoresLeft << "; maxCompressionThreads = " << maxCompressionThreads << "numleft = " << sz + maxCompressionThreads - numSemaphoresLeft << std::endl;
+    return sz + maxCompressionThreads - numSemaphoresLeft;
     
 }
     
@@ -59,12 +71,15 @@ void WindowsThreadedStaticBackgroundCompressor::frameCompressionFunction(void *p
     //background is read-only so we don't need to protect it with a mutex
     BackgroundRemovedImage *brim = new BackgroundRemovedImage(pi->im, pi->sbc->background, pi->sbc->threshBelowBackground, pi->sbc->threshAboveBackground, pi->sbc->smallDimMinSize, pi->sbc->lgDimMinSize,  pi->metadata);
     
-    EnterCriticalSection(&(pi->sbc->backgroundRemovedImageStackCS));
-    pi->sbc->bri[pi->imageNumber] = brim;
-    LeaveCriticalSection(&(pi->sbc->backgroundRemovedImageStackCS));
-    
+    /***start backgroundRemovedImageStackCS ****/
+        EnterCriticalSection(&(pi->sbc->backgroundRemovedImageStackCS));
+     //   std::cout << "inserting image number " << pi->imageNumber << std::endl;
+        pi->sbc->bri[pi->imageNumber] = brim;
+    //    std::cout << "bri size is " << pi->sbc->bri.size() << std::endl;
+        LeaveCriticalSection(&(pi->sbc->backgroundRemovedImageStackCS));
+    /****end backgroundRemovedImageStackCS ****/
+        
     cvReleaseImage(&(pi->im));
-    pi->sbc->numBeingCompressedRightNow--;
     ReleaseSemaphore(pi->sbc->compressionThreadSemaphore,1,NULL);
     delete(pi);
 }
@@ -88,38 +103,45 @@ _endthread automatically closes the thread handle (whereas _endthreadex does not
  */
 
 int WindowsThreadedStaticBackgroundCompressor::processFrame() {
-    EnterCriticalSection(&imsToProcessCS);
-    if (imsToProcess.empty()) {
+    /***start imsToProcessCS  ****/
+        EnterCriticalSection(&imsToProcessCS);
+        if (imsToProcess.empty()) {
+            LeaveCriticalSection(&imsToProcessCS);
+    /*****end imsToProcessCS****/
+            Sleep(5); // prevent constant querying while last frames process
+            return numToProccess();
+        }
         LeaveCriticalSection(&imsToProcessCS);
-        Sleep(5); // prevent constant querying while last frames process
-        return numToProccess();
-    }
-    LeaveCriticalSection(&imsToProcessCS);
-    
-    
-    EnterCriticalSection(&backgroundImCS);
-    if (background == NULL) {
+    /*****end imsToProcessCS****/
+        
+    /*****start backgroundImCS****/
+        EnterCriticalSection(&backgroundImCS);
+        if (background == NULL) {
+   /****end backgroundImCS ****/
+            LeaveCriticalSection(&backgroundImCS);
+            return -1;
+        }
         LeaveCriticalSection(&backgroundImCS);
-        return -1;
-    }
-    LeaveCriticalSection(&backgroundImCS);
+    /****end backgroundImCS ****/
     //wait for space to open for another thread
     DWORD timeout_ms = 100L;
     DWORD dwWaitResult = WaitForSingleObject(compressionThreadSemaphore,   timeout_ms);
     
     //if there is space for another thread, pop an image off the stack and start a thread to process it
     if (dwWaitResult == WAIT_OBJECT_0) {
-       
-        EnterCriticalSection(&imsToProcessCS);
-        EnterCriticalSection(&backgroundRemovedImageStackCS);
-        bri.reserve(imsToProcess.size());
-        LeaveCriticalSection(&backgroundRemovedImageStackCS);
-        InputImT nextim = imsToProcess.back();
-        ++numBeingCompressedRightNow;
-        imsToProcess.pop_back();   
-        int imnum = imsToProcess.size();
-        LeaveCriticalSection(&imsToProcessCS);
-        
+       /***start imsToProcessCS  ****/
+            EnterCriticalSection(&imsToProcessCS);
+             /***start backgroundRemovedImageStackCS ****/
+                EnterCriticalSection(&backgroundRemovedImageStackCS);
+                bri.resize(MAX(imsToProcess.size(), bri.size()), NULL);
+//                bri.reserve(imsToProcess.size());
+                LeaveCriticalSection(&backgroundRemovedImageStackCS);
+                /***end backgroundRemovedImageStackCS ****/
+            InputImT nextim = imsToProcess.back();
+            imsToProcess.pop_back();   
+            int imnum = imsToProcess.size();
+            LeaveCriticalSection(&imsToProcessCS);
+        /***end imsToProcessCS  ****/
         processingInfo *pi = new processingInfo(imnum, nextim.first, nextim.second, this);
         _beginthread(WindowsThreadedStaticBackgroundCompressor::frameCompressionFunction, 0, (void *) pi);
     }
@@ -131,14 +153,15 @@ int WindowsThreadedStaticBackgroundCompressor::processFrame() {
 
 void WindowsThreadedStaticBackgroundCompressor::calculateBackground() {
     EnterCriticalSection(&imsToProcessCS);
-    EnterCriticalSection(&backgroundImCS);
-    StaticBackgroundCompressor::calculateBackground();
+        EnterCriticalSection(&backgroundImCS);
+                StaticBackgroundCompressor::calculateBackground();
+        LeaveCriticalSection(&backgroundImCS);
     LeaveCriticalSection(&imsToProcessCS);
-    LeaveCriticalSection(&backgroundImCS);
+    
 }
 void WindowsThreadedStaticBackgroundCompressor::updateBackground(const IplImage* im) {
     EnterCriticalSection(&backgroundImCS);
-    StaticBackgroundCompressor::updateBackground(im);
+        StaticBackgroundCompressor::updateBackground(im);
     LeaveCriticalSection(&backgroundImCS);
 }
 
@@ -146,24 +169,31 @@ void WindowsThreadedStaticBackgroundCompressor::updateBackground(const IplImage*
 
 void WindowsThreadedStaticBackgroundCompressor::addFrame(IplImage** im, ImageMetaData* metadata) {
     EnterCriticalSection(&imsToProcessCS);
-    EnterCriticalSection(&backgroundImCS);
-    StaticBackgroundCompressor::addFrame(im,metadata);
+        EnterCriticalSection(&backgroundImCS);
+            imsToProcess.push_back(InputImT(*im,metadata));
+            if (updateBackgroundFrameInterval > 0 && updateCount == 0) {
+                updateBackground(*im);
+                updateCount = updateBackgroundFrameInterval;
+            }
+            --updateCount;
+            *im = NULL;
+        LeaveCriticalSection(&backgroundImCS);
     LeaveCriticalSection(&imsToProcessCS);
-    LeaveCriticalSection(&backgroundImCS);
+    
 }
 
 void WindowsThreadedStaticBackgroundCompressor::toDisk(std::ofstream& os) {
-    EnterCriticalSection(&backgroundImCS);
-    EnterCriticalSection(&backgroundRemovedImageStackCS);
+ //   EnterCriticalSection(&backgroundImCS);
+  //  EnterCriticalSection(&backgroundRemovedImageStackCS);
     StaticBackgroundCompressor::toDisk(os);
-    LeaveCriticalSection(&backgroundImCS);
-    LeaveCriticalSection(&backgroundRemovedImageStackCS);
+ //   LeaveCriticalSection(&backgroundImCS);
+ //   LeaveCriticalSection(&backgroundRemovedImageStackCS);
 }
 
 std::string WindowsThreadedStaticBackgroundCompressor::saveDescription() {
     std::string rv;
     EnterCriticalSection(&backgroundRemovedImageStackCS);
-    rv = StaticBackgroundCompressor::saveDescription();
+        rv = StaticBackgroundCompressor::saveDescription();
     LeaveCriticalSection(&backgroundRemovedImageStackCS);
     return rv;
   
@@ -173,9 +203,10 @@ std::string WindowsThreadedStaticBackgroundCompressor::saveDescription() {
 int WindowsThreadedStaticBackgroundCompressor::sizeOnDisk() {
    int rv;
    EnterCriticalSection(&backgroundImCS);
-   EnterCriticalSection(&backgroundRemovedImageStackCS);
-   rv = StaticBackgroundCompressor::sizeOnDisk();
+    EnterCriticalSection(&backgroundRemovedImageStackCS);
+        rv = StaticBackgroundCompressor::sizeOnDisk();
+    LeaveCriticalSection(&backgroundRemovedImageStackCS);
    LeaveCriticalSection(&backgroundImCS);
-   LeaveCriticalSection(&backgroundRemovedImageStackCS);
+   
    return rv;
 }

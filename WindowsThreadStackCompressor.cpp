@@ -12,6 +12,7 @@
 #ifdef WIN32
 
 #include "WindowsThreadStackCompressor.h"
+#include "WindowsThreadedStaticBackgroundCompressor.h"
 #include <windows.h>
 #include <process.h>
 #include <iostream>
@@ -196,7 +197,7 @@ unsigned __stdcall WindowsThreadStackCompressor::writingThreadFunction() {
 
         stacksLeftToWrite = (stackBeingWritten != NULL);
         if (stacksLeftToWrite) {
-    //        cout << "writing a stack\n";
+            cout << "writing a stack\n";
             /**********************writingStackCS******************/
             EnterCriticalSection(&writingStackCS);
             if (stacksavedescription.empty()) {
@@ -384,10 +385,11 @@ void WindowsThreadStackCompressor::numStacksWaiting(int& numToCompress, int& num
     LeaveCriticalSection(&imageStacksCS);
 }
 
-//void WindowsThreadStackCompressor::createStack() {
-//    activeStack = new WindowsThreadedStaticBackgroundCompressor();
-//    activeStack->setAutomaticUpdateInterval(backgroundUpdateInterval);
-//    activeStack->setThresholds(threshBelowBackground, threshAboveBackground, smallDimMinSize, lgDimMinSize);
-//}
+void WindowsThreadStackCompressor::createStack() {
+    activeStack = new WindowsThreadedStaticBackgroundCompressor();
+    //activeStack = new StaticBackgroundCompressor();
+    activeStack->setAutomaticUpdateInterval(backgroundUpdateInterval);
+    activeStack->setThresholds(threshBelowBackground, threshAboveBackground, smallDimMinSize, lgDimMinSize);
+}
 
 #endif

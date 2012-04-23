@@ -458,8 +458,8 @@ int StackReader::decimateStack(const char* outputname, int thresholdAboveBackgro
             cout << ntc << "ERROR: waiting to be compressed " << ntw << " waiting to be written" << endl;
         }
 
-        if (((int) tim.getElapsedTimeInSec()/100) > ethundred) {
-            ethundred = (int) tim.getElapsedTimeInSec()/100;
+        if (((int) tim.getElapsedTimeInSec()/20) > ethundred) { //more frequent updates = fun
+            ethundred = (int) tim.getElapsedTimeInSec()/20;
             cout << "et = " << tim.getElapsedTimeInSec() << ";  " << f << "/" << totalFrames << " done.  " << tim.getElapsedTimeInSec() / f *(totalFrames - f) << " s remain" <<endl;
             cout << (sc.numBytesWritten()>>20) << "MB written, " << f/decimationCount/tim.getElapsedTimeInSec() << " Hz" << endl;
         }
