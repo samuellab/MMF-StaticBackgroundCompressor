@@ -128,8 +128,8 @@ void wtscWrapper::newStackWriter() {
     
     os << "set output filename returned ok " << endl;
     
-    os << "about to set frame rate " << endl << flush;
-    wtsc->setFrameRate(frameRate);
+    os << "about to set frame rate (commented out) " << endl << flush;
+    //wtsc->setFrameRate(frameRate);
     
     os << "set frame rate passed " << endl << flush;
     wtsc->setIntervals(keyFrameInterval, 1);

@@ -50,7 +50,7 @@ void LinearStackCompressor::init() {
     activeStack = NULL;
     stackBeingCompressed = NULL;
     stackBeingWritten = NULL;
-    frameRate = 1;
+    frameRate = 30;
     threshBelowBackground = 5;
     threshAboveBackground = 5;
     lgDimMinSize = 2;
