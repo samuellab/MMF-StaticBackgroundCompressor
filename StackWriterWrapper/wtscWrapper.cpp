@@ -12,6 +12,7 @@
 #include "wtscWrapper.h"
 #include <sstream>
 #include <iomanip>
+#include <io.h>
 
 using namespace std;
 
@@ -52,6 +53,14 @@ void wtscWrapper::leaveCS() {
 
 wtscWrapper::wtscWrapper(const char *fname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int keyFrameInterval, double frameRate) {
     init();
+    std::ofstream os("c:\\wtscwrapperargs.txt");
+    os << "fname = " << fname << endl;
+    os << "thresholdAboveBackground = " << thresholdAboveBackground << endl;
+    os << "smallDimMinSize = " << smallDimMinSize << endl;
+    os << "lgDimMinSize = " << lgDimMinSize << endl;
+    os << "keyFrameInterval = " << keyFrameInterval << endl;
+    os << "frameRate = " << frameRate << endl;
+    
     this->thresholdAboveBackground = thresholdAboveBackground;
     this->smallDimMinSize = smallDimMinSize;
     this->lgDimMinSize = lgDimMinSize;
@@ -62,7 +71,14 @@ wtscWrapper::wtscWrapper(const char *fname, int thresholdAboveBackground, int sm
     filestub = fn.substr(0,ind);
     ext = fn.substr(ind+1);    
     
+    os << "filestub = " << filestub << endl;
+    os << "ext = " << ext << endl;
+    
+    
     newStackWriter();       
+    assert (wtsc != NULL);
+    os << "wtsc created and points to " << (intptr_t) wtsc << endl;
+    
 }
 
 wtscWrapper::wtscWrapper(const char *fstub, const char *ext, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int keyFrameInterval, double frameRate, uint64_t maxBytesToWrite) {
@@ -77,6 +93,7 @@ wtscWrapper::wtscWrapper(const char *fstub, const char *ext, int thresholdAboveB
     filestub = string(fstub);
     this->ext = string(ext);
     newStackWriter();
+    assert (wtsc != NULL);
    
     
 }
