@@ -105,14 +105,19 @@ wtscWrapper::wtscWrapper(const char *fstub, const char *ext, int thresholdAboveB
 }
 
 void wtscWrapper::newStackWriter() {
+    ofstream os("c:\\newstackwriter.txt");
+    os << "creating wtsc" << endl;
     wtsc = new WindowsThreadStackCompressor();
+    assert (wtsc != NULL);
     string fname;
     if (limitFileSize) {
+        os << "limit file size is true" << endl;
         stringstream ss;
         ss << filestub << "-" << setw(3) << setfill('0') << fileNumber << "." << ext;
         fname = ss.str();
         fileNumber++;
     } else {
+        os << "limit file size is false" << endl;
         fname = filestub + "." + ext;
     }
         
@@ -120,7 +125,9 @@ void wtscWrapper::newStackWriter() {
     wtsc->setIntervals(keyFrameInterval, 1);
     wtsc->setThresholds(0, thresholdAboveBackground, smallDimMinSize, lgDimMinSize);
     wtsc->setFrameRate(frameRate);
+    os << "about to call start threads " << endl;
     wtsc->startThreads();
+    os << "new stack writer completed OK" << endl;
 }
 
 int wtscWrapper::addFrame (void *ipl_im) {
