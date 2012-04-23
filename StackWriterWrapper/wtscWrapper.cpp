@@ -127,12 +127,16 @@ void wtscWrapper::newStackWriter() {
     wtsc->setOutputFileName(ss.str().c_str());
     
     os << "set output filename returned ok " << endl;
+    
+    os << "about to set frame rate " << endl << flush;
+    wtsc->setFrameRate(frameRate);
+    
+    os << "set frame rate passed " << endl << flush;
     wtsc->setIntervals(keyFrameInterval, 1);
     
     os << "set intervals passed " << endl;
     wtsc->setThresholds(0, thresholdAboveBackground, smallDimMinSize, lgDimMinSize);
-    os << "about to set frame rate " << endl << flush;
-    wtsc->setFrameRate(frameRate);
+    
     os << "about to call start threads " << endl << flush;
     wtsc->startThreads();
     os << "new stack writer completed OK" << endl << flush;
