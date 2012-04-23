@@ -20,10 +20,12 @@ using namespace std;
 
 void *createBrightFieldStackWriter (const char *fname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int keyFrameInterval, double frameRate) {
     wtscWrapper *ww = new wtscWrapper(fname, thresholdAboveBackground, smallDimMinSize, lgDimMinSize, keyFrameInterval, frameRate);
+    assert (ww != NULL);
     return (void *) ww;
 }
 void *createBrightFieldStackWriterWithSizeLimit (const char *fstub, const char *ext, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int keyFrameInterval, double frameRate, uint64_t maxBytesToWrite) {
     wtscWrapper *ww = new wtscWrapper(fstub, ext, thresholdAboveBackground, smallDimMinSize, lgDimMinSize, keyFrameInterval, frameRate, maxBytesToWrite);
+    assert (ww != NULL);
     return (void *) ww;
 }
 

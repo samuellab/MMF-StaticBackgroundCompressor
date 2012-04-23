@@ -102,10 +102,10 @@ void wtscWrapper::newStackWriter() {
 
 int wtscWrapper::addFrame (void *ipl_im) {
     if (wtsc == NULL) {
-        return -1;
+        return -2;
     }
     if (ipl_im == NULL) {
-        return -1;
+        return -3;
     }
     enterCS();
     if (wtsc_old != NULL) {
