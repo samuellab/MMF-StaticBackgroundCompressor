@@ -391,7 +391,7 @@ void WindowsThreadStackCompressor::numStacksWaiting(int& numToCompress, int& num
 
 void WindowsThreadStackCompressor::createStack() {
     if (maxCompressionThreads > 1) {
-        activeStack = new WindowsThreadedStaticBackgroundCompressor();
+        activeStack = new WindowsThreadedStaticBackgroundCompressor(maxCompressionThreads);
     } else {
         activeStack = new StaticBackgroundCompressor();
     }
