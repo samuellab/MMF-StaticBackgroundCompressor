@@ -61,6 +61,7 @@ WindowsThreadStackCompressor::~WindowsThreadStackCompressor() {
 }
 
 void WindowsThreadStackCompressor::init() {
+    maxCompressionThreads = 4;
     InitializeCriticalSection(&activeStackCS);
     InitializeCriticalSection(&compressingStackCS);
     InitializeCriticalSection(&imageStacksCS);
@@ -389,8 +390,11 @@ void WindowsThreadStackCompressor::numStacksWaiting(int& numToCompress, int& num
 }
 
 void WindowsThreadStackCompressor::createStack() {
-    activeStack = new WindowsThreadedStaticBackgroundCompressor();
-    //activeStack = new StaticBackgroundCompressor();
+    if (maxCompressionThreads > 1) {
+        activeStack = new WindowsThreadedStaticBackgroundCompressor();
+    } else {
+        activeStack = new StaticBackgroundCompressor();
+    }
     activeStack->setAutomaticUpdateInterval(backgroundUpdateInterval);
     activeStack->setThresholds(threshBelowBackground, threshAboveBackground, smallDimMinSize, lgDimMinSize);
 }

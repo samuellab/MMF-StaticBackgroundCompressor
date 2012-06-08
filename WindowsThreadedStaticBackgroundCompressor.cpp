@@ -19,14 +19,14 @@ struct processingInfo {
 };
 
 
-WindowsThreadedStaticBackgroundCompressor::WindowsThreadedStaticBackgroundCompressor() {
+WindowsThreadedStaticBackgroundCompressor::WindowsThreadedStaticBackgroundCompressor(int maxThreads)  : maxCompressionThreads(maxThreads > 0 ? maxThreads : 1) {
     InitializeCriticalSection(&backgroundImCS);
     InitializeCriticalSection(&backgroundRemovedImageStackCS);
     InitializeCriticalSection(&imsToProcessCS);
     compressionThreadSemaphore = CreateSemaphore(NULL, maxCompressionThreads, maxCompressionThreads, NULL);
 }
 
-WindowsThreadedStaticBackgroundCompressor::WindowsThreadedStaticBackgroundCompressor(const WindowsThreadedStaticBackgroundCompressor& orig) {
+WindowsThreadedStaticBackgroundCompressor::WindowsThreadedStaticBackgroundCompressor(const WindowsThreadedStaticBackgroundCompressor& orig) : maxCompressionThreads(orig.maxCompressionThreads) {
 }
 
 WindowsThreadedStaticBackgroundCompressor::~WindowsThreadedStaticBackgroundCompressor() {

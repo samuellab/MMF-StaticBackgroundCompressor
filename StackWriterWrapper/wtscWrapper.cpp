@@ -27,6 +27,7 @@ void wtscWrapper::init() {
     wtsc_old = NULL;
     limitFileSize = false;
     maximumBytesToWriteInOneFile = 2000000000;
+    maxCompressionThreads = defaultMaxCompressionThreads;
   //  os << "init returned " << endl;
 }
 
@@ -59,26 +60,17 @@ void wtscWrapper::leaveCS() {
 
 wtscWrapper::wtscWrapper(const char *fname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int keyFrameInterval, double frameRate) {
     init();
- //   std::ofstream os("c:\\wtscwrapperargs.txt");
-//    os << "fname = " << fname << endl;
-  //  os << "thresholdAboveBackground = " << thresholdAboveBackground << endl;
- //   os << "smallDimMinSize = " << smallDimMinSize << endl;
-  //  os << "lgDimMinSize = " << lgDimMinSize << endl;
-  //  os << "keyFrameInterval = " << keyFrameInterval << endl;
- //   os << "frameRate = " << frameRate << endl;
-    
+
     this->thresholdAboveBackground = thresholdAboveBackground;
     this->smallDimMinSize = smallDimMinSize;
     this->lgDimMinSize = lgDimMinSize;
     this->keyFrameInterval = keyFrameInterval;
     this->frameRate = frameRate;
+   
     string fn(fname);
     size_t ind = fn.find_last_of('.');
     filestub = fn.substr(0,ind);
     ext = fn.substr(ind+1);    
-    
-   // os << "filestub = " << filestub << endl;
-  //  os << "ext = " << ext << endl;
     
     
     newStackWriter();       
@@ -104,10 +96,19 @@ wtscWrapper::wtscWrapper(const char *fstub, const char *ext, int thresholdAboveB
     
 }
 
+int wtscWrapper::setMaxCompressionThreads(int maxThreads) {
+    maxCompressionThreads = maxThreads;
+    if (wtsc != NULL) {
+        wtsc->setNumCompressionThreads(maxCompressionThreads);
+    }
+    return 0;
+}
+
 void wtscWrapper::newStackWriter() {
 
     wtsc = new WindowsThreadStackCompressor();
     assert (wtsc != NULL);
+    wtsc->setNumCompressionThreads(maxCompressionThreads);
     stringstream ss;
     if (limitFileSize) {
         

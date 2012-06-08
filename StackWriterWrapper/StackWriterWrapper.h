@@ -69,6 +69,7 @@ extern "C" {
     
     EXPORT unsigned long long maxBytesSupported ();
 
+    EXPORT int setNumCompressionThreads (void *sw, int maxCompressionThreads);
 #ifdef	__cplusplus
 }
 #endif

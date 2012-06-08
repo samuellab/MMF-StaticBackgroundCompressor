@@ -18,6 +18,7 @@
 
 class wtscWrapper {
     public:
+        static const int defaultMaxCompressionThreads = 4;
         wtscWrapper();
         wtscWrapper(const char *fname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int keyFrameInterval, double frameRate);
         wtscWrapper(const char *fstub, const char *ext, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int keyFrameInterval, double frameRate, uint64_t maxBytesToWrite);
@@ -31,6 +32,7 @@ class wtscWrapper {
         Timer tim;
         void enterCS();
         void leaveCS();
+        int setMaxCompressionThreads (int maxThreads);
         
         int addFrame (void *ipl_im);
 
@@ -46,7 +48,7 @@ class wtscWrapper {
         int getTimingStatistics (double *avgAddTime, double *avgCompressTime, double *avgWriteTime);
         int getNumStacksQueued (int *numToCompress, int *numToWrite);
         int getTimingReport (char *dst, int maxchars);
-
+        
         
     protected:
         CRITICAL_SECTION protectedAction;
@@ -61,6 +63,7 @@ class wtscWrapper {
         int fileNumber;
         void newStackWriter();
         int nframes;
+        int maxCompressionThreads;
 };
 
 

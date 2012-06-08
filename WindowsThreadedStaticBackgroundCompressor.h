@@ -13,7 +13,7 @@
 
 class WindowsThreadedStaticBackgroundCompressor : public StaticBackgroundCompressor {
 public:
-    WindowsThreadedStaticBackgroundCompressor();
+    WindowsThreadedStaticBackgroundCompressor(int maxThreads = 4);
     virtual void addFrame (IplImage **im, ImageMetaData *metadata = NULL);
     virtual int processFrame();
     virtual void calculateBackground();
@@ -30,7 +30,7 @@ public:
     
     
 protected:
-    static const int maxCompressionThreads = 4;
+    const int maxCompressionThreads;
     CRITICAL_SECTION backgroundImCS;
     CRITICAL_SECTION backgroundRemovedImageStackCS;
     CRITICAL_SECTION imsToProcessCS;

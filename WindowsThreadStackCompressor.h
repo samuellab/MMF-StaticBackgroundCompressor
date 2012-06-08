@@ -127,6 +127,15 @@
         virtual void openOutputFile ();
         virtual void closeOutputFile ();
 
+        /* setNumCompressionThreads (int numThreads)
+         * sets the maximum number of threads used by the static background compressor
+         * note: does not change the number of threads used directly by this class,
+         *   which has a separate writing threads and compression threads
+         */
+        virtual inline void setNumCompressionThreads (int numThreads) {
+            maxCompressionThreads = numThreads;
+        }
+        
         inline TICTOC::tictoc const& NonthreadedTimer () {
             return nonthreadedTimer;
         }
@@ -159,6 +168,8 @@
         static unsigned __stdcall startWritingThread(void *ptr);
 
         virtual void createStack();
+        int maxCompressionThreads;
+        
         virtual void addFrameToStack(IplImage **im, ImageMetaData *metadata);
         bool compressionThreadActive;
         bool writingThreadActive;

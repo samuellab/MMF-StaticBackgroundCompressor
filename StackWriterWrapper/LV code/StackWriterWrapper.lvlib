@@ -16,6 +16,7 @@
    <Item Name="max Bytes Supported.vi" Type="VI" URL="VIs/max Bytes Supported.vi"/>
    <Item Name="num Bytes Written.vi" Type="VI" URL="VIs/num Bytes Written.vi"/>
    <Item Name="set Meta Data.vi" Type="VI" URL="VIs/set Meta Data.vi"/>
+   <Item Name="set Num Compression Threads.vi" Type="VI" URL="VIs/set Num Compression Threads.vi"/>
    <Item Name="start Recording.vi" Type="VI" URL="VIs/start Recording.vi"/>
    <Item Name="stop Recording.vi" Type="VI" URL="VIs/stop Recording.vi"/>
 </Library>

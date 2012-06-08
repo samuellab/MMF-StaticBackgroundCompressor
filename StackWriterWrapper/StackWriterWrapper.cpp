@@ -102,3 +102,11 @@ int getTimingReport (void *sw, char *dst, int maxchars) {
     wtscWrapper *ww = (wtscWrapper *) sw;
     return ww->getTimingReport(dst, maxchars);
 }
+
+int setNumCompressionThreads (void *sw, int maxCompressionThreads) {
+    if (sw == NULL) {
+        return -1;
+    }
+    wtscWrapper *ww = (wtscWrapper *) sw;
+    return ww->setMaxCompressionThreads(maxCompressionThreads);
+}
