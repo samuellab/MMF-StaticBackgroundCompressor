@@ -139,28 +139,41 @@ int wtscWrapper::addFrame (void *ipl_im) {
     }
     enterCS();
     if (wtsc_old != NULL) {
+        ofstream os("c:\\testnewwtsc.txt", ios_base::out | ios_base::app);
+        os << "detected old stackwriter" << endl << flush;
         if (wtsc_old->nothingLeftToCompressOrWrite()) {
+            os << "closing old stackwriter output file" << endl << flush;
             wtsc_old->closeOutputFile();
+            os << "nuking old stackwriter" << endl << flush;
             delete(wtsc_old);
             wtsc_old == NULL;
         }
     }
     if (limitFileSize && wtsc->numBytesWritten() >= (0.99*maximumBytesToWriteInOneFile)) {
+        ofstream os("c:\\testnewwtsc.txt", ios_base::out | ios_base::app);
         if (wtsc_old != NULL) {
+            os << "finishing off wtsc_old" << endl << flush;
             wtsc_old->finishRecording();
             wtsc_old->closeOutputFile();
             delete (wtsc_old);
             wtsc_old == NULL;
+            os << "finsihed off wtsc_old" << endl << flush;
         }
+        os << "getting num frames left to record" << endl << flush;
         int nframes = wtsc->numFramesLeftToRecord();
+        os << "going idle" << endl << flush;
         wtsc_old = wtsc;
         wtsc_old->goIdle();
         
         //wtsc->finishRecording();
         //delete(wtsc);
         wtsc = NULL;
+        os << "creating new stack writer" << endl << flush;
         newStackWriter();
+        os << "new stack writer created" << endl << flush;
         wtsc->startRecording(nframes);
+        os << "started recording" << endl << flush;
+        
     }
     md.replaceData("frameAddedTimeStamp", tim.getElapsedTimeInMilliSec());
     wtsc->newFrame((IplImage *) ipl_im, md.copy());
