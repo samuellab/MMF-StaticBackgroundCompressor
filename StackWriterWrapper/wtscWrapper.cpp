@@ -138,26 +138,26 @@ int wtscWrapper::addFrame (void *ipl_im) {
         return -3;
     }
     enterCS();
-//    if (wtsc_old != NULL) {
-//        if (wtsc_old->nothingLeftToCompressOrWrite()) {
-//            wtsc_old->closeOutputFile();
-//            delete(wtsc_old);
-//            wtsc_old == NULL;
-//        }
-//    }
+    if (wtsc_old != NULL) {
+        if (wtsc_old->nothingLeftToCompressOrWrite()) {
+            wtsc_old->closeOutputFile();
+            delete(wtsc_old);
+            wtsc_old == NULL;
+        }
+    }
     if (limitFileSize && wtsc->numBytesWritten() >= (0.99*maximumBytesToWriteInOneFile)) {
-//        if (wtsc_old != NULL) {
-//            wtsc_old->finishRecording();
-//            wtsc_old->closeOutputFile();
-//            delete (wtsc_old);
-//            wtsc_old == NULL;
-//        }
-//        wtsc_old = wtsc;
-//        wtsc_old->goIdle();
+        if (wtsc_old != NULL) {
+            wtsc_old->finishRecording();
+            wtsc_old->closeOutputFile();
+            delete (wtsc_old);
+            wtsc_old == NULL;
+        }
         int nframes = wtsc->numFramesLeftToRecord();
-        wtsc->finishRecording();
+        wtsc_old = wtsc;
+        wtsc_old->goIdle();
         
-        delete(wtsc);
+        //wtsc->finishRecording();
+        //delete(wtsc);
         wtsc = NULL;
         newStackWriter();
         wtsc->startRecording(nframes);
