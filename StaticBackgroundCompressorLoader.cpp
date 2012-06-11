@@ -22,8 +22,10 @@ StaticBackgroundCompressor *StaticBackgroundCompressorLoader::fromFile(std::ifst
             return StaticBackgroundCompressor::fromDisk(is);
             break;
         default:
-            cout << "did not recognize ID code " << hex << id << dec;
-            return StaticBackgroundCompressor::fromDisk(is);
+            cout << "did not recognize ID code " << hex << id << dec << endl;
+            cout << "you may need to update the software - search for ID code " << hex << id << dec << " in source code on github." << endl;
+            //assert (false); // bad ID code when trying to load staticbackgroundcompressor (image stack)
+            return NULL; //StaticBackgroundCompressor::fromDisk(is);
             break;
 
     }
@@ -39,11 +41,17 @@ StaticBackgroundCompressor::HeaderInfoT StaticBackgroundCompressorLoader::getHea
             return StaticBackgroundCompressor::getHeaderInfo(is);
             break;
         default:
-            cout << "did not recognize ID code";
-            return StaticBackgroundCompressor::getHeaderInfo(is);
+            cout << "did not recognize ID code " << hex << id << dec << endl;
+            cout << "you may need to update the software - search for ID code " << hex << id << dec << " in source code on github." << endl;
+          //  assert (false);// bad ID code when trying to read staticbackgroundcompressor (image stack) header
+          //  return StaticBackgroundCompressor::getHeaderInfo(is);
             break;
     }
     StaticBackgroundCompressor::HeaderInfoT hi;
+    hi.numframes = 0;
+    hi.idcode = 0;
+    hi.totalSize = 0;
+    hi.headerSize = 0;
     return hi;
 }
 
