@@ -45,6 +45,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/StaticBackgroundCompressor.o \
 	${OBJECTDIR}/StaticBackgroundCompressorLoader.o \
 	${OBJECTDIR}/BackgroundRemovedImageLoader.o \
+	${OBJECTDIR}/WindowsThreadedStaticBackgroundCompressor.o \
 	${OBJECTDIR}/MightexMetaData.o \
 	${OBJECTDIR}/IplImageLoaderFixedWidth.o \
 	${OBJECTDIR}/ImageMetaDataLoader.o \
@@ -131,6 +132,11 @@ ${OBJECTDIR}/BackgroundRemovedImageLoader.o: BackgroundRemovedImageLoader.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/BackgroundRemovedImageLoader.o BackgroundRemovedImageLoader.cpp
+
+${OBJECTDIR}/WindowsThreadedStaticBackgroundCompressor.o: WindowsThreadedStaticBackgroundCompressor.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -I. -INecessary\ Libraries\ and\ Includes -INecessary\ Libraries\ and\ Includes/CV/headers -Itictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/WindowsThreadedStaticBackgroundCompressor.o WindowsThreadedStaticBackgroundCompressor.cpp
 
 ${OBJECTDIR}/MightexMetaData.o: MightexMetaData.cpp 
 	${MKDIR} -p ${OBJECTDIR}
