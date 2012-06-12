@@ -7,41 +7,44 @@
 
 #ifndef WINDOWSTHREADEDSTATICBACKGROUNDCOMPRESSOR_H
 #define	WINDOWSTHREADEDSTATICBACKGROUNDCOMPRESSOR_H
+#ifdef WIN32
+    #include "StaticBackgroundCompressor.h"
+    #include <windows.h>
 
-#include "StaticBackgroundCompressor.h"
-#include <windows.h>
+    class WindowsThreadedStaticBackgroundCompressor : public StaticBackgroundCompressor {
+    public:
+        WindowsThreadedStaticBackgroundCompressor(int maxThreads = 4);
+        virtual void addFrame (IplImage **im, ImageMetaData *metadata = NULL);
+        virtual int processFrame();
+        virtual void calculateBackground();
+        virtual void updateBackground(const IplImage *im);
+        virtual void toDisk (std::ofstream &os);
 
-class WindowsThreadedStaticBackgroundCompressor : public StaticBackgroundCompressor {
-public:
-    WindowsThreadedStaticBackgroundCompressor(int maxThreads = 4);
-    virtual void addFrame (IplImage **im, ImageMetaData *metadata = NULL);
-    virtual int processFrame();
-    virtual void calculateBackground();
-    virtual void updateBackground(const IplImage *im);
-    virtual void toDisk (std::ofstream &os);
-    
-    virtual std::string saveDescription();    
-    virtual int sizeOnDisk();
-    virtual ~WindowsThreadedStaticBackgroundCompressor();
+        virtual std::string saveDescription();    
+        virtual int sizeOnDisk();
+        virtual ~WindowsThreadedStaticBackgroundCompressor();
 
-    virtual int numProcessed();
+        virtual int numProcessed();
 
-    virtual int numToProccess();
-    
-    
-protected:
-    const int maxCompressionThreads;
-    CRITICAL_SECTION backgroundImCS;
-    CRITICAL_SECTION backgroundRemovedImageStackCS;
-    CRITICAL_SECTION imsToProcessCS;
-    HANDLE compressionThreadSemaphore;
-    static void frameCompressionFunction(void *ptr);
-    
-        
-private:
-    WindowsThreadedStaticBackgroundCompressor(const WindowsThreadedStaticBackgroundCompressor& orig);
-    
-};
+        virtual int numToProccess();
 
+
+    protected:
+        const int maxCompressionThreads;
+        CRITICAL_SECTION backgroundImCS;
+        CRITICAL_SECTION backgroundRemovedImageStackCS;
+        CRITICAL_SECTION imsToProcessCS;
+        HANDLE compressionThreadSemaphore;
+        static void frameCompressionFunction(void *ptr);
+
+
+    private:
+        WindowsThreadedStaticBackgroundCompressor(const WindowsThreadedStaticBackgroundCompressor& orig);
+
+    };
+#else
+     #include "StaticBackgroundCompressor.h"
+    typedef StaticBackgroundCompressor WindowsThreadedStaticBackgroundCompressor;
+#endif
 #endif	/* WINDOWSTHREADEDSTATICBACKGROUNDCOMPRESSOR_H */
 

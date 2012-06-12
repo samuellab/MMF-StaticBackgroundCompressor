@@ -4,6 +4,7 @@
  * 
  * Created on April 17, 2012, 11:18 AM
  */
+#ifdef WIN32
 
 #include "WindowsThreadedStaticBackgroundCompressor.h"
 #include <windows.h>
@@ -210,3 +211,5 @@ int WindowsThreadedStaticBackgroundCompressor::sizeOnDisk() {
    
    return rv;
 }
+
+#endif
