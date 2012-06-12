@@ -51,13 +51,13 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../Necessary\ Libraries\ and\ Includes/CV/lib -L.. ../image_stack_compressor.lib -lcv -lcxcore -lhighgui
+LDLIBSOPTIONS=-L../Necessary\ Libraries\ and\ Includes/CV/lib -L.. ../WindowsBinaries/image_stack_compressor.lib -lcv -lcxcore -lhighgui
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ./StackReaderWrapper.dll
 
-./StackReaderWrapper.dll: ../image_stack_compressor.lib
+./StackReaderWrapper.dll: ../WindowsBinaries/image_stack_compressor.lib
 
 ./StackReaderWrapper.dll: ${OBJECTFILES}
 	${MKDIR} -p .
@@ -70,7 +70,7 @@ ${OBJECTDIR}/StackReaderWrapper.o: StackReaderWrapper.cpp
 
 # Subprojects
 .build-subprojects:
-	cd .. && ${MAKE}  -f Makefile CONF=Debug
+	cd .. && ${MAKE}  -f Makefile CONF=Windows
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -79,7 +79,7 @@ ${OBJECTDIR}/StackReaderWrapper.o: StackReaderWrapper.cpp
 
 # Subprojects
 .clean-subprojects:
-	cd .. && ${MAKE}  -f Makefile CONF=Debug clean
+	cd .. && ${MAKE}  -f Makefile CONF=Windows clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

@@ -146,14 +146,14 @@ void StackReader::parseInputFile() {
         keyframelocations.insert(std::make_pair(startFrame, cpos));
         startFrame = startFrame + hi.numframes;
         cpos += (ifstream::pos_type) hi.totalSize;
-        cout << "stack # " << nstacks++ << " id code = " << hex << hi.idcode << dec << " nframes = " << hi.numframes << endl;
+    //    cout << "stack # " << nstacks++ << " id code = " << hex << hi.idcode << dec << " nframes = " << hi.numframes << endl;
         if (cpos >= length) {
             break;
         }
         infile->seekg(cpos);
     }
     totalFrames = startFrame;
-    cout << "total frames = " << totalFrames << endl;
+//    cout << "total frames = " << totalFrames << endl;
     infile->clear();
 }
 
