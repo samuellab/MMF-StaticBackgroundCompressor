@@ -133,8 +133,8 @@ void StackReader::parseInputFile() {
     //determine location of keyframes/common background stacks in file
     int startFrame = 0;
     StaticBackgroundCompressor::HeaderInfoT hi;
-    int nstacks = 0;
-    while(infile->good()) {
+    
+    for(int nstacks = 0;infile->good();++nstacks) {
         ifstream::pos_type cpos = infile->tellg();
         hi = StaticBackgroundCompressorLoader::getHeaderInfo(*infile);
         if (hi.idcode == 0) {
@@ -146,7 +146,7 @@ void StackReader::parseInputFile() {
         keyframelocations.insert(std::make_pair(startFrame, cpos));
         startFrame = startFrame + hi.numframes;
         cpos += (ifstream::pos_type) hi.totalSize;
-    //    cout << "stack # " << nstacks++ << " id code = " << hex << hi.idcode << dec << " nframes = " << hi.numframes << endl;
+    //    cout << "stack # " << nstacks << " id code = " << hex << hi.idcode << dec << " nframes = " << hi.numframes << endl;
         if (cpos >= length) {
             break;
         }
