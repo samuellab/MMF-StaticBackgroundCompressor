@@ -28,6 +28,7 @@ void wtscWrapper::init() {
     limitFileSize = false;
     maximumBytesToWriteInOneFile = 2000000000;
     maxCompressionThreads = defaultMaxCompressionThreads;
+    fileNumber = 0;
   //  os << "init returned " << endl;
 }
 
