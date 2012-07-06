@@ -18,22 +18,22 @@
 #include <ctime>
 
 using namespace std;
-std::ofstream os("c:\\wtsclog.txt");
+//std::ofstream os("c:\\wtsclog.txt");
 void wtscWrapper::init() {
     
-    assert (!os.fail());
-    os << "create mutex  called" << endl;
+  //  assert (!os.fail());
+  //  os << "create mutex  called" << endl;
  //   InitializeCriticalSection(&protectedAction);
     protectedAction = CreateMutex(NULL, FALSE, NULL);
         
-    os << "create mutex returned" << endl;
+   // os << "create mutex returned" << endl;
     wtsc = NULL;
     wtsc_old = NULL;
     limitFileSize = false;
     maximumBytesToWriteInOneFile = 2000000000;
     maxCompressionThreads = defaultMaxCompressionThreads;
     fileNumber = 0;
-    os << "init returned " << endl;
+    //os << "init returned " << endl;
 }
 
 wtscWrapper::wtscWrapper() {
@@ -117,7 +117,7 @@ void wtscWrapper::leaveCS() {
 
 
 wtscWrapper::wtscWrapper(const char *fname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int keyFrameInterval, double frameRate) {
-    os << "constructor called " << fname << " " << thresholdAboveBackground << " " << smallDimMinSize << " " << lgDimMinSize << " " << keyFrameInterval << " " << frameRate;
+//    os << "constructor called " << fname << " " << thresholdAboveBackground << " " << smallDimMinSize << " " << lgDimMinSize << " " << keyFrameInterval << " " << frameRate;
     init();
 
     this->thresholdAboveBackground = thresholdAboveBackground;
