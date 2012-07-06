@@ -17,6 +17,8 @@
 #include <fstream>
 
 using namespace std;
+static ofstream TEST_CS_LOG("C:\\testingcs.txt");
+const static bool writecstest = true;
 
 void wtscWrapper::init() {
  //   std::ofstream os("c:\\testingcs.txt");
@@ -49,6 +51,20 @@ wtscWrapper::~wtscWrapper() {
     }
     DeleteCriticalSection(&protectedAction);
 }
+
+void wtscWrapper::enterCS(const char* str) {
+    enterCS();
+    if (writecstest) {
+        TEST_CS_LOG << str << ": " << " entered critical section" << endl << flush;
+    }
+}
+void wtscWrapper::leaveCS(const char* str) {
+    if (writecstest) {
+        TEST_CS_LOG << str << ": " << " leaving critical section" << endl << flush;
+    }
+    leaveCS();
+}
+
 
 void wtscWrapper::enterCS() {
     EnterCriticalSection(&protectedAction);

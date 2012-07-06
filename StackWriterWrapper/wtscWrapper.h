@@ -30,6 +30,8 @@ class wtscWrapper {
         bool limitFileSize;
         NameValueMetaData md;
         Timer tim;
+        void enterCS(const char *str);
+        void leaveCS(const char *str);
         void enterCS();
         void leaveCS();
         int setMaxCompressionThreads (int maxThreads);
