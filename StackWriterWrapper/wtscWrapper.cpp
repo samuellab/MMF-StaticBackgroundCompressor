@@ -15,6 +15,7 @@
 #include <io.h>
 #include <iostream>
 #include <fstream>
+#include <ctime>
 
 using namespace std;
 static ofstream TEST_CS_LOG("C:\\testingcs.txt");
@@ -23,7 +24,9 @@ const static bool writecstest = true;
 void wtscWrapper::init() {
  //   std::ofstream os("c:\\testingcs.txt");
   //  os << "initialize critical section called" << endl;
-    InitializeCriticalSection(&protectedAction);
+ //   InitializeCriticalSection(&protectedAction);
+    protectedAction = CreateMutex(NULL, FALSE, NULL);
+        
  //   os << "initialize critical section returned" << endl;
     wtsc = NULL;
     wtsc_old = NULL;
@@ -49,29 +52,68 @@ wtscWrapper::~wtscWrapper() {
         wtsc_old->closeOutputFile();
         delete(wtsc_old);
     }
-    DeleteCriticalSection(&protectedAction);
+   // DeleteCriticalSection(&protectedAction);
+    CloseHandle(protectedAction);
+}
+//
+//void wtscWrapper::enterCS(const char* str) {
+//    enterCS();
+//    if (writecstest) {
+//        TEST_CS_LOG << str << ": " << " entered critical section" << endl << flush;
+//    }
+//}
+//void wtscWrapper::leaveCS(const char* str) {
+//    if (writecstest) {
+//        TEST_CS_LOG << str << ": " << " leaving critical section" << endl << flush;
+//    }
+//    leaveCS();
+//}
+
+bool wtscWrapper::enterCS() {
+    enterCS(default_timeout);
 }
 
-void wtscWrapper::enterCS(const char* str) {
-    enterCS();
-    if (writecstest) {
-        TEST_CS_LOG << str << ": " << " entered critical section" << endl << flush;
+bool wtscWrapper::enterCS(unsigned long waitTimeInMs) {
+    //EnterCriticalSection(&protectedAction);
+    DWORD waitResult = WaitForSingleObject(protectedAction, waitTimeInMs);
+    string msg;
+    bool rv = false;
+    stringstream ss;
+    switch (waitResult) {
+        case WAIT_OBJECT_0:
+            return false;
+            break;
+        case WAIT_ABANDONED:
+            msg = ": warning : wtscWrapper mutex was abandoned";
+            rv = false;
+            break;
+        case WAIT_TIMEOUT:
+
+            ss << ": error : wtscWrapper timed out waiting for mutex after " << waitTimeInMs/1000 << "seconds";
+            msg = ss.str();
+            rv = true;
+            break;
+        default:
+            msg = ": error : wtscWrapper mutex error";
+            rv = true;
+            break;
     }
-}
-void wtscWrapper::leaveCS(const char* str) {
-    if (writecstest) {
-        TEST_CS_LOG << str << ": " << " leaving critical section" << endl << flush;
+    
+    ofstream os("c:\\stackwriterwrapper_error_log.txt", ios_base::ate);
+    time_t rawtime;
+    struct tm * timeinfo;
+    time ( &rawtime );
+    timeinfo = localtime ( &rawtime );
+    if (!os.fail()) {
+        os << asctime(timeinfo) << msg << ", error code = " << GetLastError() << endl << flush;
     }
-    leaveCS();
-}
+    return rv;
 
-
-void wtscWrapper::enterCS() {
-    EnterCriticalSection(&protectedAction);
 }
 
 void wtscWrapper::leaveCS() {
-    LeaveCriticalSection(&protectedAction);
+    //LeaveCriticalSection(&protectedAction);
+    ReleaseMutex(protectedAction);
 }
 
 
@@ -113,7 +155,7 @@ wtscWrapper::wtscWrapper(const char *fstub, const char *ext, int thresholdAboveB
     
 }
 
-int wtscWrapper::setMaxCompressionThreads(int maxThreads) {
+int64_t wtscWrapper::setMaxCompressionThreads(int maxThreads) {
     maxCompressionThreads = maxThreads;
     if (wtsc != NULL) {
         wtsc->setNumCompressionThreads(maxCompressionThreads);
@@ -147,7 +189,7 @@ void wtscWrapper::newStackWriter() {
     wtsc->startThreads();
 }
 
-int wtscWrapper::addFrame (void *ipl_im) {
+int64_t wtscWrapper::addFrame (void *ipl_im) {
     if (wtsc == NULL) {
         return -2;
     }
@@ -156,7 +198,9 @@ int wtscWrapper::addFrame (void *ipl_im) {
     }
     static int frameAddedNumber = 0;
     ++frameAddedNumber;
-    enterCS();
+    if (enterCS()) {
+        return GetLastError();
+    }
     
     if (wtsc_old != NULL) {
   //      ofstream os("c:\\testnewwtsc.txt", ios_base::out | ios_base::app);
@@ -204,19 +248,23 @@ int wtscWrapper::addFrame (void *ipl_im) {
     return 0;
 }
 
-int wtscWrapper::setMetaData(char* fieldname, double fieldvalue) {
+int64_t wtscWrapper::setMetaData(char* fieldname, double fieldvalue) {
     
-    enterCS();
+    if (enterCS()) {
+        return GetLastError();
+    }
     md.replaceData(string(fieldname), fieldvalue);
     leaveCS();
     return 0;
 }
 
-int wtscWrapper::startRecording (int nframes) {     
+int64_t wtscWrapper::startRecording (int nframes) {     
     if (wtsc == NULL) {
         return -1;
     }
-    enterCS();
+    if (enterCS()) {
+        return GetLastError();
+    }
     tim.start();
     wtsc->startRecording(nframes);
     this->nframes = nframes;
@@ -224,11 +272,13 @@ int wtscWrapper::startRecording (int nframes) {
     return 0;
 }
 
-int wtscWrapper::stopRecording() {
+int64_t wtscWrapper::stopRecording() {
     if (wtsc == NULL) {
         return -1;
     }
-    enterCS();
+    if (enterCS()) {
+        return GetLastError();
+    }
     wtsc->stopRecording();
     leaveCS();
     return 0;
@@ -238,16 +288,20 @@ int64_t wtscWrapper::numBytesWritten () {
     if (wtsc == NULL) {
         return -1;
     }
-    enterCS();
+    if (enterCS()) {
+        return -1*GetLastError();
+    }
     int64_t nbr = wtsc->numBytesWritten();
     leaveCS();
     return nbr;
 }
-int wtscWrapper::getTimingStatistics (double *avgAddTime, double *avgCompressTime, double *avgWriteTime) {
+int64_t wtscWrapper::getTimingStatistics (double *avgAddTime, double *avgCompressTime, double *avgWriteTime) {
     if (wtsc == NULL) {
         return -1;
     }
-    enterCS();
+    if (enterCS()) {
+        return GetLastError();
+    }
     if (avgAddTime != NULL) {
         *avgAddTime = wtsc->NonthreadedTimer().getStatistics("adding frame to stack");;
     }
@@ -260,11 +314,13 @@ int wtscWrapper::getTimingStatistics (double *avgAddTime, double *avgCompressTim
     leaveCS();
     return 0;
 }
-int wtscWrapper::getNumStacksQueued (int *numToCompress, int *numToWrite) {
+int64_t wtscWrapper::getNumStacksQueued (int *numToCompress, int *numToWrite) {
     if (wtsc == NULL) {
         return -1;
     }
-    enterCS();
+    if (enterCS()) {
+        return GetLastError();
+    }
     int ntc, ntw;
     wtsc->numStacksWaiting(ntc, ntw);
     if (numToCompress != NULL) {
@@ -277,11 +333,13 @@ int wtscWrapper::getNumStacksQueued (int *numToCompress, int *numToWrite) {
     return 0;
 }
 
-int wtscWrapper::getTimingReport (char *dst, int maxchars) {
+int64_t wtscWrapper::getTimingReport (char *dst, int maxchars) {
     if (wtsc == NULL) {
         return -1;
     }
-    enterCS();
+    if (enterCS(30000)) {
+        return GetLastError();
+    }
     string s = wtsc->generateTimingReport();
     if (dst != NULL) {
         s.copy(dst, maxchars);

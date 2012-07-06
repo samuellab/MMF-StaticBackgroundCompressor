@@ -30,30 +30,31 @@ class wtscWrapper {
         bool limitFileSize;
         NameValueMetaData md;
         Timer tim;
-        void enterCS(const char *str);
-        void leaveCS(const char *str);
-        void enterCS();
+//        void enterCS(const char *str);
+//        void leaveCS(const char *str);
+        bool enterCS();
+        bool enterCS(unsigned long waitTimeInMs);
         void leaveCS();
-        int setMaxCompressionThreads (int maxThreads);
+        int64_t setMaxCompressionThreads (int maxThreads);
         
-        int addFrame (void *ipl_im);
+        int64_t addFrame (void *ipl_im);
 
-        int setMetaData(char* fieldname, double fieldvalue);
+        int64_t setMetaData(char* fieldname, double fieldvalue);
 
-        int startRecording (int nframes);
-        int stopRecording ();
+        int64_t startRecording (int nframes);
+        int64_t stopRecording ();
 
         int64_t numBytesWritten ();
         static inline uint64_t maxFileSizeSupported() {
             return std::numeric_limits<std::streamoff>::max();
         }
-        int getTimingStatistics (double *avgAddTime, double *avgCompressTime, double *avgWriteTime);
-        int getNumStacksQueued (int *numToCompress, int *numToWrite);
-        int getTimingReport (char *dst, int maxchars);
-        
+        int64_t getTimingStatistics (double *avgAddTime, double *avgCompressTime, double *avgWriteTime);
+        int64_t getNumStacksQueued (int *numToCompress, int *numToWrite);
+        int64_t getTimingReport (char *dst, int maxchars);
+        static const unsigned long default_timeout = 5000;
         
     protected:
-        CRITICAL_SECTION protectedAction;
+        HANDLE protectedAction;
         std::string filestub;
         std::string ext;
         void init();
