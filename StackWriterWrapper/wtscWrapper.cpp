@@ -18,9 +18,9 @@
 #include <ctime>
 
 using namespace std;
-
+std::ofstream os("c:\\wtsclog.txt");
 void wtscWrapper::init() {
-    std::ofstream os("c:\\testingcs.txt");
+    
     assert (!os.fail());
     os << "create mutex  called" << endl;
  //   InitializeCriticalSection(&protectedAction);
@@ -33,7 +33,7 @@ void wtscWrapper::init() {
     maximumBytesToWriteInOneFile = 2000000000;
     maxCompressionThreads = defaultMaxCompressionThreads;
     fileNumber = 0;
-  //  os << "init returned " << endl;
+    os << "init returned " << endl;
 }
 
 wtscWrapper::wtscWrapper() {
@@ -117,6 +117,7 @@ void wtscWrapper::leaveCS() {
 
 
 wtscWrapper::wtscWrapper(const char *fname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int keyFrameInterval, double frameRate) {
+    os << "constructor called " << fname << " " << thresholdAboveBackground << " " << smallDimMinSize << " " << lgDimMinSize << " " << keyFrameInterval << " " << frameRate;
     init();
 
     this->thresholdAboveBackground = thresholdAboveBackground;
