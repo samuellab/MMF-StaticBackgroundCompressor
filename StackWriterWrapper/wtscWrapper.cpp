@@ -21,6 +21,7 @@ using namespace std;
 
 void wtscWrapper::init() {
     std::ofstream os("c:\\testingcs.txt");
+    assert (!os.fail());
     os << "create mutex  called" << endl;
  //   InitializeCriticalSection(&protectedAction);
     protectedAction = CreateMutex(NULL, FALSE, NULL);
