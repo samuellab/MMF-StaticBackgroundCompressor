@@ -22,7 +22,7 @@ AS=as.exe
 
 # Macros
 CND_PLATFORM=MinGW-Windows
-CND_CONF=Release
+CND_CONF=test
 CND_DISTDIR=dist
 CND_BUILDDIR=build
 
@@ -43,8 +43,8 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=
-CXXFLAGS=
+CCFLAGS=-DBUILD_DLL -static-libgcc -static-libstdc++
+CXXFLAGS=-DBUILD_DLL -static-libgcc -static-libstdc++
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -57,28 +57,28 @@ LDLIBSOPTIONS=-L../Necessary\ Libraries\ and\ Includes/CV/lib -L.. ../WindowsBin
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libStackWriterWrapper.dll
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/stackwriterwrapper.exe
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libStackWriterWrapper.dll: ../WindowsBinaries/image_stack_compressor.lib
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/stackwriterwrapper.exe: ../WindowsBinaries/image_stack_compressor.lib
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libStackWriterWrapper.dll: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/stackwriterwrapper.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -shared -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libStackWriterWrapper.dll ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/stackwriterwrapper ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/wtscWrapper.o: wtscWrapper.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I.. -I../Necessary\ Libraries\ and\ Includes/CV/headers -I../tictoc  -MMD -MP -MF $@.d -o ${OBJECTDIR}/wtscWrapper.o wtscWrapper.cpp
+	$(COMPILE.cc) -g -I.. -I../Necessary\ Libraries\ and\ Includes/CV/headers -I../tictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/wtscWrapper.o wtscWrapper.cpp
 
 ${OBJECTDIR}/StackWriterWrapper.o: StackWriterWrapper.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I.. -I../Necessary\ Libraries\ and\ Includes/CV/headers -I../tictoc  -MMD -MP -MF $@.d -o ${OBJECTDIR}/StackWriterWrapper.o StackWriterWrapper.cpp
+	$(COMPILE.cc) -g -I.. -I../Necessary\ Libraries\ and\ Includes/CV/headers -I../tictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/StackWriterWrapper.o StackWriterWrapper.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I.. -I../Necessary\ Libraries\ and\ Includes/CV/headers -I../tictoc  -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -g -I.. -I../Necessary\ Libraries\ and\ Includes/CV/headers -I../tictoc -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
 
 # Subprojects
 .build-subprojects:
@@ -87,7 +87,7 @@ ${OBJECTDIR}/main.o: main.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libStackWriterWrapper.dll
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/stackwriterwrapper.exe
 
 # Subprojects
 .clean-subprojects:

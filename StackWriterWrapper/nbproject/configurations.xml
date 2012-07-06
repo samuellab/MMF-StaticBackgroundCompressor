@@ -41,6 +41,7 @@
     </logicalFolder>
     <itemPath>StackWriterWrapper.cpp</itemPath>
     <itemPath>StackWriterWrapper.h</itemPath>
+    <itemPath>main.cpp</itemPath>
     <itemPath>wtscWrapper.cpp</itemPath>
     <itemPath>wtscWrapper.h</itemPath>
   </logicalFolder>
@@ -97,6 +98,11 @@
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
+          <incDir>
+            <pElem>..</pElem>
+            <pElem>../Necessary Libraries and Includes/CV/headers</pElem>
+            <pElem>../tictoc</pElem>
+          </incDir>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
@@ -104,6 +110,68 @@
         <asmTool>
           <developmentMode>5</developmentMode>
         </asmTool>
+        <linkerTool>
+          <linkerAddLib>
+            <pElem>../Necessary Libraries and Includes/CV/lib</pElem>
+            <pElem>..</pElem>
+          </linkerAddLib>
+          <linkerLibItems>
+            <linkerLibProjectItem>
+              <makeArtifact PL=".."
+                            CT="3"
+                            CN="Windows"
+                            AC="true"
+                            BL="true"
+                            WD=".."
+                            BC="${MAKE}  -f Makefile CONF=Windows"
+                            CC="${MAKE}  -f Makefile CONF=Windows clean"
+                            OP="WindowsBinaries/image_stack_compressor.lib">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibLibItem>cv</linkerLibLibItem>
+            <linkerLibLibItem>cxcore</linkerLibLibItem>
+            <linkerLibLibItem>highgui</linkerLibLibItem>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+    </conf>
+    <conf name="test" type="1">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>default</compilerSet>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <incDir>
+            <pElem>..</pElem>
+            <pElem>../Necessary Libraries and Includes/CV/headers</pElem>
+            <pElem>../tictoc</pElem>
+          </incDir>
+          <commandLine>-DBUILD_DLL -static-libgcc -static-libstdc++</commandLine>
+        </ccTool>
+        <linkerTool>
+          <linkerAddLib>
+            <pElem>../Necessary Libraries and Includes/CV/lib</pElem>
+            <pElem>..</pElem>
+          </linkerAddLib>
+          <linkerLibItems>
+            <linkerLibProjectItem>
+              <makeArtifact PL=".."
+                            CT="3"
+                            CN="Windows"
+                            AC="true"
+                            BL="true"
+                            WD=".."
+                            BC="${MAKE}  -f Makefile CONF=Windows"
+                            CC="${MAKE}  -f Makefile CONF=Windows clean"
+                            OP="WindowsBinaries/image_stack_compressor.lib">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibLibItem>cv</linkerLibLibItem>
+            <linkerLibLibItem>cxcore</linkerLibLibItem>
+            <linkerLibLibItem>highgui</linkerLibLibItem>
+          </linkerLibItems>
+        </linkerTool>
       </compileType>
     </conf>
   </confs>

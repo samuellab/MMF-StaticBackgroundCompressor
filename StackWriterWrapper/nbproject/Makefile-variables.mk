@@ -22,6 +22,14 @@ CND_ARTIFACT_PATH_Release=dist/Release/MinGW-Windows/libStackWriterWrapper.dll
 CND_PACKAGE_DIR_Release=dist/Release/MinGW-Windows/package
 CND_PACKAGE_NAME_Release=libStackWriterWrapper.dll.tar
 CND_PACKAGE_PATH_Release=dist/Release/MinGW-Windows/package/libStackWriterWrapper.dll.tar
+# test configuration
+CND_PLATFORM_test=MinGW-Windows
+CND_ARTIFACT_DIR_test=dist/test/MinGW-Windows
+CND_ARTIFACT_NAME_test=stackwriterwrapper
+CND_ARTIFACT_PATH_test=dist/test/MinGW-Windows/stackwriterwrapper
+CND_PACKAGE_DIR_test=dist/test/MinGW-Windows/package
+CND_PACKAGE_NAME_test=stackwriterwrapper.tar
+CND_PACKAGE_PATH_test=dist/test/MinGW-Windows/package/stackwriterwrapper.tar
 #
 # include compiler specific variables
 #

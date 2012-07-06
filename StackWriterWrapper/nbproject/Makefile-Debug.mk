@@ -35,7 +35,8 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/wtscWrapper.o \
-	${OBJECTDIR}/StackWriterWrapper.o
+	${OBJECTDIR}/StackWriterWrapper.o \
+	${OBJECTDIR}/main.o
 
 
 # C Compiler Flags
@@ -73,6 +74,11 @@ ${OBJECTDIR}/StackWriterWrapper.o: StackWriterWrapper.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -I.. -I../Necessary\ Libraries\ and\ Includes/CV/headers -I../tictoc  -MMD -MP -MF $@.d -o ${OBJECTDIR}/StackWriterWrapper.o StackWriterWrapper.cpp
+
+${OBJECTDIR}/main.o: main.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -I.. -I../Necessary\ Libraries\ and\ Includes/CV/headers -I../tictoc  -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
 
 # Subprojects
 .build-subprojects:
