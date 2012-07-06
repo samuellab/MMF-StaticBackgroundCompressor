@@ -18,8 +18,6 @@
 #include <ctime>
 
 using namespace std;
-static ofstream TEST_CS_LOG("C:\\testingcs.txt");
-const static bool writecstest = true;
 
 void wtscWrapper::init() {
  //   std::ofstream os("c:\\testingcs.txt");
