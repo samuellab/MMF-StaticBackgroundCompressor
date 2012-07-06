@@ -20,12 +20,12 @@
 using namespace std;
 
 void wtscWrapper::init() {
- //   std::ofstream os("c:\\testingcs.txt");
-  //  os << "initialize critical section called" << endl;
+    std::ofstream os("c:\\testingcs.txt");
+    os << "create mutex  called" << endl;
  //   InitializeCriticalSection(&protectedAction);
     protectedAction = CreateMutex(NULL, FALSE, NULL);
         
- //   os << "initialize critical section returned" << endl;
+    os << "create mutex returned" << endl;
     wtsc = NULL;
     wtsc_old = NULL;
     limitFileSize = false;
