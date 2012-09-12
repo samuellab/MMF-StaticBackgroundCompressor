@@ -40,8 +40,9 @@ OBJECTFILES= \
 	${OBJECTDIR}/ExtraDataWriter.o \
 	${OBJECTDIR}/tictoc/Timer.o \
 	${OBJECTDIR}/NameValueMetaData.o \
-	${OBJECTDIR}/tictoc/tictoc.o \
+	${OBJECTDIR}/MultiStackReader.o \
 	${OBJECTDIR}/CompositeImageMetaData.o \
+	${OBJECTDIR}/tictoc/tictoc.o \
 	${OBJECTDIR}/StaticBackgroundCompressor.o \
 	${OBJECTDIR}/StaticBackgroundCompressorLoader.o \
 	${OBJECTDIR}/BackgroundRemovedImageLoader.o \
@@ -106,15 +107,20 @@ ${OBJECTDIR}/NameValueMetaData.o: NameValueMetaData.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O2  -MMD -MP -MF $@.d -o ${OBJECTDIR}/NameValueMetaData.o NameValueMetaData.cpp
 
-${OBJECTDIR}/tictoc/tictoc.o: tictoc/tictoc.cpp 
-	${MKDIR} -p ${OBJECTDIR}/tictoc
+${OBJECTDIR}/MultiStackReader.o: MultiStackReader.cpp 
+	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2  -MMD -MP -MF $@.d -o ${OBJECTDIR}/tictoc/tictoc.o tictoc/tictoc.cpp
+	$(COMPILE.cc) -O2  -MMD -MP -MF $@.d -o ${OBJECTDIR}/MultiStackReader.o MultiStackReader.cpp
 
 ${OBJECTDIR}/CompositeImageMetaData.o: CompositeImageMetaData.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -O2  -MMD -MP -MF $@.d -o ${OBJECTDIR}/CompositeImageMetaData.o CompositeImageMetaData.cpp
+
+${OBJECTDIR}/tictoc/tictoc.o: tictoc/tictoc.cpp 
+	${MKDIR} -p ${OBJECTDIR}/tictoc
+	${RM} $@.d
+	$(COMPILE.cc) -O2  -MMD -MP -MF $@.d -o ${OBJECTDIR}/tictoc/tictoc.o tictoc/tictoc.cpp
 
 ${OBJECTDIR}/StaticBackgroundCompressor.o: StaticBackgroundCompressor.cpp 
 	${MKDIR} -p ${OBJECTDIR}

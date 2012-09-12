@@ -41,7 +41,7 @@ MultiStackReader::MultiStackReader() {
     init();
 }
 
-MultiStackReader::MultiStackReader(const StackReader& orig) {
+MultiStackReader::MultiStackReader(const MultiStackReader& orig) {
 }
 
 MultiStackReader::~MultiStackReader() {
@@ -52,7 +52,7 @@ MultiStackReader::~MultiStackReader() {
 
 void MultiStackReader::init() {
     StackReader::init();
-    nstacks = 0;
+    
     sr.clear();
     fnames.clear();
     
@@ -106,7 +106,7 @@ CvSize MultiStackReader::getImageSize() {
         setError("get image size called with no stacks open");
     }
     if (isError()) { return cvSize(0,0); }
-    int srnum = findStackReader(sr.front()->second);
+    int srnum = findStackReader(sr.front().second);
     if (srnum < 0 || srnum >= sr.size()) {
         if (!isError()) {
             setError("findStackReader returned bad value");           
@@ -223,7 +223,7 @@ ExtraDataWriter *MultiStackReader::getSupplementalData() {
 }
 ExtraDataWriter *MultiStackReader::addToSupplementalData(ExtraDataWriter* edw, int frameOffset) {
     for (vector<pair<StackReader *, int> >::iterator it = sr.begin(); it != sr.end(); ++it) {
-        edw = it->first.addToSupplementalData(edw, it->second + frameOffset);
+        edw = it->first->addToSupplementalData(edw, it->second + frameOffset);
     }
     checkError();
     return edw;
@@ -288,19 +288,20 @@ std::string MultiStackReader::diagnostics() {
 
 int MultiStackReader::findStackReader(int frameNumber) {
     checkError();    if (isError()) {return -1;}
-    for (int j = 0; j < nstacks && j < endFrames.size() && j < startFrames.size() && j < sr.size(); ++j) {
-        if (startFrames[j] <= frameNumber && endFrames[j] >= frameNumber) {
+    int nstacks = MIN (endFrames.size(), sr.size());
+    for (int j = 0; j < nstacks; ++j) {
+        if (sr.at(j).second <= frameNumber && endFrames.at(j) >= frameNumber) {
             return j;
         }
     }
     
     stringstream s;
-    if (nstacks*endFrames.size()* startFrames.size()*sr.size() == 0) {
+    if (endFrames.size()*sr.size() == 0) {
         s << "tried to set stack reader with no open stacks";
     } else {
         s << "could not find frame number " << frameNumber << " : frame ranges are: ";
-        for (int j = 0; j < nstacks && j < endFrames.size() && j < startFrames.size() && j < sr.size(); ++j) {
-            s << startFrames[j] << "->" << endFrames[j] << "  ";
+        for (int j = 0; j < nstacks; ++j) {
+            s << sr.at(j).second << "->" << endFrames.at(j) << "  ";
         }
     }
     return -1;

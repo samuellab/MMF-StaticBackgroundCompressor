@@ -44,6 +44,8 @@
     <itemPath>LinearStackCompressor.h</itemPath>
     <itemPath>MightexMetaData.cpp</itemPath>
     <itemPath>MightexMetaData.h</itemPath>
+    <itemPath>MultiStackReader.cpp</itemPath>
+    <itemPath>MultiStackReader.h</itemPath>
     <itemPath>NameValueMetaData.cpp</itemPath>
     <itemPath>NameValueMetaData.h</itemPath>
     <itemPath>StackReader.cpp</itemPath>
