@@ -302,7 +302,7 @@ int MultiStackReader::findStackReader(int frameNumber) {
     checkError();    if (isError()) {return -1;}
     int nstacks = MIN (endFrames.size(), sr.size());
     for (int j = 0; j < nstacks; ++j) {
-        if (sr.at(j).second <= frameNumber && endFrames.at(j) >= frameNumber) {
+        if (sr.at(j).second <= frameNumber && endFrames.at(j) > frameNumber) {
             return j;
         }
     }
@@ -313,9 +313,10 @@ int MultiStackReader::findStackReader(int frameNumber) {
     } else {
         s << "could not find frame number " << frameNumber << " : frame ranges are: ";
         for (int j = 0; j < nstacks; ++j) {
-            s << sr.at(j).second << "->" << endFrames.at(j) << "  ";
+            s << "[" <<sr.at(j).second << "," << endFrames.at(j) << ");  ";
         }
     }
+    setError(s.str());
     return -1;
 }
 
