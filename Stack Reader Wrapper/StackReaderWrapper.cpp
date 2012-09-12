@@ -8,7 +8,7 @@
 #include "StackReaderWrapper.h"
 #include "cv.h"
 #include "highgui.h"
-#include "StackReader.h"
+#include "MultiStackReader.h"
 #include "LinearStackCompressor.h"
 #include "WindowsThreadStackCompressor.h"
 #include "BlankMetaData.h"
@@ -24,7 +24,7 @@ void *createStackReader(const char* fname) {
         return NULL;
     }
  //   os << "trying to open " << fname << endl;
-    StackReader *sr = new StackReader(fname);
+    StackReader *sr = new MultiStackReader(fname); //changed to multistackreader
     if (sr == NULL) {
  //       os << "sr is null" << endl;
         return NULL;

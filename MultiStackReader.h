@@ -50,11 +50,9 @@ public:
     virtual void getBackground (int frameNum, IplImage **dst, int frameRange = 0);
     virtual void getFrame (int frameNum, IplImage **dst);
     virtual void annotatedFrame (int frameNum, IplImage **dst);
-    virtual void playMovie (int startFrame = 0, int endFrame = -1, int delay_ms = 50, const char *windowName = NULL, bool annotated = true);
-
+    
     virtual CvSize getImageSize ();
 
-    virtual void createSupplementalDataFile(const char *fname);
     
     virtual ExtraDataWriter *getSupplementalData();
     /*  virtual ExtraDataWriter *addToSupplementalData(ExtraDataWriter *edw, int frameOffset);
@@ -66,9 +64,7 @@ public:
      */
     virtual ExtraDataWriter *addToSupplementalData(ExtraDataWriter *edw = NULL, int frameOffset = 0);
     
-    virtual inline bool dataFileOk(){
-        return (infile != NULL && !infile->fail());
-    }
+    virtual bool dataFileOk();
 
     virtual inline int getTotalFrames () {
         return totalFrames;
@@ -86,17 +82,9 @@ public:
 
     virtual CvRect getLargestROI ();
 
-    /* virtual void decimateStack(const char *outputname, int decimationCount = 2);
-     * writes out a copy of the compressed movie, but only a subset of the frames
-     *
-     * outputname - name of the file to save the new movie in (cannot be the same as the old file name)
-     * decimationCount - factor to reduce the file size by (e.g. decimation count of 4 means to record every 4th frame)
-     *
-     * returns 0 on sucess, < 0 on error
-     */
-    virtual int decimateStack(const char *outputname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int decimationCount = 2);
-
     virtual const ImageMetaData* getMetaData(int frameNum);
+    
+    static std::vector<std::string> parseFileNameInput (const char *fname);
     
 protected:
     std::vector<std::pair<StackReader *, int> > sr;
@@ -104,7 +92,6 @@ protected:
     std::vector<int> endFrames;
     
     virtual void init();
-    virtual void countFrames();
     virtual void checkError();
     virtual int findStackReader(int frameNumber);
     

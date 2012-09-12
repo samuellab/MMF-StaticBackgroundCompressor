@@ -9,7 +9,7 @@
  */
 
 #include <cstdlib>
-#include "StackReader.h"
+#include "MultiStackReader.h"
 #include <sstream>
 using namespace std;
 
@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
         return 0;
     }
    // cout << "opening stack reader" << endl;
-    StackReader sr(filename.c_str());
+    MultiStackReader sr(filename.c_str());
     if (!sr.dataFileOk()) {
         cout << "couldn't open or parse data file: " << filename;
         return 0;

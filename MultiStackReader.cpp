@@ -13,8 +13,7 @@
 #include <map>
 #include <iostream>
 #include <sstream>
-#include <dirent.h>
-#include <sys/stat.h>
+#include <ctype.h>
 #ifdef _WIN32
 // Hopefully one day the code may be less windows-centric :)
     #include <windows.h> //required to use multithreaded stack writing
@@ -48,31 +47,88 @@ MultiStackReader::~MultiStackReader() {
     closeInputFile();
 }
 
-
+MultiStackReader::MultiStackReader(const char* fname) {
+    init();
+    setInputFileName(fname);
+    openInputFile();
+}
 
 void MultiStackReader::init() {
     StackReader::init();
-    
     sr.clear();
     fnames.clear();
+}
+//
+//inline bool isopenbracket(char c) {
+//    return ('{' == c || '[' == c  '(' == c);
+//}
+//
+//inline bool isclosebracket(char c) {
+//    return ('}' == c ||  ']' == c || ')' == c);
+//}
+//
+//inline bool isbracket(char c) {
+//    return isopenbracket(c) || isclosebracket(c);
+//}
+//
+//inline bool isseparator(char c) {
+//    return (',' == c || ';' == c)
+//}
+static string& trimwhitespace (string &s);
+string& trimwhitespace (string &s) {
+    const string whitespace(" \t\n\f\r");
+    size_t pos = s.find_first_not_of(whitespace);
+    if (pos > s.length()) {
+        s.clear();
+    } else {
+        s = s.substr(pos, s.find_last_not_of(whitespace));
+    }
+    return s;
+    
+}
+std::vector<std::string> MultiStackReader::parseFileNameInput (const char *fname) {
+    //currently (9/12) only parses a single file name to a vector with that single file name, or 
+    //a list of filenames {filename1, filename2, filename3} to a vector of file names
+    //extensions could be to determine if the fname is a directory and use all files in that directory
+    //or to do wild card searches, etc
+    
+    vector<string> fn;
+    
+    
+    const string openbrackets("{[(");
+    const string closebrackets("]})");
+    const string separators(",;");
+    
+    string s(fname);
+    
+    size_t pos = s.find_first_of(openbrackets);
+    if (pos == string::npos) {
+        fn.push_back(trimwhitespace(s));
+        return fn;
+    }
+    //remove enclosing brackets
+    s.erase(0,pos);
+    pos = s.find_last_of(closebrackets);
+    s.erase(pos, string::npos);
+    
+    while (!s.empty()) {
+        pos = s.find_first_of(separators);
+        pos = (pos == string::npos) ? pos : pos-1; 
+        string ss = s.substr(0,pos);
+        fn.push_back(trimwhitespace(ss));
+        s.erase(0,pos);
+        trimwhitespace(s);
+    }
+    return fn;
     
 }
 
-
-
 void MultiStackReader::setInputFileName(const char* fname) {
-    fnames.clear();
-    fnames.push_back(string(fname));
-//    this->fname = string(fname);
-    
+    setInputFileName(parseFileNameInput(fname));
 }
 void MultiStackReader::setInputFileName(const std::vector<std::string> fnames) {
     this->fnames = fnames;
-//    for (vector<string>::iterator it = fnames.begin(); it != fnames.end(); ++it) {
-//        this->fnames.push_back(*it);
-//    }
-//    nstacks = this->fnames.size();
-//    checkError();
+
 }
 
 void MultiStackReader::closeInputFile() {
@@ -98,7 +154,19 @@ void MultiStackReader::openInputFile() {
     checkError();
 }
 
-
+bool MultiStackReader::dataFileOk() {
+        if (!sr.empty()) {
+            for (vector<pair<StackReader *, int> >::iterator it = sr.begin(); it != sr.end(); ++it) {
+                if (it->first == NULL || !it->first->dataFileOk()) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+        return false;
+    }
 
 CvSize MultiStackReader::getImageSize() {
     checkError(); 
@@ -177,47 +245,6 @@ void MultiStackReader::annotatedFrame(int frameNum, IplImage** dst) {
     sr.at(srnum).first->annotatedFrame(frameNum-sr.at(srnum).second, dst);
 }
 
-void MultiStackReader::playMovie(int startFrame, int endFrame, int delay_ms, const char* windowName, bool annotated) {
-   
-    startFrame = startFrame < 0 ? 0 : startFrame;
-    endFrame = endFrame > totalFrames ? totalFrames : endFrame;
-    endFrame = endFrame < 0 ? totalFrames : endFrame;
-
-    if (windowName == NULL) {
-        windowName =  "background restored movie";
-    }
-    cvNamedWindow(windowName, 0);
-    IplImage *im = NULL;
-  
-    Timer tim;
-    Sleep(2000); // removed on linux branch
-    for (int f = startFrame; f < endFrame; ++f) {
-
-        tim.start();
-         if (annotated) {
-            annotatedFrame(f, &im);
-        } else {
-            getFrame(f, &im);
-        }
-        if (im == NULL) {
-            break;
-        }
-
-
-        cvShowImage(windowName, im);
-        int delaytime = (int) (delay_ms - tim.getElapsedTimeInMilliSec());
-        tim.stop();
-        delaytime = delaytime < 1 ? 1: delaytime;
-        if (tolower(cvWaitKey(delaytime)) == 'q') {
-            break;
-        }
-    }
-    if (im != NULL) {
-        cvReleaseImage(&im);
-    }
-    cvDestroyWindow(windowName);
-}
-
 ExtraDataWriter *MultiStackReader::getSupplementalData() {
     return addToSupplementalData(NULL,0);
 }
@@ -247,44 +274,7 @@ CvRect MultiStackReader::getLargestROI() {
 }
 
 
-std::string MultiStackReader::diagnostics() {
-    stringstream s;
-    if (iserror) {
-        s << "error: " << getError();
-        return s.str();
-    }
-//    s << "no error" << endl;
-    setSBC(0);
-    if (sbc == NULL) {
-        s << getError() << endl;
-        s << "sbc was null" << endl;
-        return s.str();
-    }
-    s << "sbc save description:\n" << sbc->saveDescription() << endl;
-    //return s.str();
-    s << "sbc has " << sbc->numProcessed() << "frames" << endl;
-    s << "sbc frame size is " << sbc->getFrameSize().width << " x " << sbc->getFrameSize().height << endl;
-    s << "frame 0:" << endl << "meta data:" << endl;
-    const ImageMetaData* imd = sbc->getMetaData(0);
-    if (imd == NULL) {
-        s << "meta data is NULL" << endl;
-    } else {
-        s << imd->saveDescription() << endl;
-        map<string,double>mdp = imd->getFieldNamesAndValues();
-        for (map<string, double>::const_iterator it = mdp.begin(); it != mdp.end(); ++it) {
-            s << it->first << "," << it->second << "\t";
-        }
-        s << endl;
-    }
-    s << sbc->numRegionsInFrame(0) << " regions different from background" << endl;
-    //return s.str();
-    IplImage *im = NULL;
-    sbc->reconstructFrame(0, &im);
-    s << "im params: w= " << im->width << ", h= " << im->height << ", nchannels = " << im->nChannels << ", width step = " << im->widthStep << "imageSize = " << im->imageSize << endl;
 
-    return s.str();
-    
-}
 
 int MultiStackReader::findStackReader(int frameNumber) {
     checkError();    if (isError()) {return -1;}
@@ -305,4 +295,32 @@ int MultiStackReader::findStackReader(int frameNumber) {
         }
     }
     return -1;
+}
+
+void MultiStackReader::checkError() {
+    if (isError()) {
+        return;
+    }
+    int j = 0;
+    for (vector<pair<StackReader *, int> >::iterator it = sr.begin(); it != sr.end(); ++it) {
+        if (it->first->isError()) {
+            stringstream s;
+            s << "stack #" << j << ": " <<it->first->getError();
+            setError(s.str());
+            return;
+        }
+        j++;
+    }
+}
+
+std::string MultiStackReader::diagnostics() {
+    stringstream s;
+    if (sr.empty()) {
+        return "no stacks opened";
+    }
+    int j = 0;
+    for (vector<pair<StackReader *, int> >::iterator it = sr.begin(); it != sr.end(); ++it) {
+        s << "stack #" << j++ << ": " << it->first->diagnostics();
+    }
+    return s.str();
 }
