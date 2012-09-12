@@ -26,21 +26,24 @@
  *
  */
 
-#ifndef STACKREADER_H
-#define	STACKREADER_H
+#ifndef MULTISTACKREADER_H
+#define	MULTISTACKREADER_H
 
+#include "StackReader.h"
 #include "StaticBackgroundCompressor.h"
 #include "ExtraDataWriter.h"
 #include <map>
 #include <string>
 #include <cv.h>
 
-class StackReader {
+class MultiStackReader : public StackReader {
 public:
-    StackReader();
-    StackReader(const char *fname);
-    virtual ~StackReader();
+    MultiStackReader();
+    MultiStackReader(const char *fname);
+    MultiStackReader(const std::vector<std::string>fnames);
+    virtual ~MultiStackReader();
     virtual void setInputFileName (const char *fname);
+    virtual void setInputFileName (const std::vector<std::string>fnames);
     virtual void openInputFile ();
     virtual void closeInputFile ();
 
@@ -94,35 +97,21 @@ public:
     virtual int decimateStack(const char *outputname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int decimationCount = 2);
 
     virtual const ImageMetaData* getMetaData(int frameNum);
-    
 protected:
-    std::string fname;
-    std::ifstream *infile;
-    std::map<int, std::ifstream::pos_type> keyframelocations; //start frame, place in file
-
-    int totalFrames;
-    int startFrame;
-    int endFrame;
-    StaticBackgroundCompressor *sbc;
-
+    std::vector<std::pair<StackReader *, int> > sr;
+    std::vector<std::string> fnames;
+    std::vector<int> endFrames;
+    int nstacks;
+    
     virtual void init();
-
-    virtual void parseInputFile();
-    virtual void setSBC(int frameNum);
-    virtual inline void setError (std::string err) {
-        iserror = true;
-        errormessage = err;
-    }
-
-    CvRect validROI;
-
-    bool iserror;
-    std::string errormessage;
-
+    virtual void countFrames();
+    virtual void checkError();
+    virtual int findStackReader(int frameNumber);
+    
 private:
-      StackReader(const StackReader& orig);
+      MultiStackReader(const MultiStackReader& orig);
   
 };
 
-#endif	/* STACKREADER_H */
+#endif	/* MULTISTACKREADER_H */
 

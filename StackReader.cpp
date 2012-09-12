@@ -356,6 +356,28 @@ ExtraDataWriter *StackReader::getSupplementalData() {
     }
     return edw;
 }
+ExtraDataWriter *StackReader::addToSupplementalData(ExtraDataWriter* edw, int frameOffset) {
+    if (edw == NULL) {
+        edw = new ExtraDataWriter();
+    }
+    
+    for (int frameNum = 0; frameNum < totalFrames; ++frameNum) {
+        setSBC(frameNum);
+        if (iserror || sbc == NULL) {
+            break;
+        }
+        const ImageMetaData *imd = sbc->getMetaData(frameNum-startFrame);
+        edw->goToFrame(frameNum + frameOffset);
+        
+        if (imd != NULL) {
+            edw->addElements(imd->getFieldNamesAndValues());
+        }
+        edw->addElement(string("FrameNumber"), (double) frameNum + frameOffset);
+        edw->addElement(string("LocalFrameNumber"), (double) frameNum);
+        edw->addElement(string("NumberOfRegionsDiffFromBackground"), (double) sbc->numRegionsInFrame(frameNum-startFrame));
+    }
+    return edw;
+}
 
 void StackReader::createSupplementalDataFile(const char* fname) {
     ExtraDataWriter *edw = getSupplementalData();
@@ -419,8 +441,7 @@ int StackReader::decimateStack(const char* outputname, int thresholdAboveBackgro
         if (im == NULL) {
             break;
         }
-        setSBC(f);
-        const ImageMetaData* imd = sbc->getMetaData(f - startFrame);
+        const ImageMetaData* imd = getMetaData(f);
         if (false) {
             cout << imd->saveDescription();
             cout << imd->clone()->saveDescription();
@@ -521,4 +542,17 @@ std::string StackReader::diagnostics() {
 
     return s.str();
     
+}
+
+const ImageMetaData *StackReader::getMetaData(int frameNum) {
+    setSBC(frameNum);
+    if (!dataFileOk() || sbc == NULL) {
+        stringstream s;
+        s << "could not open data file to frame number: " << frameNum;
+        setError(s.str());
+        return NULL;
+    }
+    if (sbc != NULL) {
+        return sbc->getMetaData(frameNum - startFrame);
+    }
 }
