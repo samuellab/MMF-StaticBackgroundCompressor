@@ -395,7 +395,14 @@ CvRect StackReader::getLargestROI() {
     }
     return validROI;
 }
-
+int StackReader::getKeyFrameInterval() {
+    setSBC(0);
+    if (sbc == NULL) {
+        setError("could not go to first static background compressor; check data file");
+        return -1;
+    }
+    return sbc->numProcessed();
+}
 int StackReader::decimateStack(const char* outputname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int decimationCount) {
     #ifdef _WIN32
     WindowsThreadStackCompressor sc;
@@ -404,8 +411,11 @@ int StackReader::decimateStack(const char* outputname, int thresholdAboveBackgro
     #endif
     bool showFrames = false;
     sc.setThresholds(0, thresholdAboveBackground, smallDimMinSize, lgDimMinSize);
-    setSBC(0);
-    sc.setIntervals(sbc->numProcessed(), 1);
+    int kfi = getKeyFrameInterval();
+    if (kfi < 0 || isError()) {
+        return -1;
+    }
+    sc.setIntervals(kfi, 1);
     sc.setOutputFileName(outputname);
 
     IplImage *im = NULL;

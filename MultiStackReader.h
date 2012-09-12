@@ -85,6 +85,7 @@ public:
     virtual const ImageMetaData* getMetaData(int frameNum);
     
     static std::vector<std::string> parseFileNameInput (const char *fname);
+    virtual int getKeyFrameInterval();
     
 protected:
     std::vector<std::pair<StackReader *, int> > sr;
@@ -94,6 +95,7 @@ protected:
     virtual void init();
     virtual void checkError();
     virtual int findStackReader(int frameNumber);
+   
     
 private:
       MultiStackReader(const MultiStackReader& orig);

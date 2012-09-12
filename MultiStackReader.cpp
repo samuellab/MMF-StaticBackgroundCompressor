@@ -81,7 +81,7 @@ string& trimwhitespace (string &s) {
     if (pos > s.length()) {
         s.clear();
     } else {
-        s = s.substr(pos, s.find_last_not_of(whitespace));
+        s = s.substr(pos, s.find_last_not_of(whitespace)-pos+1);
     }
     return s;
     
@@ -107,17 +107,27 @@ std::vector<std::string> MultiStackReader::parseFileNameInput (const char *fname
         return fn;
     }
     //remove enclosing brackets
-    s.erase(0,pos);
+    s.erase(0,pos+1);
     pos = s.find_last_of(closebrackets);
     s.erase(pos, string::npos);
+   // cout << "after removing brackets, s = " << endl << s << endl;
+    
     
     while (!s.empty()) {
         pos = s.find_first_of(separators);
-        pos = (pos == string::npos) ? pos : pos-1; 
+      //  pos = (pos == string::npos) ? pos : pos-1; 
         string ss = s.substr(0,pos);
-        fn.push_back(trimwhitespace(ss));
-        s.erase(0,pos);
+       // cout << "pos = " << pos << endl;
+       // cout << "pretrim substring = " << ss << endl;
+        trimwhitespace(ss);
+      //  cout << "posttrim substring = " << ss << endl;
+        if (!ss.empty()) {
+            fn.push_back(ss);
+        }
+        
+        s.erase(0,MAX(pos,pos+1)); //max command takes care of wrapping at npos
         trimwhitespace(s);
+       // cout << "post trim s = " << endl << s << endl;
     }
     return fn;
     
@@ -243,6 +253,18 @@ void MultiStackReader::annotatedFrame(int frameNum, IplImage** dst) {
         return;
     }
     sr.at(srnum).first->annotatedFrame(frameNum-sr.at(srnum).second, dst);
+}
+
+int MultiStackReader::getKeyFrameInterval() {
+    if (sr.empty() || sr.at(0).first == NULL) {
+        setError("no open stack readers in getKeyFrameInterval");
+        return -1;
+    }
+    
+    
+    int kfi = sr.at(0).first->getKeyFrameInterval();
+    checkError();
+    return kfi;
 }
 
 ExtraDataWriter *MultiStackReader::getSupplementalData() {

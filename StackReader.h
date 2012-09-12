@@ -94,7 +94,8 @@ public:
     virtual int decimateStack(const char *outputname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int decimationCount = 2);
 
     virtual const ImageMetaData* getMetaData(int frameNum);
-    
+    virtual int getKeyFrameInterval();
+        
 protected:
     std::string fname;
     std::ifstream *infile;
@@ -114,6 +115,8 @@ protected:
         errormessage = err;
     }
 
+
+    
     CvRect validROI;
 
     bool iserror;
