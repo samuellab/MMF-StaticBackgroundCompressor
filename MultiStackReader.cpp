@@ -95,8 +95,8 @@ std::vector<std::string> MultiStackReader::parseFileNameInput (const char *fname
     vector<string> fn;
     
     
-    const string openbrackets("{[(");
-    const string closebrackets("]})");
+    const string openbrackets("{[");
+    const string closebrackets("]}");
     const string separators(",;");
     
     string s(fname);
