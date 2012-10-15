@@ -29,8 +29,8 @@
 using namespace std;
 
 #ifndef _WIN32
-    void Sleep (int t);
-    void Sleep (int t) {
+    static void Sleep (int t);
+    static void Sleep (int t) {
         cvWaitKey(t);
     }
 #endif
