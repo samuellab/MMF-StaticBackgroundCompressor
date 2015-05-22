@@ -107,7 +107,14 @@ public:
      */
     virtual void annotateImage (IplImage *dst, CvScalar color = CV_RGB(255,0,0), int thickness = 2);
 
-    
+    /* void switchBackground (const IplImage *bak)
+     * changes the backgroundIm pointer to point to new background image
+     * does not allocate or release memory; does not make a copy of background image
+     * 
+     */
+    virtual void switchBackground (const IplImage *bak) {
+        backgroundIm = bak;
+    }
 
     virtual int numRegions() const;
 
@@ -149,6 +156,14 @@ public:
 
     typedef struct {uint32_t idcode; int32_t headersize; int32_t depth; int32_t nchannels; int32_t numims;} HeaderInfoT;
 
+    typedef void (*mergeFunctionT) (const CvArr *src1, const CvArr *src2, CvArr *dst);
+    /* mergeRegions(const BackgroundRemovedImage *bri2);
+     
+     * 
+     * 
+     */
+    virtual void mergeRegions(const BackgroundRemovedImage *bri2, mergeFunctionT mergeFunction);
+    
 protected:
     virtual void extractDifferences(IplImage *src);
     virtual void extractBlobs (IplImage *src, IplImage *mask);
@@ -160,11 +175,20 @@ protected:
     virtual std::string headerDescription();
 
     virtual void setImOriginFromMetaData();
+    
+    virtual IplImage *subImageFromConst (const IplImage *src, CvRect & r);
+    
     template<class subclass, class superclass> bool isa (superclass *obj, subclass * &dst);
     template<class subclass, class superclass> bool isa (const superclass *obj, const subclass * &dst);
     template<class subclass, class superclass> bool isa (const superclass *obj);
 
+    inline bool rectanglesIntersect (CvRect r1, CvRect r2) {
+        return (r1.x < r2.x+r2.width && r2.x < r1.x+r1.width && r1.y < r2.y+r2.height && r2.y < r1.y + r1.height);
+    }
+    virtual std::pair<CvRect, IplImage *> mergeBlobs(std::pair<CvRect, IplImage *> b1, std::pair<CvRect, IplImage *> b2, mergeFunctionT mergeFunction);
 
+    virtual bool compactBlobs(mergeFunctionT mergeFunction); //returns true if any blobs were compacted
+    
     BackgroundRemovedImage();
     BackgroundRemovedImage(const BackgroundRemovedImage& orig);
 
@@ -177,6 +201,10 @@ protected:
     CvPoint imOrigin;
     CvMemStorage *ms;
     ImageMetaData *metadata;
+    
+    static void avgOfTwoIms (const CvArr *src1, const CvArr *src2, CvArr *dst) {
+        cvAddWeighted(src1, 0.5, src2, 0.5, 0, dst);
+    }
 };
 
 #endif	/* BACKGROUNDREMOVEDIMAGE_H */

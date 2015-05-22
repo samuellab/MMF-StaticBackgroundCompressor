@@ -115,6 +115,43 @@ int StaticBackgroundCompressor::processFrame() {
     return imsToProcess.size();
 }
 
+void StaticBackgroundCompressor::changeBackground(const IplImage* newBackground) {
+    IplImage *oldbak;
+    oldbak = cvCloneImage(background);
+    cvMin(newBackground, oldbak, background);
+    BackgroundRemovedImage *bakim = new BackgroundRemovedImage(oldbak, background, threshBelowBackground, threshAboveBackground, smallDimMinSize, lgDimMinSize,  NULL);
+
+    for (vector<BackgroundRemovedImage *>::iterator it = bri.begin(); it != bri.end(); ++it) {
+      //  cout << "calling merge regions" << endl << flush;
+        (*it)->mergeRegions(bakim, cvMax);       
+       // cout << "merge regions returned" << endl << flush;
+    }
+    
+    cvReleaseImage(&oldbak);
+    delete bakim;
+}
+
+void StaticBackgroundCompressor::mergeStacks(std::vector<StaticBackgroundCompressor*> alreadyCompressedStacks) {
+    if (alreadyCompressedStacks.empty()) {
+        return;
+    }
+    IplImage *newbak = cvCloneImage(background);
+  //  cout << "calculating background" << endl<< flush;
+    for (vector<StaticBackgroundCompressor*>::iterator it = alreadyCompressedStacks.begin(); it != alreadyCompressedStacks.end(); ++it) {
+        cvMin(newbak, (*it)->background, newbak);
+    }
+  //  cout << "changing backgrounds" << endl << flush;
+    changeBackground(newbak);
+    for (vector<StaticBackgroundCompressor*>::iterator it = alreadyCompressedStacks.begin(); it != alreadyCompressedStacks.end(); ++it) {
+        (*it)->changeBackground(newbak);
+        bri.insert(bri.end(), (*it)->bri.begin(), (*it)->bri.end());
+        (*it)->bri.clear();
+    }
+    cvReleaseImage(&newbak); 
+    
+    
+}
+
 void StaticBackgroundCompressor::processFrames() {
     while (processFrame() > 0) {
         //process Frame does all the work
@@ -201,6 +238,18 @@ StaticBackgroundCompressor * StaticBackgroundCompressor::fromDisk(std::ifstream&
     }
     return sbc;
 }
+//estimate, does not include metadata and maybe some other stuff
+int StaticBackgroundCompressor::sizeInMemory() {
+    
+    int totalBytes = sizeof(this);
+    if (background != NULL) {
+        totalBytes += (sizeof(IplImage) + background->imageSize) * (imsToProcess.size()+4);
+    }
+     for (vector<BackgroundRemovedImage *>::iterator it = bri.begin(); it != bri.end(); ++it) {
+        totalBytes += (*it)->sizeInMemory();
+    }
+    return totalBytes;
+}
 
 int StaticBackgroundCompressor::sizeOnDisk() {
     
@@ -242,6 +291,9 @@ int StaticBackgroundCompressor::numProcessed() {
 
 int StaticBackgroundCompressor::numToProccess() {
     return imsToProcess.size();
+}
+bool StaticBackgroundCompressor::framesWaitingToProcess() {
+    return !imsToProcess.empty();
 }
 
 void StaticBackgroundCompressor::reconstructFrame(int frameNum, IplImage** dst) {

@@ -53,6 +53,8 @@ extern "C" {
  
     EXPORT int addFrame (void *sw, void *ipl_im);
 
+    EXPORT int addLabviewFrame (void *sw, void* lvsrc, int lvwidth, int lvheight, int lvlinewidth);
+    
     EXPORT int setMetaData (void *sw, char *fieldname, double fieldvalue);
     
     EXPORT int startRecording (void *sw, int nframes);

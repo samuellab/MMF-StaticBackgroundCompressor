@@ -52,6 +52,7 @@
     #include "tictoc/tictoc.h"
     #include <windows.h>
     #include <process.h>
+    #include <queue>
 
     class WindowsThreadStackCompressor : public LinearStackCompressor {
     public:
@@ -70,6 +71,23 @@
         */
         virtual ~WindowsThreadStackCompressor();
 
+         /* virtual int checkIfThreadsHaveEnded(int timeout= 2000);
+         * 
+         * returns 0 if threads have ended
+         * otherwise returns an integer reflecting which threads are still active
+         *
+         */
+        virtual int checkIfThreadsAreActive(int timeout = 2000);
+       
+         /* virtual int endThreads(int timeout= 2000);
+         * 
+         * ends all compression and writing threads, call only before destruction 
+         *
+         */
+        virtual int endThreads(int timeout= 2000);
+       
+        
+        
         /* virtual int startThreads(); //returns -1 on error, 0 on ok
         * 
         * starts compression and writing threads that run in background
@@ -106,7 +124,7 @@
          * returns true if all images have been compressed and written to disk
          */
          
-        virtual bool nothingLeftToCompressOrWrite();
+        virtual bool nothingLeftToCompressOrWrite(bool verbose = false);
         
         virtual void goIdle();
         /* virtual void goIdle();
@@ -146,40 +164,81 @@
             return compressionThreadTimer;
         }
 
+        inline TICTOC::tictoc const& InputBufferThreadTimer () {
+            return inputBufferThreadTimer;
+        }
+
+        /* bool readyForNewFrame(); 
+         * returns false if input buffer is over full & frame will be discarded
+         * returns true if new frame will be added to stack
+         *
+         */
+        virtual bool readyForNewFrame(); 
+        
         std::string generateTimingReport();
 
-        virtual std::ofstream::pos_type numBytesWritten ();
-
+        
         virtual void numStacksWaiting (int &numToCompress, int &numToWrite);
 
     protected:
+        CRITICAL_SECTION inputBufferCS;
         CRITICAL_SECTION activeStackCS;
         CRITICAL_SECTION compressingStackCS;
         CRITICAL_SECTION imageStacksCS;
         CRITICAL_SECTION outfileCS;
         CRITICAL_SECTION writingStackCS;
+        CRITICAL_SECTION compressedStacksCS;
+        CRITICAL_SECTION stacksToWriteCS;
+        
 
         HANDLE compressionThread;
         HANDLE writingThread;
+        HANDLE inputBufferThread;
 
-        unsigned __stdcall compressionThreadFunction();
-        unsigned __stdcall writingThreadFunction();
-        static unsigned __stdcall startCompressionThread(void *ptr);
-        static unsigned __stdcall startWritingThread(void *ptr);
-
-        virtual void createStack();
         int maxCompressionThreads;
-        
-        virtual void addFrameToStack(IplImage **im, ImageMetaData *metadata);
-        bool compressionThreadActive;
+         bool compressionThreadActive;
         bool writingThreadActive;
-
+        bool inputBufferThreadActive;
+        
         bool stacksLeftToCompress;
         bool stacksLeftToWrite;
 
         TICTOC::tictoc nonthreadedTimer;
         TICTOC::tictoc compressionThreadTimer;
         TICTOC::tictoc writingThreadTimer;
+        TICTOC::tictoc inputBufferThreadTimer;
+        
+        int numTimesNewFrameCalled;
+        int numTimesFramePassedToInputBuffer;
+        int numTimesFramePassedToStackCompressor;
+        int numTimesFrameIsCompressed;
+        int numTimesFrameIsNotRecorded;
+        
+        unsigned __stdcall compressionThreadFunction();
+        unsigned __stdcall writingThreadFunction();
+        unsigned __stdcall inputBufferThreadFunction();
+        
+        static unsigned __stdcall startCompressionThread(void *ptr);
+        static unsigned __stdcall startWritingThread(void *ptr);
+        static unsigned __stdcall startInputBufferThread(void *ptr);
+        
+        typedef std::pair<IplImage *, ImageMetaData *> InputImT;
+        std::queue<InputImT> inputBuffer;
+        
+        virtual bool inputBufferEmpty();
+        virtual int inputBufferLength();
+        
+        virtual void createStack();
+       
+        
+        virtual void addFrameToStack(IplImage **im, ImageMetaData *metadata);
+        
+        virtual void setCompressionStack();
+        virtual void setWritingStack();
+        virtual void mergeCompressedStacks();
+        virtual void emptyInputBuffer();
+        
+       
 
     private:
         WindowsThreadStackCompressor(const WindowsThreadStackCompressor& orig);

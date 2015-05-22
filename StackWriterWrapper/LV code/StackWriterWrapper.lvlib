@@ -7,6 +7,7 @@
    </Item>
    <Item Name="StackWriterWrapper.dll" Type="Document" URL="../StackWriterWrapper.dll"/>
    <Item Name="add Frame.vi" Type="VI" URL="VIs/add Frame.vi"/>
+   <Item Name="add Labview Frame.vi" Type="VI" URL="VIs/add Labview Frame.vi"/>
    <Item Name="create Bright Field Stack Writer.vi" Type="VI" URL="VIs/create Bright Field Stack Writer.vi"/>
    <Item Name="create Bright Field Stack Writer With Size Limit.vi" Type="VI" URL="VIs/create Bright Field Stack Writer With Size Limit.vi"/>
    <Item Name="destroy Stack Writer.vi" Type="VI" URL="VIs/destroy Stack Writer.vi"/>

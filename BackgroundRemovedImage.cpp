@@ -20,6 +20,7 @@
 #include <fstream>
 #include <map>
 #include <sstream>
+#include <algorithm>
 
 using namespace std;
 
@@ -172,7 +173,11 @@ void BackgroundRemovedImage::extractBlobs(IplImage *src, IplImage *mask) {
                 cvCopy(src, copy);
                 r.x += offset.x;
                 r.y += offset.y;
-                differencesFromBackground.push_back(pair<CvRect, IplImage *> (r, copy));
+                if (copy != NULL) {
+                        differencesFromBackground.push_back(pair<CvRect, IplImage *> (r, copy));
+                } else {
+                    cout << "NULL copy -- wtf? r.x,y,w,h = " << r.x << "," << r.y << " ; " << r.width << "," << r.height << endl;
+                }
             }
         }
     }
@@ -449,4 +454,160 @@ void BackgroundRemovedImage::setImOriginFromMetaData() {
             }
         }
     }
+}
+
+IplImage *BackgroundRemovedImage::subImageFromConst(const IplImage* src, CvRect& r) {
+    if (src == NULL)
+        return NULL;
+    IplImage *dst = cvCreateImage(cvSize(r.width, r.height), src->depth, src->nChannels);
+    r.x = r.x < 0 ? 0 : r.x;
+    r.y = r.y < 0 ? 0 : r.y;
+    r.x = (r.x + r.width) > src->width ? src->width - r.width  : r.x;
+    r.y = (r.y + r.height) > src->height ? src->height - r.height : r.y;
+
+    
+    
+  //  cvSetImageROI(src, r);
+
+    char *srcPtr, *dstPtr;
+    int pxsize = bytesPerPixel(src)*src->nChannels;
+    for (int j = 0; j < r.height; ++j) {
+        srcPtr = src->imageData + (r.y + j)*src->widthStep + (r.x * pxsize);
+        dstPtr = dst->imageData + j*dst->widthStep;
+        memcpy(dstPtr, srcPtr, r.width*pxsize);
+    }
+    return dst;
+
+}
+
+std::pair<CvRect,IplImage*> BackgroundRemovedImage::mergeBlobs(std::pair<CvRect,IplImage*> b1, std::pair<CvRect,IplImage*> b2, mergeFunctionT mergeFunction){
+    CvRect r, r1, r2, roi;
+    IplImage *im, *im1, *im2;
+    r1 = b1.first;
+    r2 = b2.first;
+    im1 = b1.second;
+    im2 = b2.second;
+//    r.x = min(r1.x, r2.x);
+//    r.width = max(r1.x + r1.width, r2.x + r2.width) - r.x;
+//    r.y = min(r1.y, r2.y);
+//    r.height = max(r1.y + r1.height, r2.y + r2.height) - r.y;
+    r = cvMaxRect(&r1, &r2);
+    if (backgroundIm == NULL) {
+        im = cvCreateImage(cvSize(r.width, r.height), im1->depth, im1->nChannels);
+        cvSetZero(im);
+    } else {
+        im = subImageFromConst(backgroundIm, r);
+    }
+    //cout << "reseting roi" << endl << flush;
+    assert (im != NULL);
+    assert (im1 != NULL);
+    assert (im2 != NULL);
+    cvResetImageROI(im1);
+    cvResetImageROI(im2);
+    
+   // cout << "copying im 1" << endl << flush;
+    roi.x = r1.x - r.x;
+    roi.y = r1.y - r.y;
+    roi.width = r1.width; 
+    roi.height = r1.height;
+   // cout << "im1 size = " << im1->width << " , " << im1->height << endl << flush;
+   // cout << "im size = " << im->width << " , " << im->height << endl << flush;
+  //  cout << "roi = " << roi.x << " , " << roi.y << "; " << roi.width << " , " << roi.height << endl << flush;
+    cvSetImageROI(im, roi);
+    cvCopy(im1, im, NULL);
+    
+  //   cout << "copying im 2" << endl << flush;
+    roi.x = r2.x - r.x;
+    roi.y = r2.y - r.y;
+    roi.width = r2.width; 
+    roi.height = r2.height;
+    cvSetImageROI(im, roi);
+    cvCopy(im2, im, NULL);
+    
+    if (mergeFunction != NULL) {
+        CvRect ri, roi1, roi2;
+        ri.x = max(r1.x, r2.x);
+        ri.width = min(r1.x + r1.width, r2.x + r2.width) - ri.x;
+        ri.y = max(r1.y, r2.y);
+        ri.height = min(r1.y + r1.height, r2.y + r2.height) - ri.y;
+        if (ri.width > 0 && ri.height > 0) {
+            roi1 = roi2 = roi = ri;
+            roi.x = ri.x - r.x;
+            roi.y = ri.y - r.y;
+           
+            roi1.x = ri.x - r1.x;
+            roi1.y = ri.y - r1.y;
+            
+            roi2.x = ri.x - r2.x;
+            roi2.y = ri.y - r2.y;
+            
+            cvSetImageROI(im, roi);
+            cvSetImageROI(im1, roi1);
+            cvSetImageROI(im2, roi2);
+            mergeFunction(im1, im2, im);
+            assert (im != NULL && im1 != NULL && im2 != NULL);
+            cvResetImageROI(im);   
+            cvResetImageROI(im1);   
+            cvResetImageROI(im2);   
+        }
+    }
+    
+    return pair<CvRect,IplImage*> (r, im);
+}
+
+static bool comparePairsByRectX (pair<CvRect, IplImage *>a, pair<CvRect, IplImage *> b) {
+    return a.first.x < b.first.x;
+}
+
+void BackgroundRemovedImage::mergeRegions(const BackgroundRemovedImage* bri2, mergeFunctionT mergeFunction) {
+    if (mergeFunction == NULL) {
+        if (threshAboveBackground > 0 && threshBelowBackground <= 0) {
+            //background is minimum, so take maximum
+            mergeFunction = cvMax;
+        } else if (threshAboveBackground <= 0 && threshBelowBackground > 0) {
+            //background is maximum, so take minimum
+            mergeFunction = cvMax;
+        } else {
+            mergeFunction = avgOfTwoIms;
+        }
+    }
+
+    //cout << "merging two sets of differences" << endl;
+    for (vector< pair<CvRect, IplImage *> >::const_iterator it = bri2->differencesFromBackground.begin(); it != bri2->differencesFromBackground.end(); ++ it) {
+        IplImage *copy = cvCloneImage (it->second);
+        assert (copy != NULL);
+        differencesFromBackground.push_back(pair<CvRect, IplImage *>(it->first, copy));
+    }
+ //   differencesFromBackground.insert(differencesFromBackground.end(), bri2->differencesFromBackground.begin(), bri2->differencesFromBackground.end());
+    
+    //cout << "compacting blobs" << endl;
+    while (compactBlobs(mergeFunction)) {
+     //   cout << "calling merge function an additional time" << endl;
+    };
+    
+}
+
+bool BackgroundRemovedImage::compactBlobs(mergeFunctionT mergeFunction) {
+    bool rv = false;
+    //cout << "sorting" << endl << flush;
+    std::sort (differencesFromBackground.begin(), differencesFromBackground.end(), comparePairsByRectX);
+    vector< pair<CvRect, IplImage *> >::iterator it, it2;
+    for (it = differencesFromBackground.begin(); it < differencesFromBackground.end(); ++it) {
+        for (it2 = it + 1; it2 != differencesFromBackground.end() && it2->first.x < it->first.x + it->first.width; ) {
+            if (rectanglesIntersect(it->first, it2->first)) {
+                //cout << "merging two rectangles" << endl << flush;
+                rv = true;
+                pair<CvRect, IplImage *> newblob = mergeBlobs(*it, *it2, mergeFunction);
+                //cout << "freeing memory" << endl << flush;
+                cvReleaseImage(&(it2->second));
+                cvReleaseImage(&(it->second));
+                it2 = differencesFromBackground.erase(it2);
+                *it = newblob;
+                //cout << "rectangles merged" << endl << flush;
+            } else {
+                ++it2;
+            }
+        }
+    }
+    return rv;
 }

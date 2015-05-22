@@ -34,12 +34,16 @@ public:
      */
     virtual void addFrame (const IplImage *im, ImageMetaData *metadata = NULL);
     virtual void addFrame (IplImage **im, ImageMetaData *metadata = NULL);
+    virtual bool readyToProcess() {
+        return true;
+    }
     virtual int processFrame();
     virtual void processFrames();
     virtual void calculateBackground();
     virtual void updateBackground(const IplImage *im);
     virtual void toDisk (std::ofstream &os);
     virtual int sizeOnDisk();
+    virtual int sizeInMemory();
     StaticBackgroundCompressor();
     virtual ~StaticBackgroundCompressor();
     static StaticBackgroundCompressor *fromDisk(std::ifstream& is);
@@ -91,6 +95,7 @@ public:
     }
 
     virtual int numToProccess ();
+    virtual bool framesWaitingToProcess();
     virtual int numProcessed ();
 
     virtual std::string saveDescription();
@@ -101,6 +106,15 @@ public:
 
     virtual const ImageMetaData *getMetaData(int frameNumber);
 
+    /* virtual void changeBackground (const IplImage *newBackground);
+     * updates the background to be min(newBackground, oldBackground)
+     * merges in places where old background is greater than new background
+    
+     */
+    virtual void changeBackground (const IplImage *newBackground);
+    
+    virtual void mergeStacks (std::vector<StaticBackgroundCompressor *> alreadyCompressedStacks);
+    
 protected:
      StaticBackgroundCompressor(const StaticBackgroundCompressor& orig);
 

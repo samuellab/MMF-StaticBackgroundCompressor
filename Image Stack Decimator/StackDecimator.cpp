@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
         cout << "couldn't open or parse data file: " << filename;
         return 0;
     }
-    sr.decimateStack(outputname.c_str(), threshAboveBackground, 3, 3, decimationcount);
+    sr.decimateStack(outputname.c_str(), threshAboveBackground, 4, 7, decimationcount);
    // cout << "stack reader opened" << endl;
   //  sr.playMovie(startframe, endframe, delayms, "MMF Player", annotated);
     return 0;

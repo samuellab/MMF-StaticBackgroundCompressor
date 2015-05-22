@@ -25,10 +25,15 @@
       <runprofile version="9">
         <runcommandpicklist>
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" </runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" "E:\tabone data\olfaction\EtAc Spatial Linear 0 to 100 ppm 20 cm\CS\20130112\1650\</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" "E:\tabone data\olfaction\EtAc Spatial Linear 0 to 100 ppm 20 cm\CS\20130112\1650\CS_EtAc_SLi_0to100_20_201301121650.mmf", "E:\teststack.mmf" -decimationcount 1</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" "E:\tabone data\olfaction\EtAc Spatial Linear 0 to 100 ppm 20 cm\CS\20130112\1650\CS_EtAc_SLi_0to100_20_201301121650.mmf" "E:\teststack.mmf" -decimationcount 1</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}"</runcommand>
+        <runcommand>"${OUTPUT_PATH}" "E:\tabone data\olfaction\EtAc Spatial Linear 0 to 100 ppm 20 cm\CS\20130112\1650\CS_EtAc_SLi_0to100_20_201301121650.mmf" "E:\teststack.mmf" -decimationcount 1</runcommand>
         <rundir></rundir>
         <buildfirst>true</buildfirst>
+        <console-type>1</console-type>
         <terminal-type>0</terminal-type>
         <remove-instrumentation>0</remove-instrumentation>
         <environment>

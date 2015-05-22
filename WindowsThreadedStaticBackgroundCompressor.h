@@ -15,6 +15,7 @@
     public:
         WindowsThreadedStaticBackgroundCompressor(int maxThreads = 4);
         virtual void addFrame (IplImage **im, ImageMetaData *metadata = NULL);
+        virtual bool readyToProcess();
         virtual int processFrame();
         virtual void calculateBackground();
         virtual void updateBackground(const IplImage *im);
@@ -25,7 +26,7 @@
         virtual ~WindowsThreadedStaticBackgroundCompressor();
 
         virtual int numProcessed();
-
+        virtual bool framesWaitingToProcess();
         virtual int numToProccess();
 
 

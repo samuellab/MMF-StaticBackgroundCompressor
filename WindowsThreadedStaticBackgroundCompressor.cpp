@@ -7,6 +7,7 @@
 #ifdef WIN32
 
 #include "WindowsThreadedStaticBackgroundCompressor.h"
+#include "WindowsThreadStackCompressor.h"
 #include <windows.h>
 #include <process.h>
 struct processingInfo {
@@ -102,6 +103,25 @@ _endthread automatically closes the thread handle (whereas _endthreadex does not
  This behavior differs from the Win32 http://msdn.microsoft.com/en-us/library/cc429100.aspx API.
  
  */
+bool WindowsThreadedStaticBackgroundCompressor::readyToProcess() {
+     
+    //wait for space to open for another thread
+    DWORD timeout_ms = 100L;
+    DWORD dwWaitResult = WaitForSingleObject(compressionThreadSemaphore,   timeout_ms);
+    
+    //if there is space for another thread, pop an image off the stack and start a thread to process it
+    if (dwWaitResult == WAIT_OBJECT_0) {
+        ReleaseSemaphore(compressionThreadSemaphore,1,NULL);
+        return framesWaitingToProcess();
+    }
+    return false;
+}
+bool WindowsThreadedStaticBackgroundCompressor::framesWaitingToProcess() {
+    EnterCriticalSection(&imsToProcessCS);
+    bool rv =  !imsToProcess.empty();
+    LeaveCriticalSection(&imsToProcessCS);
+    return rv;
+}
 
 int WindowsThreadedStaticBackgroundCompressor::processFrame() {
     /***start imsToProcessCS  ****/
@@ -145,6 +165,8 @@ int WindowsThreadedStaticBackgroundCompressor::processFrame() {
         /***end imsToProcessCS  ****/
         processingInfo *pi = new processingInfo(imnum, nextim.first, nextim.second, this);
         _beginthread(WindowsThreadedStaticBackgroundCompressor::frameCompressionFunction, 0, (void *) pi);
+    } else {
+        Sleep(5); // should not be necessary, because we timed out above, but prevent hammering with repeated requests for a handle
     }
         
     

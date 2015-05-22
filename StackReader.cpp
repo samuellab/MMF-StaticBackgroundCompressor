@@ -98,7 +98,7 @@ void StackReader::openInputFile() {
 void StackReader::parseInputFile() {
     cout << "parse input file " << fname << endl;
     infile->seekg(0, ios::end);
-    ifstream::pos_type length = (ifstream::pos_type) infile->tellg();
+    size_t length = infile->tellg();
     infile->seekg(0, ios::beg); //go to start
     cout << "infile length = " << length << endl;
     
@@ -107,6 +107,7 @@ void StackReader::parseInputFile() {
         ss << "sizeof length = " << sizeof(length) << " length = " << length << " infile->fail = " << infile->fail() << " infile->good() = " << infile->good();
         setError (ss.str().c_str());
         setError("length < 0 or !infile->good");
+        cout << ss.str() << endl << flush;
         delete infile;
         infile = NULL;
         return;
@@ -437,14 +438,15 @@ int StackReader::decimateStack(const char* outputname, int thresholdAboveBackgro
     sc.startThreads();
     #endif
 
-    sc.startRecording(totalFrames);
+    int tf = totalFrames; //min(totalFrames, 3000);
+    sc.startRecording(tf);
     tim.start();
     int ethundred = 0;
     if (showFrames) {
         cvNamedWindow("source movie frame",0);
     }
-    for (int f = 0; f < totalFrames; f += decimationCount) {
-       // cout << f << ", " << f/decimationCount/tim.getElapsedTimeInSec() << " Hz" << "\t";
+    for (int f = 0; f < tf; f += decimationCount) {
+     //   cout << f << ", " << f/decimationCount/tim.getElapsedTimeInSec() << " Hz" << "\t";
         
         getFrame(f, &im);
         
@@ -465,10 +467,23 @@ int StackReader::decimateStack(const char* outputname, int thresholdAboveBackgro
             cout << "\n";
         }
     
+        double ts0 = tim.getElapsedTimeInMilliSec(); bool reportDelay;
+        while (!sc.readyForNewFrame()) {
+            Sleep(20);
+            reportDelay = (tim.getElapsedTimeInMilliSec() - ts0 > 100);
+        }
+        if (reportDelay) {
+            cout << "waited " << tim.getElapsedTimeInMilliSec() - ts0 << " ms to be ready for a new frame" << endl;
+        }
+        
+        ts0 = tim.getElapsedTimeInMilliSec(); 
         if (imd != NULL) {
             sc.newFrame(im, imd->clone());
         } else {
             sc.newFrame(im, NULL);
+        }
+        if (tim.getElapsedTimeInMilliSec() - ts0 > 100) {
+            cout << "waited " << tim.getElapsedTimeInMilliSec() - ts0 << " ms to add a new frame" << endl;
         }
         if (showFrames) {
             cvShowImage("source movie frame", im);
@@ -487,26 +502,28 @@ int StackReader::decimateStack(const char* outputname, int thresholdAboveBackgro
         }
          * */
         #ifdef _WIN32
-        while (ntc > 1 || ntw > 1) {
-            Sleep(200);
-            sc.numStacksWaiting(ntc, ntw);
-        }
+//        while (ntc > 1 || ntw > 1) {
+//            Sleep(200);
+//            sc.numStacksWaiting(ntc, ntw);
+//        }
         #endif
 
-        if (ntc > 1 || ntw > 1) {
-            cout << ntc << "ERROR: waiting to be compressed " << ntw << " waiting to be written" << endl;
-        }
+//        if (ntc > 1 || ntw > 1) {
+//            cout << ntc << "ERROR: waiting to be compressed " << ntw << " waiting to be written" << endl;
+//        }
 
-        if (((int) tim.getElapsedTimeInSec()/20) > ethundred) { //more frequent updates = fun
-            ethundred = (int) tim.getElapsedTimeInSec()/20;
+        if (((int) tim.getElapsedTimeInSec()/100) > ethundred) { //more frequent updates = fun
+            ethundred = (int) tim.getElapsedTimeInSec()/100;
             cout << "et = " << tim.getElapsedTimeInSec() << ";  " << f << "/" << totalFrames << " done.  " << tim.getElapsedTimeInSec() / f *(totalFrames - f) << " s remain" <<endl;
             cout << (sc.numBytesWritten()>>20) << "MB written, " << f/decimationCount/tim.getElapsedTimeInSec() << " Hz" << endl;
         }
+        Sleep(5);
 
     }
-
+    cout << "done with loop" << endl;
 //    sc.finishRecording();
     sc.closeOutputFile();
+    cout << sc.generateTimingReport() << endl << flush;
     if (im != NULL) {
         cvReleaseImage(&im);
         return 0;

@@ -46,6 +46,7 @@
 
 #include <stdio.h>
 #include "StaticBackgroundCompressor.h"
+#include <queue>
 
 
 class LinearStackCompressor {
@@ -172,11 +173,19 @@ protected:
     recordingState_t recordingState;
     int framesToRecord;
     std::ofstream *outfile;
-    std::vector<StaticBackgroundCompressor *> imageStacks;
+    
+    std::queue<StaticBackgroundCompressor *> imageStacks; //stacks to compress
+    std::queue<StaticBackgroundCompressor *> compressedStacks; //stacks to merge
+    std::queue<StaticBackgroundCompressor *> stacksToWrite; //merged stacks to write
+    
+    
     StaticBackgroundCompressor *activeStack;
     StaticBackgroundCompressor *stackBeingCompressed;
 
-    StaticBackgroundCompressor *stackBeingWritten; //not used by lsc right now
+    StaticBackgroundCompressor *stackBeingWritten; //not used by lsc right now (?? MHG 6/6/13 - there's a function to set it)
+    
+    int numStacksToMerge;
+    size_t memoryUsedByCompressedStacks;
 
     double frameRate;
     int threshBelowBackground;
@@ -192,13 +201,12 @@ protected:
     virtual void createStack();
     virtual void addFrameToStack(IplImage **im, ImageMetaData *metadata);
     virtual bool compressStack();
+    virtual void mergeCompressedStacks(); // moves compressed stacks to compressedStacks vector, removes them from imageStacks
     virtual bool writeFinishedStack();
     virtual void setCompressionStack();
     virtual void setWritingStack(); //not used by lsc right now
-    virtual bool readyForCompression (StaticBackgroundCompressor *sc);
-    virtual bool readyForWriting (StaticBackgroundCompressor *sc);
     virtual void finishRecording ();
-
+    
     virtual void writeHeader();
     virtual std::string headerDescription();
     virtual inline uint32_t idCode () {

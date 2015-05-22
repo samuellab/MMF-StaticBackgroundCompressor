@@ -68,7 +68,7 @@
     <conf name="Windows" type="3">
       <toolsSet>
         <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
-        <compilerSet>MinGW|MinGW</compilerSet>
+        <compilerSet>default</compilerSet>
         <rebuildPropChanged>true</rebuildPropChanged>
       </toolsSet>
       <compileType>

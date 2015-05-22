@@ -38,7 +38,8 @@ class wtscWrapper {
         int64_t setMaxCompressionThreads (int maxThreads);
         
         int64_t addFrame (void *ipl_im);
-
+        int64_t addLabviewFrame (void* lvsrc, int lvwidth, int lvheight, int lvlinewidth); 
+        
         int64_t setMetaData(char* fieldname, double fieldvalue);
 
         int64_t startRecording (int nframes);
@@ -67,6 +68,7 @@ class wtscWrapper {
         void newStackWriter();
         int nframes;
         int maxCompressionThreads;
+        static const bool debug = false;
 };
 
 

@@ -18,22 +18,33 @@
 #include <ctime>
 
 using namespace std;
-//std::ofstream os("c:\\wtsclog.txt");
+//
 void wtscWrapper::init() {
-    
-  //  assert (!os.fail());
-  //  os << "create mutex  called" << endl;
- //   InitializeCriticalSection(&protectedAction);
+    if (debug) {
+      std::ofstream os("c:\\wtsclog.txt", ios_base::app);
+      os << "create mutex  called" << endl;
+
+    }
     protectedAction = CreateMutex(NULL, FALSE, NULL);
-        
-   // os << "create mutex returned" << endl;
+    if (protectedAction == NULL) {
+        ofstream os("c:\\wtscwrapper_error_log.txt", ios_base::app);
+        os << "mutex creation returned NULL" << endl << flush;
+    }
+    assert (protectedAction != NULL);
+    if (debug) {
+      std::ofstream os("c:\\wtsclog.txt", ios_base::app);    
+      os << "create mutex returned" << endl;
+    }
     wtsc = NULL;
     wtsc_old = NULL;
     limitFileSize = false;
     maximumBytesToWriteInOneFile = 2000000000;
     maxCompressionThreads = defaultMaxCompressionThreads;
     fileNumber = 0;
-    //os << "init returned " << endl;
+    if (debug) {
+      std::ofstream os("c:\\wtsclog.txt", ios_base::app);    
+      os << "init returned " << endl;
+    }
 }
 
 wtscWrapper::wtscWrapper() {
@@ -41,18 +52,41 @@ wtscWrapper::wtscWrapper() {
 }
 
 wtscWrapper::~wtscWrapper() {
-    if (wtsc != NULL) {
-        wtsc->finishRecording();
-        wtsc->closeOutputFile();
-        delete (wtsc);
+    if (!enterCS(60000)){
+        if (wtsc != NULL) {
+            wtsc->finishRecording();
+            wtsc->closeOutputFile();
+            int rv;
+            if ((rv = wtsc->endThreads(2000)) != 0) {
+                ofstream os("c:\\wtscwrapper_error_log.txt", ios_base::app);
+                os << "endThreads detected threads still open: code = " << rv << endl << flush;
+            }
+            delete (wtsc);
+        }
+        if (wtsc_old != NULL) {
+            wtsc_old->finishRecording();
+            wtsc_old->closeOutputFile();
+            delete(wtsc_old);
+        }
+        leaveCS();
+        // DeleteCriticalSection(&protectedAction);
+        CloseHandle(protectedAction);
+    } else {
+        ofstream os("c:\\wtscwrapper_error_log.txt", ios_base::app);
+        os << "failed to acquire mutex to delete stack writers" << endl << flush;
+        if (wtsc != NULL) {
+            wtsc->finishRecording();
+            wtsc->closeOutputFile();
+            delete (wtsc);
+        }
+        if (wtsc_old != NULL) {
+            wtsc_old->finishRecording();
+            wtsc_old->closeOutputFile();
+            delete(wtsc_old);
+        }
+        CloseHandle(protectedAction);
     }
-    if (wtsc_old != NULL) {
-        wtsc_old->finishRecording();
-        wtsc_old->closeOutputFile();
-        delete(wtsc_old);
-    }
-   // DeleteCriticalSection(&protectedAction);
-    CloseHandle(protectedAction);
+   
 }
 //
 //void wtscWrapper::enterCS(const char* str) {
@@ -98,7 +132,7 @@ bool wtscWrapper::enterCS(unsigned long waitTimeInMs) {
             break;
     }
     
-    ofstream os("c:\\stackwriterwrapper_error_log.txt", ios_base::ate);
+    ofstream os("c:\\wtscwrapper_error_log.txt", ios_base::app); //change to put error log in with stack being written!
     time_t rawtime;
     struct tm * timeinfo;
     time ( &rawtime );
@@ -117,7 +151,10 @@ void wtscWrapper::leaveCS() {
 
 
 wtscWrapper::wtscWrapper(const char *fname, int thresholdAboveBackground, int smallDimMinSize, int lgDimMinSize, int keyFrameInterval, double frameRate) {
-//    os << "constructor called " << fname << " " << thresholdAboveBackground << " " << smallDimMinSize << " " << lgDimMinSize << " " << keyFrameInterval << " " << frameRate;
+    if (debug) {
+      std::ofstream os("c:\\wtsclog.txt", ios_base::app);    
+      os << "constructor called " << fname << " " << thresholdAboveBackground << " " << smallDimMinSize << " " << lgDimMinSize << " " << keyFrameInterval << " " << frameRate << endl << flush;
+    }
     init();
 
     this->thresholdAboveBackground = thresholdAboveBackground;
@@ -131,10 +168,17 @@ wtscWrapper::wtscWrapper(const char *fname, int thresholdAboveBackground, int sm
     filestub = fn.substr(0,ind);
     ext = fn.substr(ind+1);    
     
-    
+    if (debug) {
+      std::ofstream os("c:\\wtsclog.txt", ios_base::app);    
+      os << "calling newStackWriter; old stackwriter points to " << (intptr_t) wtsc << endl << flush;
+    }
     newStackWriter();       
+    if (debug) {
+      std::ofstream os("c:\\wtsclog.txt", ios_base::app);    
+      os << "wtsc created and points to " << (intptr_t) wtsc << endl;
+    }
     assert (wtsc != NULL);
-  //  os << "wtsc created and points to " << (intptr_t) wtsc << endl;
+    
     
 }
 
@@ -166,6 +210,10 @@ int64_t wtscWrapper::setMaxCompressionThreads(int maxThreads) {
 void wtscWrapper::newStackWriter() {
 
     wtsc = new WindowsThreadStackCompressor();
+    if (wtsc == NULL) {
+        ofstream os("c:\\wtscwrapper_error_log.txt", ios_base::app);
+        os << "wtsc creation returned NULL" << endl << flush;
+    }
     assert (wtsc != NULL);
     wtsc->setNumCompressionThreads(maxCompressionThreads);
     stringstream ss;
@@ -185,8 +233,39 @@ void wtscWrapper::newStackWriter() {
     wtsc->setIntervals(keyFrameInterval, 1);
     
     wtsc->setThresholds(0, thresholdAboveBackground, smallDimMinSize, lgDimMinSize);
+    if (debug) {
+       std::ofstream os("c:\\wtsclog.txt", ios_base::app);    
+       os << "calling start threads " << endl << flush;    
+    }
+    if (wtsc->startThreads() != 0) {
+        ofstream os("c:\\wtscwrapper_error_log.txt", ios_base::app);
+        os << "startThreads returned error" << endl << flush;
+    }
+    if (debug) {
+       std::ofstream os("c:\\wtsclog.txt", ios_base::app);    
+       os << "start threads returned" << endl << flush;    
+       for (int j = 0; j < 5; ++j) {
+           Sleep(100);
+           os << "still running: j = " << j << endl << flush;
+       }
+    }
     
-    wtsc->startThreads();
+}
+
+int64_t wtscWrapper::addLabviewFrame(void* lvsrc, int lvwidth, int lvheight, int lvlinewidth) {
+    
+    IplImage *lvim;
+    if (lvsrc == NULL || lvwidth <= 0 || lvheight <= 0 || lvlinewidth < lvwidth) {
+        return -4;
+    }
+    lvim = cvCreateImageHeader(cvSize(lvwidth, lvheight), IPL_DEPTH_8U, 1);
+    assert(lvim != NULL);
+    cvSetData(lvim, lvsrc, lvlinewidth);
+    
+    //enters critical section here
+    int64_t rv = addFrame((void *) lvim);
+    cvReleaseImageHeader(&lvim);
+    return rv;
 }
 
 int64_t wtscWrapper::addFrame (void *ipl_im) {
@@ -196,12 +275,19 @@ int64_t wtscWrapper::addFrame (void *ipl_im) {
     if (ipl_im == NULL) {
         return -3;
     }
-    static int frameAddedNumber = 0;
-    ++frameAddedNumber;
+   // static int frameAddedNumber = 0;
+    
     if (enterCS()) {
         return GetLastError();
     }
+    double calltime = tim.getElapsedTimeInMilliSec();
+    if (!wtsc->readyForNewFrame()) {
+        leaveCS();
+        return 0; // don't fail, but don't pass image to wtsc; avoids clearing metadata this way
+    }
     
+    //++frameAddedNumber;
+
     if (wtsc_old != NULL) {
   //      ofstream os("c:\\testnewwtsc.txt", ios_base::out | ios_base::app);
  //       os << "on frame: " << frameAddedNumber << " detected old stackwriter" << endl << flush;
@@ -241,7 +327,7 @@ int64_t wtscWrapper::addFrame (void *ipl_im) {
  //       os << "started recording" << endl << flush;
         
     }
-    md.replaceData("frameAddedTimeStamp", tim.getElapsedTimeInMilliSec());
+    md.replaceData("frameAddedTimeStamp", calltime);
     wtsc->newFrame((IplImage *) ipl_im, md.copy());
     md.clear();
     leaveCS();
@@ -303,7 +389,7 @@ int64_t wtscWrapper::getTimingStatistics (double *avgAddTime, double *avgCompres
         return GetLastError();
     }
     if (avgAddTime != NULL) {
-        *avgAddTime = wtsc->NonthreadedTimer().getStatistics("adding frame to stack");;
+        *avgAddTime = wtsc->NonthreadedTimer().getStatistics("cloning image") + wtsc->NonthreadedTimer().getStatistics("adding frame to input buffer");
     }
     if (avgCompressTime != NULL) {
         *avgCompressTime = wtsc->CompressionThreadTimer().getStatistics("compressing a frame");

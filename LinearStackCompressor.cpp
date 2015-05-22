@@ -15,6 +15,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <queue>
 using namespace std;
 
 LinearStackCompressor::LinearStackCompressor() {
@@ -26,14 +27,18 @@ LinearStackCompressor::LinearStackCompressor(const LinearStackCompressor& orig) 
 
 LinearStackCompressor::~LinearStackCompressor() {
    closeOutputFile();
-   vector<StaticBackgroundCompressor *>::iterator it;
-   for (it = imageStacks.begin(); it != imageStacks.end(); ++it) {
-       if ((*it) != NULL && (*it) != activeStack) {
-           delete *it;
-           *it = NULL;
-       }
+   while (!imageStacks.empty()) {
+       delete imageStacks.front();
+       imageStacks.pop();
    }
-   imageStacks.clear();
+   while (!compressedStacks.empty()) {
+       delete compressedStacks.front();
+       compressedStacks.pop();
+   }
+   while (!stacksToWrite.empty()) {
+       delete stacksToWrite.front();
+       stacksToWrite.pop();
+   }
    if (activeStack != NULL) {
        delete activeStack;
    }
@@ -58,6 +63,9 @@ void LinearStackCompressor::init() {
     processing = false; //really should be a mutex, but whatever
     lockActiveStack = false; //really should be a mutex, but whatever
     currentFileSize = 0;
+    numStacksToMerge = 12;
+    memoryUsedByCompressedStacks = 0;
+    
 }
 
 void LinearStackCompressor::newFrame(const IplImage* im, ImageMetaData *metadata) {
@@ -86,7 +94,6 @@ void LinearStackCompressor::newFrame(const IplImage* im, ImageMetaData *metadata
 
     if (!processing) {
         processing = true;
-    //    cout << tim.getElapsedTimeInSec() << " s elapsed\n";
         while (tim.getElapsedTimeInSec() < 0.95/frameRate && compressStack()) {
         //intentionally blank       
         }
@@ -102,10 +109,7 @@ void LinearStackCompressor::addFrameToStack(IplImage **im, ImageMetaData *metada
         createStack();
     }
     if (activeStack->numToProccess() >= keyframeInterval) {
-    //    cout << "pusing active stack on imstacks\n";
-        imageStacks.push_back(activeStack);
-        
- //       cout << "creating new stack\n";
+        imageStacks.push(activeStack);        
         createStack();
     }
     if (recordingState == recording) {
@@ -137,7 +141,7 @@ void LinearStackCompressor::finishRecording() {
     recordingState = idle;
     if (activeStack != NULL) {
         if (activeStack->numToProccess() > 0) {
-            imageStacks.push_back(activeStack);
+            imageStacks.push(activeStack);
         } else {
             delete activeStack;
         }
@@ -164,97 +168,67 @@ void LinearStackCompressor::createStack() {
 //returns true if there may be images remaining to compress
 bool LinearStackCompressor::compressStack() {
      setCompressionStack();
- //    cout << "stack being compressed = " << (int) stackBeingCompressed << "\n";
      if (stackBeingCompressed != NULL) {
-        // cout << "processing compression frame\n";
          stackBeingCompressed->processFrame();
          return true;
-     } else {
-         return false;
-     }
+     } 
+         
+     return false;
 }
 
+
+
 void LinearStackCompressor::numStacksWaiting(int& numToCompress, int& numToWrite) {
-    numToCompress = numToWrite = 0;
-    vector<StaticBackgroundCompressor *>::iterator it;
-    for (it = imageStacks.begin(); it != imageStacks.end(); ++it) {
-       if (readyForCompression(*it)) {
-           ++numToCompress;
-       }
-       if (readyForWriting(*it)) {
-           ++numToWrite;
-       }
-   }
+    
+    numToCompress = imageStacks.size();
+    numToWrite = compressedStacks.size() + stacksToWrite.size();
+    
 }
 
 void LinearStackCompressor::setCompressionStack() {
-   vector<StaticBackgroundCompressor *>::iterator it;
-   for (it = imageStacks.begin(); it != imageStacks.end(); ++it) {
-       if (readyForCompression(*it)) {
-       //    cout << "found one ready for compression\n";
-           stackBeingCompressed = *it;
-           return;
-       }
-   }
- //  cout << "no one is ready for compression\n";
-   stackBeingCompressed = NULL;
+   
+   if (stackBeingCompressed != NULL && stackBeingCompressed->numToProccess() <= 0) {
+        compressedStacks.push(stackBeingCompressed);
+        memoryUsedByCompressedStacks += stackBeingCompressed->sizeInMemory();
+        stackBeingCompressed = NULL;
+    }
+
+   if (stackBeingCompressed == NULL && !imageStacks.empty()) {
+        stackBeingCompressed = imageStacks.front();
+        imageStacks.pop();
+    }      
 }
 
 //returns true if there may be stacks remaining to write
 bool LinearStackCompressor::writeFinishedStack() {
-   vector<StaticBackgroundCompressor *>::iterator it;
-   for (it = imageStacks.begin(); it != imageStacks.end(); ++it) {
-       if (readyForWriting(*it)) {
-           if (outfile == NULL) {
-               openOutputFile();
-           }
-           if (outfile == NULL) {
-               return false;
-           }
-           StaticBackgroundCompressor *sbc = *it;
-          // ofstream::pos_type sp = outfile->tellp();
-         //  int sod = sbc->sizeOnDisk();
-           if (stacksavedescription.empty()) {
-                stacksavedescription = sbc->saveDescription();
-            }
-           //cout << "sbc to disk\n";
-           sbc->toDisk(*outfile);
-           currentFileSize = outfile->tellp();
-         //  cout << "delete sbc\n";
-           delete sbc;
-       //    cout << "imageStacks.erase\n";
-           imageStacks.erase(it);
-      //     cout << "return\n";
-           return true;
-           
+    mergeCompressedStacks();
+    setWritingStack();
+    if (stackBeingWritten != NULL) {
+        if (outfile == NULL) {
+            openOutputFile();
         }
-   }
+        if (outfile == NULL) {
+            return false;
+        }
+
+        if (stacksavedescription.empty()) {
+            stacksavedescription = stackBeingWritten->saveDescription();
+        }
+        stackBeingWritten->toDisk(*outfile);
+        currentFileSize = outfile->tellp();
+        delete stackBeingWritten;
+        stackBeingWritten = NULL;    
+        return true;          
+    }
    return false;
 }
+    
 
 ofstream::pos_type LinearStackCompressor::numBytesWritten() {
-//    if (outfile == NULL) {
-//        return 0;
-//    }
-//    ofstream::pos_type rv = outfile->tellp();
-//    if (rv > 0) {
-//        return rv;
-//    } else {
-//        return 0;
-//    }
+
     return currentFileSize;
 }
 
-bool LinearStackCompressor::readyForCompression(StaticBackgroundCompressor* sc) {
- //   if (sc != NULL) {
-//        cout << "num to compress = " << sc->numToProccess() << "\n";
- //   }
-    return (sc != NULL && sc != activeStack && sc->numToProccess() > 0);
-}
-
-bool LinearStackCompressor::readyForWriting(StaticBackgroundCompressor* sc) {
-    return (sc != NULL && sc != activeStack && sc != stackBeingCompressed && sc->numToProccess() == 0 && sc->numProcessed() > 0);
-}
 
 void LinearStackCompressor::openOutputFile() {
     if (outfile != NULL) {
@@ -283,7 +257,7 @@ void LinearStackCompressor::setOutputFileName(const char* fname) {
 }
 
 void LinearStackCompressor::stopRecording() {
-    recordingState = idle;
+    //recordingState = idle;
     finishRecording();
 }
 
@@ -333,13 +307,39 @@ string LinearStackCompressor::saveDescription() {
     return os.str();
 }
 
+void LinearStackCompressor::mergeCompressedStacks() {
+  
+    
+    if ((recordingState != recording && !compressedStacks.empty()) || compressedStacks.size() >= numStacksToMerge) {
+        cout << "merging stacks " << endl << flush;
+        StaticBackgroundCompressor *sbc = compressedStacks.front();
+        compressedStacks.pop();
+        vector<StaticBackgroundCompressor *> stacksToMerge;
+        for (int j = 1; !compressedStacks.empty() && j < numStacksToMerge; ++j) {
+            stacksToMerge.push_back(compressedStacks.front());
+            compressedStacks.pop();
+        }
+        memoryUsedByCompressedStacks *= (compressedStacks.size() / (compressedStacks.size() + numStacksToMerge)); //estimates, in the unusual case compressedStacks wasn't emptied
+        sbc->mergeStacks(stacksToMerge);
+        for (vector<StaticBackgroundCompressor *>::iterator it = stacksToMerge.begin(); it != stacksToMerge.end(); ++it) {
+            delete (*it);
+            *it = NULL;
+        }      
+        stacksToWrite.push(sbc);
+        cout << "done merging stacks " << endl << flush;
+    }
+}
+
+
+
+
+
+
 void LinearStackCompressor::setWritingStack() {
-   vector<StaticBackgroundCompressor *>::iterator it;
-   for (it = imageStacks.begin(); it != imageStacks.end(); ++it) {
-       if (readyForWriting(*it)) {
-           stackBeingWritten = *it;
-           return;
-       }
-   }
-   stackBeingWritten = NULL;
+     
+    if (stackBeingWritten == NULL && !stacksToWrite.empty()) {
+        stackBeingWritten = stacksToWrite.front();
+        stacksToWrite.pop();
+    }
+    
 }
